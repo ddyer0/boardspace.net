@@ -28,7 +28,6 @@ public abstract class GenericLayer extends BaseLayer implements Layer
 	public String getID() { return(id==null ? layerName : id); }
 	public void setID(String n) { id = n; }
 	public String getName() { return(layerName); }
-	@SuppressWarnings("deprecation")
 	public String toString() { return("<"+getClass().getName()+" "+layerName+">"); }
 	public Neuron[] getNeurons() { return(neurons);}
 	public Neuron makeNeuron(int seq) { return(new FCNeuron(layerName+"-"+seq,transferFunction)); }

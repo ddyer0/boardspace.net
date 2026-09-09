@@ -27,8 +27,8 @@ public class HorizontalBar extends DrawnIcon
 {
 	public double percent;
 	Color color;
-	public int getWidth() { return((int)w); }
-	public int getHeight() { return((int)h); }
+	public int getWidth() { return(w); }
+	public int getHeight() { return(h); }
 	public HorizontalBar(double wid,double hei,double pc,Color c)
 		{	super((int)wid,(int)hei,null);
 			percent = pc;

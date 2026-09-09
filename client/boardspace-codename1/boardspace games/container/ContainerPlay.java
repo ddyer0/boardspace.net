@@ -329,7 +329,7 @@ void showFairBids(ContainerBoard evboard)
      * */
     public void StaticEval()
     {
-    	ContainerBoard evboard = (ContainerBoard)GameBoard.cloneBoard();
+    	ContainerBoard evboard = GameBoard.cloneBoard();
     	StaticEvalPosition(evboard,evboard.whoseTurn,true);
     	showFairBids(evboard);
     }
@@ -394,7 +394,7 @@ void showFairBids(ContainerBoard evboard)
     {
         InitRobot(newParam, info, strat);
         GameBoard = (ContainerBoard) gboard;
-        board = (ContainerBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         switch(strat)
         {
         case WEAKBOT_LEVEL:

@@ -312,7 +312,7 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 		getMenu().paint(g);
 	}
 	
-	public NativeMenuItemInterface getMenuItem(int n) { return((NativeMenuItemInterface)getItem(n)); }
+	public NativeMenuItemInterface getMenuItem(int n) { return(getItem(n)); }
 
 	public void show(Object window, int x, int y) throws AccessControlException {
 		final Menu jMenu = this;

@@ -23,7 +23,6 @@ import java.awt.FontMetrics;
 import lib.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.URL;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
@@ -74,7 +73,7 @@ import vnc.VNCService;
 import static util.PasswordCollector.VersionMessage;
 
 @SuppressWarnings("serial")
-public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParentInterface,ActionListener
+public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParentInterface
 {	
 	private static final String FAVORITES = "SeatingFavorites";
 	private static final String RECENTS = "SeatingRecents";
@@ -680,7 +679,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			if(colorIndex!=null && i<colorIndex.length)
 				{
 				int xo1 = xc + (int)(colorStep*0.4);
-				int yo1 = yo-(int)(colorStep);
+				int yo1 = yo-(colorStep);
 				Rectangle r = new Rectangle(xo1,yo1,colorStep*3,colorStep*3);
 				drawColorBox(gc,i,bubbleSelect,map[colorIndex[i]],r,pickedSource>0);
 
@@ -1193,7 +1192,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	{	if(selectedChart!=null)
 		{
 		drawSeatingSchematic(gc,selectedChart,null,
-				(int)(Math.min(G.Width(mainr),G.Height(mainr))),
+				(Math.min(G.Width(mainr),G.Height(mainr))),
 				G.centerX(mainr),
 				G.centerY(mainr) - ((serviceRunning()|portrait) ? 0 : G.Height(mainr)/6),
 				hp,portrait);
@@ -1443,9 +1442,9 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	}
     private AuxViewer doVncViewer(ExtendedHashtable sharedInfo)
     {  
-    	commonPanel panel = (commonPanel)new commonPanel();
+    	commonPanel panel = new commonPanel();
     	XFrame frame = new XFrame("VNC viewer");
-    	AuxViewer viewer = (AuxViewer)new vnc.AuxViewer();
+    	AuxViewer viewer = new vnc.AuxViewer();
     	if(viewer!=null)
     	{
     	viewer.init(sharedInfo,frame);
@@ -1463,7 +1462,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
     private RpcServiceClient doRpcViewer(ExtendedHashtable sharedInfo)
     {  
     	XFrame frame = new XFrame("RPC viewer");
-    	commonPanel panel = (commonPanel)new commonPanel();
+    	commonPanel panel = new commonPanel();
     	panel.init(sharedInfo,frame);
     	RpcReceiver.start("localhost",RpcPort,sharedInfo, panel,frame);
     	

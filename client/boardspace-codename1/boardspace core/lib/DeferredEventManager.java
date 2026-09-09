@@ -36,7 +36,6 @@ import com.codename1.ui.events.ActionListener;
  * @author ddyer
  *
  */
-@SuppressWarnings("rawtypes")
 public class DeferredEventManager implements ActionListener<ActionEvent>,ItemListener,ListSelectionListener
 {
 	private Vector<Object> deferredEvents = new Vector<Object>();

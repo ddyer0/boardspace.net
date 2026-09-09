@@ -116,7 +116,7 @@ class MogulBoard extends trackBoard<MogulCell> implements BoardProtocol,MogulCon
 		}
 		public long Digest(Random r)
 		{	
-			long v = (long)vp*r.nextLong();
+			long v = vp*r.nextLong();
 			v ^= MogulBoard.this.Digest(r,cards);
 			v ^= MogulBoard.this.Digest(r,chips);
 			v ^= (hasTakenLoan ? 0x056806023 : 0xf120045) | (hasTakenMoney ? 0x98932985 : 0x7063467e);

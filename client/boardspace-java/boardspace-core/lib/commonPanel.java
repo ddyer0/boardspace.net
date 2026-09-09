@@ -344,7 +344,6 @@ public class commonPanel extends FullscreenPanel
         return (0);
     } 
 
-	@SuppressWarnings("deprecation")
     public void start()
     {	// use this to set an artificially low stack size
 		//new Thread(null,this,getClass().getName(),1000000).start();

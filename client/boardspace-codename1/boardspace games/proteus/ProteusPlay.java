@@ -91,7 +91,7 @@ public class ProteusPlay extends commonRobot<ProteusBoard> implements Runnable, 
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (ProteusBoard) gboard;
-        board = (ProteusBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         repeats = ((ProteusViewer)newParam).repeatedPositions;
         MONTEBOT = true;
         switch(strategy)

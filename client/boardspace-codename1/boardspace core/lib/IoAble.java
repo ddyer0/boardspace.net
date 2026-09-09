@@ -21,7 +21,6 @@ public interface IoAble {
 	public static String VERSION = "1";
 	
 	// save an arbitrary IoAble item
-	@SuppressWarnings("deprecation")
 	static public boolean saveWithId(PrintStream s,IoAble item)
 	{
 		s.println(IOABLE+" "+VERSION+" "+item.getClass().getName());

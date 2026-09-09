@@ -393,7 +393,6 @@ public class ResourceBundle
 		else { return new RawResources(new File(f),f); }
 	}
 
-	@SuppressWarnings("resource")
 	ResourceInterface openLocalFile(File f,String name)
 	{	resFile = name;
 		cacheFile = f;

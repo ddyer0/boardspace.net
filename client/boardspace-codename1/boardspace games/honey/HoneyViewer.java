@@ -66,7 +66,6 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard>
     private Color chatBackgroundColor = new Color(235,235,235);
     private Color rackBackGroundColor = new Color(192,192,192);
     private Color boardBackgroundColor = new Color(220,165,155);
-    @SuppressWarnings("unused")
     private Color tempLetterColor = new Color(0.1f,0.5f,0.1f);
     private Dictionary dictionary = Dictionary.getInstance();
     private GameLog gameLog1 = new GameLog(this);
@@ -544,7 +543,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
     	boolean leadin = !mutable_game_record && time<5000;
     	if(leadin) { highlight=null; }
      	boolean canHit = G.pointInRect(highlight,brect);
-    	int cs = Math.max(5,(int)gb.cellSize());
+    	int cs = Math.max(5,gb.cellSize());
     	Rectangle oldClip = GC.combinedClip(gc,brect);
     	//GC.fillRect(gc,new Color(0.8f,0.8f,0.85f),brect);
         //

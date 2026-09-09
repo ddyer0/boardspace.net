@@ -32,7 +32,6 @@ import udp.PlaytableStack;
  * @author Ddyer
  *
  */
-@SuppressWarnings("serial")
 public class AuxViewer extends exCanvas
 {
 	VNCReceiver receiver = new VNCReceiver(this);

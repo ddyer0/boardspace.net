@@ -511,8 +511,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
     // 
     // undo the pick, getting back to base state for the move
     //
-    @SuppressWarnings("unused")
-	private void unPickObject()
+ 	private void unPickObject()
     {	PushfightCell rv = pickedSourceStack.pop();
     	setState(stateStack.pop());
     	SetBoard(rv,pickedObject);

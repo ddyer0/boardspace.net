@@ -107,7 +107,6 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 		toolBar.setShouldCalcPreferredSize(true);
 	}
 
-	@SuppressWarnings("deprecation")
 	public void initGlobalToolbar()
 	{
 		toolBar = new MasterToolBar();
@@ -149,7 +148,6 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	// them into an invisible text window.
 	//
 	TextArea keys = new TextArea(1,20);
-	@SuppressWarnings("deprecation")
 	private MasterForm(String app) 
 	{ super(app);
 	  setLayout(new NullLayout(this));
@@ -187,7 +185,6 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	  toolBar.add("West",tabs);
 	  toolBar.add("East",menus);
 	  toolBar.add("Center",centers);  
-	  TextField.setUseNativeTextInput(false);
 	}
 	public void setFocused(com.codename1.ui.Component p)
 	{	//G.print("set focused ",p,p==null?"":p.isFocusable());
@@ -287,7 +284,6 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 		super.show();
 		changeTitle();
 		int w = getWidth();
-		@SuppressWarnings("deprecation")
 		int titleh = getTitleArea().getHeight();
 		int h = Math.min(getSafe().getHeight(),getHeight())-titleh;		
 		p.setX(0);
@@ -741,7 +737,6 @@ public void addToMenus(JButton m)
 		getHierarchy(this,b,0);
 		return b.toString();
 	}
-	@SuppressWarnings("deprecation")
 	private void getHierarchy(com.codename1.ui.Component w,StringBuilder b,int lvl)
 	{
 		if(w instanceof com.codename1.ui.Container)

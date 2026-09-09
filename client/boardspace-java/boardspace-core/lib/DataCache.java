@@ -63,7 +63,6 @@ import java.io.ByteArrayOutputStream;
 
 
 import bridge.Config;
-
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -424,7 +423,6 @@ public class DataCache implements Runnable,Config
 	public static String getCacheName(File cacheDir)
 	{
 		try {
-			@SuppressWarnings("resource")
 			InputStream s = new FileInputStream(new File(cacheDir,CACHENAME));
 			if(s!=null)
 			{

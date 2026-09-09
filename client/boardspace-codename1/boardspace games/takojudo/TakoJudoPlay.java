@@ -134,7 +134,7 @@ public class TakoJudoPlay extends commonRobot<TakojudoBoard> implements Runnable
      * */
     public void StaticEval()
     {
-    	TakojudoBoard evboard = (TakojudoBoard)GameBoard.cloneBoard();
+    	TakojudoBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
@@ -150,7 +150,7 @@ public class TakoJudoPlay extends commonRobot<TakojudoBoard> implements Runnable
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (TakojudoBoard) gboard;
-        board = (TakojudoBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         switch(strategy)
         {
         case WEAKBOT_LEVEL:

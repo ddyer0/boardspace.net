@@ -361,7 +361,7 @@ public class EuphoriaPlay extends commonMPRobot<EuphoriaBoard>
      * information about the static analysis of the current position.
      * */
     public void StaticEval()
-    {	EuphoriaBoard evboard = (EuphoriaBoard)GameBoard.cloneBoard();
+    {	EuphoriaBoard evboard = GameBoard.cloneBoard();
     	int nplay = evboard.nPlayers();
     	for(int i=0;i<nplay; i++)
     	{	double sc = ScoreForPlayer(evboard,i,true);

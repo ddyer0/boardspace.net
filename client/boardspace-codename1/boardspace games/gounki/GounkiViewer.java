@@ -221,8 +221,8 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
     	SQUARESIZE = CELLSIZE*3;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(nrows*CELLSIZE);
+    	int boardW = (ncols*CELLSIZE);
+    	int boardH = (nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW-bufferCellsW*2*CELLSIZE)/2);
     	int extraH = Math.max(0, (mainH-boardH-bufferCellsH*2*CELLSIZE)/2);
     	int boardX = mainX+extraW+bufferCellsW*CELLSIZE;

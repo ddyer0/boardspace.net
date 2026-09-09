@@ -116,7 +116,7 @@ public class QuinamidPlay extends commonRobot<QuinamidBoard> implements Runnable
      * */
     public void StaticEval()
     {
-    	QuinamidBoard evboard = (QuinamidBoard)GameBoard.cloneBoard();
+    	QuinamidBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
@@ -132,7 +132,7 @@ public class QuinamidPlay extends commonRobot<QuinamidBoard> implements Runnable
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (QuinamidBoard) gboard;
-        board = (QuinamidBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         switch(strategy)
         {
         case WEAKBOT_LEVEL:

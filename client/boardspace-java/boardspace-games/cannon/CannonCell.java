@@ -16,12 +16,13 @@
  */
 package cannon;
 import cannon.CannonConstants.CannonId;
-import lib.OStack;
+import lib.PrivateIndex;
+import lib.QRStack;
 import lib.Random;
 import online.game.PlacementProvider;
 import online.game.stackCell;
 
-class CellStack extends OStack<CannonCell>
+class CellStack extends QRStack<CannonCell>
 {
 	public CannonCell[] newComponentArray(int sz) {
 		return new CannonCell[sz];
@@ -29,20 +30,25 @@ class CellStack extends OStack<CannonCell>
 	
 }
 
-public class CannonCell extends stackCell<CannonCell,CannonChip> implements PlacementProvider
-{	public CannonChip[] newComponentArray(int n) { return(new CannonChip[n]); }
+public class CannonCell extends stackCell<CannonCell,CannonChip> implements PlacementProvider,PrivateIndex{	public CannonChip[] newComponentArray(int n) { return(new CannonChip[n]); }
 	// constructor
 	int lastPicked = -1;
 	int lastDropped = -1;
+	int privateIndex = -1;
+	public int getPrivateIndex() { return privateIndex;}
+	public void setPrivateIndex(int c) { privateIndex = c;}
+	
 	public void reInit()
 	{
 		super.reInit();
 		lastPicked = -1;
+		privateIndex = -1;
 		lastDropped = -1;
 	}
 	public void copyFrom(CannonCell o)
 	{
 		super.copyFrom(o);
+		privateIndex = o.privateIndex;
 		lastPicked = o.lastPicked;
 		lastDropped = o.lastDropped;
 	}
@@ -72,6 +78,5 @@ public class CannonCell extends stackCell<CannonCell,CannonChip> implements Plac
 		{ CannonChip top = topChip();
 		  return((top==null)?"":top.toString());
 		}
-	
 
 }

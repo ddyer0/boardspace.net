@@ -72,14 +72,15 @@ public class JavaServerSocket extends SocketConnection implements ServerSocketPr
 	        private boolean stopped;
 	        public void run() {
 	            try {
-	            	NativeServerSocket sockImpl = (NativeServerSocket)NativeLookup.create(NativeServerSocket.class);
+	            	NativeServerSocket sockImpl = NativeLookup.create(NativeServerSocket.class);
 	            	if(sockImpl==null) { G.Error("NativeServerSocket class not found"); }
 	            	else {
 	            		boolean supported = sockImpl.isSupported();
 	            	if(supported)
 	            	{
 	                final int bound = sockImpl.bindSocket(port);
-                    final SocketConnection sc = (SocketConnection)scClass.newInstance();
+                    @SuppressWarnings("deprecation")
+					final SocketConnection sc = (SocketConnection)scClass.newInstance();
 	                if(bound<0) { sc.connectionError(bound,sockImpl.getIOExceptionMessage(bound)); }
 	                else
 	                {while(bound>=0 && !stopped) {
@@ -133,7 +134,6 @@ public class JavaServerSocket extends SocketConnection implements ServerSocketPr
 	public void closeQuietly() {
 		try { close(); } catch (IOException e) { }
 	}
-	@SuppressWarnings("deprecation")
 	public static boolean isServerSocketSupported()
 	{	return(com.codename1.io.Socket.isServerSocketSupported());
 	}

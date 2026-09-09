@@ -53,7 +53,7 @@ public class Plog {
 	    if(isLogThread()) {el.append("E "); }
 	    else { el.append(Thread.currentThread().getName()); el.append(" "); }
 	   
-		int micros = (int)((nanos+500)/1000);
+		int micros = ((nanos+500)/1000);
 		int millis = micros/1000;
 		micros=micros%1000;
 		if(secs<10) { el.append(' '); }

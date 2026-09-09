@@ -554,7 +554,6 @@ public class Http implements Config {
     	            //sometimes processes get stuck in an error loop. Don't flood the
     	            //server with too many reports.
     	            String msg = getErrorMessage(message, err);
-    	            @SuppressWarnings("deprecation")
 					String cname =  (caller==null) ? "null" :
 									(caller instanceof String) 
     	            					? (String)caller 

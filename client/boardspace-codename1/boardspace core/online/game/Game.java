@@ -264,7 +264,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
     private boolean GameOver() { return((v!=null)&&v.GameOver()); }
     
-   
     private String fileNameString()
     {	StringBuilder str = new StringBuilder();
     	if(tournamentMode)
@@ -3087,7 +3086,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     {	
 		int position = myST.intToken();	// unused, but meaningful to the server so don't mess with it
 		String uid = myST.nextToken();
-		String name = Base64.decodeAlphaNumeric(myST.nextToken());
+		String nametoken = myST.nextToken();
+		String name = Base64.decodeAlphaNumeric(nametoken);
 		int order = myST.intToken();
 		//
 		// from time to time, the "order" argument was overloaded to pass new information about the 
@@ -4193,6 +4193,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                     if(fullMsg!=null)
                     {	//G.print("In: "+fullMsg);
                         localST = new Tokenizer(fullMsg);
+                        localST.singletons = "";
                         cmd = localST.nextToken();
                         if(isExpectedSequence(cmd,fullMsg))
                         {

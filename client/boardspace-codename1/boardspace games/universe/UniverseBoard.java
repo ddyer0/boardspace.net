@@ -4410,7 +4410,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
  		if(GameOver()) 
  			{	//bestScore = total;
  				bestMoves.copyFrom(moveStack);
- 				UniverseBoard save = (UniverseBoard)mainBoard.cloneBoard();
+ 				UniverseBoard save = mainBoard.cloneBoard();
  				mainBoard.copyFrom(this);
  				for(int i=0;i<bestMoves.size();i++) { G.print(""+bestMoves.elementAt(i)); }
 				G.print("New best "+bestScore);

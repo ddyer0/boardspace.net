@@ -61,7 +61,6 @@ abstract class BlobCore implements TwixtConstants
 	{	return(hasRightEdge>=2);
 	}
 
-	@SuppressWarnings("deprecation")
 	public String toString()
     {
       return("<"+getClass().getName()+":"+ span()+ color+" "+leftCol+"-"+rightCol+","+topRow+"-"+bottomRow+">");

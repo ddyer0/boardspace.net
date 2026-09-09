@@ -132,7 +132,7 @@ public class Bitset <P extends Enum<?>> implements Digestable
 
 	public boolean equals(Object other) {
 	    if (!(other instanceof Bitset)) return false;
-	    return equals((Bitset<?>) other);
+	    return equals(other);
 	}
 	
 	public int hashCode()

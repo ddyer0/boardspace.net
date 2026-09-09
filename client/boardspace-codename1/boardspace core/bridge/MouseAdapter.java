@@ -196,7 +196,7 @@ public class MouseAdapter
 		
 		while(!systemFocusListeners.isEmpty())
 		{
-			component.removeFocusListener((com.codename1.ui.events.FocusListener) systemFocusListeners.pop());
+			component.removeFocusListener(systemFocusListeners.pop());
 		}
 		
 		removeSystemActionListeners();

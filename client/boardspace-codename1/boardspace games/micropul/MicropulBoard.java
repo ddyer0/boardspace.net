@@ -1143,8 +1143,10 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
  	int who = whoseTurn;
  	// add "place a chip" moves
  	int ncells = occupiedCells.size();
- 	for(int i=offset-1; i<ncells; i+=skip)
+ 	for(int i=0; i<ncells; i++)
  	{	MicropulCell c = occupiedCells.elementAt(i);
+ 		if(c.cellInThreadGroup(offset,skip))
+ 		{
  		for(int dir=0; dir<4; dir++)
  		{	MicropulCell nx = c.exitTo(dir);
  			if((nx.sweep_counter!=sweep) && (nx.topChip()==null))
@@ -1169,7 +1171,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
  					}
  				}
  				
- 			}
+ 			}}
  		}
  	}
  	

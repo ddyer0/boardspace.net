@@ -37,6 +37,7 @@ public class TextInputWindow extends exCanvas implements CanvasProtocol, Runnabl
 	TextContainer area = new TextContainer("");
 	Keyboard keyboard = null;
 	boolean useKeyboard = G.defaultUseKeyboard();
+	
     public void closeKeyboard()
     {
     	Keyboard kb = keyboard;

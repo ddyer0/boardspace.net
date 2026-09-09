@@ -89,7 +89,7 @@ public class CRC32 implements Checksum
    */
   public long getValue ()
   {
-    return (long) crc & 0xffffffffL;
+    return crc & 0xffffffffL;
   }
 
   /**

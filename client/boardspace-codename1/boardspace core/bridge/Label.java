@@ -52,7 +52,6 @@ public class Label extends com.codename1.ui.Label
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public Label(String string, int center) 
 	{ super(string);
 	  setAlignment(center); 

@@ -200,6 +200,6 @@ public class Adler32 implements Checksum
    */
   public long getValue()
   {
-    return (long) checksum & 0xffffffffL;
+    return checksum & 0xffffffffL;
   }
 }

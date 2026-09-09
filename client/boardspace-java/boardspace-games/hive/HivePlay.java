@@ -33,6 +33,7 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
 	private int WEAKBOT_DEPTH = 3;
 	private boolean ProgressiveSearch = false;
 	private int DUMBOT_DEPTH = 5;
+	private boolean useThreads = true;
     //int SMARTBOT_DEPTH = 5;
 	private int MAX_DEPTH = DUMBOT_DEPTH;
 	private final double VALUE_OF_WIN = 100000.0;
@@ -68,7 +69,8 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
     	HivePlay cc = (HivePlay)c;
     	cc.evaluator = evaluator;
     	cc.Strategy = Strategy;
-    	
+    	cc.sprintThreshold = sprintThreshold;
+    	cc.sprintProgressThreshold = sprintProgressThreshold;
     	return(c);
     }
 
@@ -269,7 +271,7 @@ static String ref3 = "-1.4900855185584436 5.391213625565254 -9.731346119706972 -
         	evaluator = new RevisedAugustEvaluator();
         	avoidSpiderOpening = true;
         	pushToWin = false;	// see comments, can't be used in its current form.
-           	MAX_DEPTH = DUMBOT_DEPTH + (G.getAvailableProcessors()>2 ? 1 : 0);
+           	MAX_DEPTH = DUMBOT_DEPTH;
            	KILLER_HEURISTIC = true;
         	ProgressiveSearch = false;
         	MONTEBOT = false;
@@ -280,12 +282,15 @@ static String ref3 = "-1.4900855185584436 5.391213625565254 -9.731346119706972 -
 		//	MONTEBOT = false;
 	    //   	evaluator = new ThirdStandardEvaluator();
         //	break;
-        case BESTBOT_LEVEL: 
+        case TESTBOT_LEVEL_1:
+        	useThreads = false;
+			//$FALL-THROUGH$
+		case BESTBOT_LEVEL: 
         	evaluator = new RevisedSeptemberEvaluatorJJ();	// previous bestbot was EvaluatorN
         	avoidSpiderOpening = true;
         	ProgressiveSearch = false;
         	pushToWin = false;	// see comments, can't be used in its current form.
-           	MAX_DEPTH = DUMBOT_DEPTH + (G.getAvailableProcessors()>2 ? 1 : 0);
+           	MAX_DEPTH = DUMBOT_DEPTH+2;
            	sprintThreshold = 70;
            	KILLER_HEURISTIC = true;
            	sprintProgressThreshold = 10;
@@ -296,6 +301,7 @@ static String ref3 = "-1.4900855185584436 5.391213625565254 -9.731346119706972 -
         	COLLECT_TREE = false;
         	evaluator = new MonteEvaluator();
         	break;
+        /*
          case TESTBOT_LEVEL_1:
         	evaluator = new RevisedSeptemberEvaluator();	// 
         	avoidSpiderOpening = true;
@@ -307,7 +313,7 @@ static String ref3 = "-1.4900855185584436 5.391213625565254 -9.731346119706972 -
            	sprintProgressThreshold = 10;
         	MONTEBOT = false;
         	break;
-
+*/
         case TESTBOT_LEVEL_2:
         	// this is an experiment with an evaluator that does not generate moves or consider mobility
         	// this result is that it gets - maybe - 2 ply more, but still gets crushed by slower evaluators
@@ -451,7 +457,7 @@ public commonMove Random_Good_Move(Search_Driver search,int n,double dif)
             search_state.save_all_variations = SAVE_TREE;
             //search_state.use_nullmove = NULLMOVE;
             search_state.verbose = verbose;
-            search_state.max_threads = DEPLOY_THREADS;
+            search_state.max_threads = useThreads ? DEPLOY_THREADS : 0;
              //search_state.allow_killer = true;
             search_state.allow_best_killer = KILLER_HEURISTIC;
             search_state.save_top_digest=true;	// always on background check on the robot
@@ -481,7 +487,7 @@ public commonMove Random_Good_Move(Search_Driver search,int n,double dif)
             		 	break;
             		 }
             	  }
-            	  search_state.showResult(move,false);
+            	  search_state.showResult(move,true);
             	}
         }
         finally
@@ -698,11 +704,11 @@ public commonMove Random_Good_Move(Search_Driver search,int n,double dif)
 	 		black.StopRobot();
 	 		white.StopRobot();
 	 		G.print("running ",fullname);
-	 		runBotGame(v,(commonRobot<?>)white,(commonRobot<?>)black); 
+	 		runBotGame(v,white,black); 
 	 		boolean gameover = cloneBoard.GameOver();
 	 		if(!gameover)
 	 		{
-	 			runBotGame(v,(commonRobot<?>)white,(commonRobot<?>)black); 
+	 			runBotGame(v,white,black); 
 	 			gameover = cloneBoard.GameOver();
 	 		}
 	 		String result = !gameover 

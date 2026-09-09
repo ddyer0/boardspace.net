@@ -20,7 +20,6 @@ import bridge.MouseEvent;
 import bridge.MouseWheelEvent;
 import bridge.Canvas;
 
-@SuppressWarnings("serial")
 public class MouseCanvas extends Canvas implements MouseClient,DeferredEventHandler
 {	private boolean PINCHROTATION = false;		
 	public static double MINIMUM_ZOOM = 1.05;
@@ -212,7 +211,7 @@ public class MouseCanvas extends Canvas implements MouseClient,DeferredEventHand
 	{ 	int oldX = mouse.getSX();
 	   	int w = getWidth();
 	   	double z = getGlobalZoom();
-	   	int margin = (int)(w/4);			// the /4 allows 25% overpan
+	   	int margin = (w/4);			// the /4 allows 25% overpan
      	int maxW = (int)(w*z-margin);	
      	int newsx = (z<MINIMUM_ZOOM? 0 :(int)Math.min(maxW,Math.max(margin-w,x)));
      	mouse.setSX(newsx);
@@ -227,7 +226,7 @@ public class MouseCanvas extends Canvas implements MouseClient,DeferredEventHand
 	{	int oldY = mouse.getSY();
 		int h = getHeight();
 		double z = getGlobalZoom();
-		int margin = (int)(h/4);
+		int margin = (h/4);
 		int maxH = (int)(h*z-margin);
 		int newsy = (z<MINIMUM_ZOOM) ? 0 : (int)Math.min(maxH,Math.max(margin-h,y));
 		mouse.setSY(newsy);

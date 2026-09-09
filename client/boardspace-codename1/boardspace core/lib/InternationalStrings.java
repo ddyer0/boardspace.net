@@ -643,7 +643,7 @@ public abstract class InternationalStrings implements Config
     	 {
     		 int nItems = m.getItemCount();
     		 for(int i = 0; i<nItems; i++)
-    		 {	JMenuItem item = (JMenuItem)m.getItem(i);
+    		 {	JMenuItem item = m.getItem(i);
      		    if(item==target)
     	    		{	
     			 	String old = G.getString(G.LANGUAGE, DefaultLanguageName);

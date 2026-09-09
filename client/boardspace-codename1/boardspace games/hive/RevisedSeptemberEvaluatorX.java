@@ -353,7 +353,7 @@ class RevisedSeptemberEvaluatorX extends DefaultEvaluator implements Evaluator
 		  {	  // vacant space next to queen
 			  if(enemyBeetle)
 			  {	// extra danger if the queen is topped by an enemy beetle
-				  if(board.legalDropDest(c,board.playerColor(targetPlayer^1)))
+				  if(board.legalToDropAdjacent(c,board.playerColor(targetPlayer^1)))
 				  {
 					  credits +=QueenDropCount;	// drop destination directly next to Q
 				  }
@@ -738,7 +738,7 @@ class RevisedSeptemberEvaluatorX extends DefaultEvaluator implements Evaluator
   			  }
   		  if(altBest!= null) 
   		  {	G.print("using TRUST to play ",altBest," instead of ",move);
-  		  	move = (Hivemovespec)altBest;
+  		  	move = altBest;
   		  }
   		  }
   	  }

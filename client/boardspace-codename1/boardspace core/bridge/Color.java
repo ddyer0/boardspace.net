@@ -529,8 +529,7 @@ public class Color  {
      *
      * @return  a string representation of this <code>Color</code>.
      */
-    @SuppressWarnings("deprecation")
-	public String toString() {
+ 	public String toString() {
         return getClass().getName() + "[r=" + getRed() + ",g=" + getGreen() + ",b=" + getBlue() + "]";
     }
 

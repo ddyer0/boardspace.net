@@ -54,7 +54,6 @@ class RpcChoiceStack extends OStack<RpcChoice>
 	public RpcChoice[] newComponentArray(int sz) { return new RpcChoice[sz]; }	
 }
 
-@SuppressWarnings("serial")
 public class RpcServiceClient  extends exCanvas implements RpcInterface
 {
 	private RpcChoiceStack choices = new RpcChoiceStack();

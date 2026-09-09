@@ -29,7 +29,7 @@ import bridge.FontMetrics;
  * @author ddyer
  *
  */
-@SuppressWarnings({ "serial", "rawtypes" })
+@SuppressWarnings({"rawtypes" })
 public class DateSelector extends Rectangle implements ActionListener
 {	public enum DateCode implements CellId,EnumMenu
 	{ Year,Month,Day;

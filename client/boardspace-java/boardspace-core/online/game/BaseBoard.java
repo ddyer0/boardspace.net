@@ -46,6 +46,7 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
     /**
      * this is used to distinguish the true board from copies
      */
+	protected final boolean DEBUG = G.DEBUG;
 	private String name = "main";
 	private int generation = 0;
 	public String getName() { return(generation>0 ? "copy("+generation+") "+name : name); }
@@ -56,7 +57,6 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
      */
 	public boolean reverseView() { return false; }
 
-	@SuppressWarnings("deprecation")
 	public String toString() { return("<"+getClass().getName()+" "+getName()+">"); }
 	
 	public int whoseTurn = -1; 		// player index who is to move next

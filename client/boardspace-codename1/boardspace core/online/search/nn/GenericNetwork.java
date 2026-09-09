@@ -191,7 +191,6 @@ public class GenericNetwork implements Network
 		return(n);
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void saveNetwork(PrintStream out,String comment)
 	{
 		out.print(this.getClass().getName());

@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+@SuppressWarnings("serial")
 public class SystemDate extends Date
 {	static final String GMT = "GMT";
 	Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone(GMT));

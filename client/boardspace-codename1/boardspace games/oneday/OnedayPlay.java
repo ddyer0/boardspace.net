@@ -115,7 +115,7 @@ public class OnedayPlay extends commonMPRobot<OnedayBoard> implements Runnable, 
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (OnedayBoard) gboard;
-        board = (OnedayBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
     	RESHUFFLE = true;
     	MONTEBOT = true;
         switch(strategy)

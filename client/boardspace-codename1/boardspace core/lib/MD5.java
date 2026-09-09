@@ -59,7 +59,7 @@ public class MD5
        {
            int index = i << 6;
            for (int j = 0; j < 64; j++, index++)
-               buffer[j >>> 2] = ((int) ((index < messageLenBytes) ? message[index]
+               buffer[j >>> 2] = (((index < messageLenBytes) ? message[index]
                        : paddingBytes[index - messageLenBytes]) << 24)
                        | (buffer[j >>> 2] >>> 8);
            int originalA = a;

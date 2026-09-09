@@ -156,7 +156,6 @@ public class UCTNode {
 		commonMove ch[] = children;
 		return(ch==null?0:ch.length);
 	}
-	@SuppressWarnings("unused")
 	private int getNoActiveChildren()
 	{	commonMove ch[] = children;
 		int n=0;

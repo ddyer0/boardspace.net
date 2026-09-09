@@ -2128,9 +2128,11 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
  public boolean addSimpleMoves(CommonMoveStack all,int who,int offset,int skip)
  {	boolean some = false;
  	CellStack pieces = occupiedCells[who];
- 	for(int lim=pieces.size()-offset; lim>=0; lim-=skip)
- 	{	
+ 	for(int lim=pieces.size()-1; lim>=0; lim--)
+ 	{	// note that we can't just skip, because the order of pieces in the stack is not stable
  		ChessCell cell = pieces.elementAt(lim);
+ 		if(cell.cellInThreadGroup(offset,skip))
+ 		{
  		ChessChip top = cell.topChip();
  		if(isImmobilized(cell,top,who))
  		{ if(!top.isKing())
@@ -2141,7 +2143,7 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
  		{
  		some |= addSimpleMoves(all, cell,top.piece,who);
  		if(some && (all==null))  { return(true); }
- 		}
+ 		}}
  	}
  	if(variation==Variation.CrazyHouse)
  	{

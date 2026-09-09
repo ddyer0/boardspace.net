@@ -68,6 +68,8 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
 	 */
 	public boolean save_all_variations = false; // if true, save more information for the full search tree
 
+	public int recheck_evaluations = G.DEBUG ? 1003 : 0;
+	public double recheck_slop = 0.01;
 	public RobotProtocol robot = null;
 	public void setRobot(RobotProtocol r) { robot = r; }
 	public long evalAndSortTime = 0;
@@ -590,7 +592,6 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
             if ((verbose > 1) && ((search_clock % 100000) == 0))
             {
                 Describe_Search();
-                System.out.flush();
             }
             if (search_clock == stop_at_search_clock)
 	            {
@@ -796,7 +797,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         G.print("EvalAndSort "
         			+(evalAndSortTime/(evalAndSortCalls*1e3))+"uS/call "
         			+evalAndSortCalls+" eval "+((evalAndSortEval*100)/evalAndSortTime)+"%"
-        			+((threadPool==null)?" no threads" : ""+threadPool.length+" threads"));
+        			+((threadPoolSize==0)?" no threads" : " "+threadPoolSize+" threads"));
         }
     }
     //
@@ -897,12 +898,15 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     }
     
     public Sthread threadPool[] = null;
+    private int threadPoolSize = 0;
     public void createThreadPool()
     {
     	threadPool = null;
+    	threadPoolSize = 0;
     	if(max_threads>=1)
     	{
     		threadPool = new Sthread[max_threads];
+    		threadPoolSize = max_threads;
     		for(int i=0;i<max_threads;i++)
     			{ threadPool[i] = new Sthread(this,robot.copyPlayer("alphabeta"),i );
      			  threadPool[i].start(); }
@@ -987,18 +991,29 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     	return false;
     }
     int finishOffset = 0;
-    public commonMove finishEval() throws Throwable
+    public commonMove finishEval(boolean discard) throws Throwable
     {	int nthreads = threadPool.length;
     	for(int i=0;i<threadPool.length;i++)
     		{
     		finishOffset++;
     		finishOffset = finishOffset%nthreads;
-    		commonMove m = threadPool[finishOffset].finishEval();
+    		Sthread st = threadPool[finishOffset];
+    		if(discard) { st.cancelEval(); }
+    		commonMove m = st.finishEval();
      		if(m!=null) { return m; }
     		}
     	return null;
     }
-
+    private void recheckMove(commonMove mm)
+    {
+    	double was = mm.local_evaluation();
+    	Static_Evaluate_Move(mm);
+    	double is = mm.local_evaluation();
+    	if(Math.abs(was-is)>recheck_slop)
+    	{
+    		G.Error("move ",mm," was ",was," is ",is);
+    	}
+    }
     public int Evaluate_And_Sort_Moves(Search_Node sn,commonMove mvec[]) 
     {	//boolean all_depth_limited = true;
     	boolean all_terminals = true;
@@ -1090,6 +1105,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         int startIndex = has_nullmove?1:0;
         int finIndex = startIndex;
         commonMove best = null;
+        commonMove recheckMove = null;
         double bestEval = 0;
         try {
         Sthread.waitForIdle(threadPool);
@@ -1102,16 +1118,18 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         	{
         	// separate starting and finishing so parallel threads can do the work
         	while(startIndex<sz && startEval(mvec[startIndex])) 
-        		{ startIndex++; total_evaluations++;
-        		 
+        		{ 
+        		//G.print("start "+mm2+" @ "+startIndex);
+        		startIndex++; total_evaluations++;
         		}
-            mm = finishEval();    
+            mm = finishEval(false);    
         	}
         	if(mm==null  && startIndex<sz && startIndex==startIndex0)
         	{
         	// all the threads are busy or fully loaded, do one ourselves
         	// experiment shows that this helps.
         	mm = mvec[startIndex0];
+        	//G.print("mstart "+mm+" @ "+startIndex0);
         	startIndex++;
         	total_evaluations++;
         	long now = G.nanoTime();
@@ -1119,28 +1137,36 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     		evalAndSortEval += G.nanoTime()-now;
         	}
         	if(mm!=null)
-        	{ finIndex++; 
+        	{ 
+        	mvec[finIndex++] = mm; 
+        	if(recheck_evaluations>0 && total_evaluations%recheck_evaluations==0)
+        	{
+        		recheckMove = mm;
+        	}
         	if(usedKiller==mm) 
         	{
         		killer_helped++;
         	}
         	double localEval = mm.local_evaluation();
-        	if(best==null || localEval>bestEval) { bestEval = localEval; best = mm; }
+        	if(best==null || localEval>bestEval) 
+        		{ bestEval = localEval; best = mm;
+        		}
             if(cutting
             	  &&  (mm.depth_limited()!=commonMove.EStatus.EVALUATED)
            		  && (localEval>=cutoff_limit)
           		  )
             {	// we hit a value that can cause an alpha-beta cutoff. 
           	// so skip the rest
+            int cutIndex = finIndex;
            	//G.print("Skip "+pred.prepare_clock+" "+mm+" "+mm.local_evaluation+" > "+cutoff_limit);   
           	skipped_evals += sz-finIndex;
             non_skipped_evals += sz;
             // we need to wait for active evals to finish
             while(finIndex<startIndex)
-            {
-            	if(finishEval()!=null) { finIndex++; }
+            {	
+            	if((mm=finishEval(true))!=null) { mvec[finIndex++]=mm; }
             }
-           	sz = finIndex;
+           	finIndex = sz = cutIndex;
             }
             else if(allow_killer) 
               {    
@@ -1204,12 +1230,14 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
               //all_depth_limited &= search_limit;
               //some_depth_limited |= search_limit;
         	}
-        }}
+        }
+        }
         catch (Throwable err)
         {
     		Abort_Search_In_Progress("robot eval "+err.toString());
         }
         finally {
+
         	stopEvaling();
         }
         sn.some_terminals = some_terminals;
@@ -1225,17 +1253,21 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         }
         extra = 0;
         }
-        
+        if(recheckMove!=null)
+        {
+        	recheckMove(recheckMove);
+        	
+        }
         // subtle point here.  If all the moves are terminals, we may apply the depth limit optimization
         // and if so, the first move must really be the best, not necessarily the best terminal
         if(all_terminals && best!=null && sz>2 && current_depth>1)
         	{
         	mvec[0] = best;
-        	mvec[1] = null;	// use this as a tripwire, the rest of these values should be ignored
         	sz = 1;
         	}
         	else 
-        	{Sort.sort(mvec,extra,sz-1,!all_terminals);	// alternative sort, put terminals first unless all of them are terminals
+        	{
+        	 Sort.sort(mvec,extra,sz-1,!all_terminals);	// alternative sort, put terminals first unless all of them are terminals
              sz = Width_Limit_Moves(mvec,sz);
         	}
         evalAndSortTime += G.nanoTime()-startTime;

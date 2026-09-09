@@ -231,13 +231,13 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
      	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/ncols,(double)mainH/(nrows+0.5));
+    	double cs = Math.min((double)mainW/ncols,mainH/(nrows+0.5));
     	BOARDCELLSIZE = CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
         int stateH = fh*5/2;
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(nrows*CELLSIZE);
+    	int boardW = (ncols*CELLSIZE);
+    	int boardH = (nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH-stateH*3/2)/2);
     	int boardX = mainX+extraW;

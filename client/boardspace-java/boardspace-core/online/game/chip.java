@@ -116,7 +116,6 @@ public abstract class chip<T extends chip<T>> extends DrawableImage<T> implement
 	public static long Digest(Random r,chip<?> c) { return(r.nextLong()*Digest(c)); }
 	
 	// default which may be overridden
-	@SuppressWarnings("deprecation")
 	public String toString() { return("<"+getClass().getName()+" "+contentsString()+">"); }
 	/**
 	 * this verifies that the digests of all the canonical chips are distinct.

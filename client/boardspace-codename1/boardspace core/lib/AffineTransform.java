@@ -854,7 +854,6 @@ public class AffineTransform
      * they have not been cached.
      * @see #getType
      */
-    @SuppressWarnings("fallthrough")
     private void calculateType() {
         int ret = TYPE_IDENTITY;
         boolean sgn0, sgn1;
@@ -1017,7 +1016,6 @@ public class AffineTransform
      * @see #TYPE_UNIFORM_SCALE
      * @since 1.2
      */
-    @SuppressWarnings("fallthrough")
     public double getDeterminant() {
         switch (state) {
         default:
@@ -1628,7 +1626,6 @@ public class AffineTransform
      * Y axis direction
      * @since 1.2
      */
-    @SuppressWarnings("fallthrough")
     public void scale(double sx, double sy) {
         int state = this.state;
         switch (state) {
@@ -2223,8 +2220,7 @@ public class AffineTransform
      * @see #preConcatenate
      * @since 1.2
      */
-    @SuppressWarnings("fallthrough")
-    public void concatenate(AffineTransform Tx) {
+     public void concatenate(AffineTransform Tx) {
         double M0, M1;
         double T00, T01, T10, T11;
         double T02, T12;
@@ -2432,7 +2428,6 @@ public class AffineTransform
      * @see #concatenate
      * @since 1.2
      */
-    @SuppressWarnings("fallthrough")
     public void preConcatenate(AffineTransform Tx) {
         double M0, M1;
         double T00, T01, T10, T11;
@@ -3435,7 +3430,6 @@ public class AffineTransform
      *                                         inverted.
      * @since 1.2
      */
-    @SuppressWarnings("fallthrough")
     public Point2D inverseTransform(Point2D ptSrc, Point2D ptDst)
         throws Exception
     {

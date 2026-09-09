@@ -172,7 +172,7 @@ public class ShogiPlay extends commonRobot<ShogiBoard> implements Runnable, Shog
      * */
     public void StaticEval()
     {
-    	ShogiBoard evboard = (ShogiBoard)GameBoard.cloneBoard();
+    	ShogiBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
@@ -188,7 +188,7 @@ public class ShogiPlay extends commonRobot<ShogiBoard> implements Runnable, Shog
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (ShogiBoard) gboard;
-        board = (ShogiBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         robotLevel = strategy;
         switch(strategy)
         {
@@ -264,7 +264,7 @@ public class ShogiPlay extends commonRobot<ShogiBoard> implements Runnable, Shog
                 move = search_state.Find_Static_Best_Move(randomn,dif);
                	if((move!=null) && (move.op==MOVE_NULL))
                 {	
-            		move = (ShogiMovespec)search_state.Nth_Good_Move(1,0.0);	// second best
+            		move = search_state.Nth_Good_Move(1,0.0);	// second best
                 	if(move.evaluation()<=-VALUE_OF_WIN) 
                 	{
                 		move = new ShogiMovespec(MOVE_RESIGN,board.whoseTurn);

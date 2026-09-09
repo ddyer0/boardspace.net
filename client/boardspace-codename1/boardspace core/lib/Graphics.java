@@ -705,6 +705,7 @@ public class Graphics extends SystemGraphics
 	 	}
 	 }
  
+	 @SuppressWarnings("cast")
 	 void showTransformStd(Color c,int x,int y,int w,int h)
 	 {
 		 Point d = transform(x,y);

@@ -3100,6 +3100,7 @@ public long positionDigest()
 	 	break;
 	 case PLAY_STATE:
 		 cell<ArimaaCell> cells[] = getCellArray();
+		 // this iteration is ok because the cell array never changes order
 		 for(int i=offset-1; i<fullBoardSize;i+=skip)
 		 {	ArimaaCell c = (ArimaaCell)cells[i];
 	 		ArimaaChip ch = c.topChip();

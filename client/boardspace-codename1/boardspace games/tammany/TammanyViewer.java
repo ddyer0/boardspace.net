@@ -245,8 +245,8 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
         int C2 = CELLSIZE/2;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(cols*CELLSIZE);
-    	int boardH = (int)(rows*CELLSIZE);
+    	int boardW = (cols*CELLSIZE);
+    	int boardH = (rows*CELLSIZE);
     	int extraW = (mainW-boardW)/2;
     	int extraH = (mainH-boardH)/2;
     	int boardX = mainX+extraW;

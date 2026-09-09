@@ -156,7 +156,7 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
      * */
     public void StaticEval()
     {
-    	ChessBoard evboard = (ChessBoard)GameBoard.cloneBoard();
+    	ChessBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
@@ -171,7 +171,7 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (ChessBoard) gboard;
-        board = (ChessBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         boolean reduced = board.variation==Variation.Ultima || board.variation==Variation.CrazyHouse;
         switch(strategy)
         {
@@ -201,6 +201,7 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
  */
  public void PrepareToMove(int playerIndex)
  {	InitBoardFromGame();
+ 	board.initRobotValues(this);
  }
  /**
   * breakpoint or otherwise override this method to intercept search events.
@@ -246,13 +247,14 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
             search_state.save_top_digest = true;	// always on as a background check
             search_state.save_digest=false;			// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
+            search_state.max_threads = DEPLOY_THREADS;
             search_state.good_enough_to_quit = VALUE_OF_WIN;
             search_state.allow_good_enough = true;
 
             if (move == null)
             {
                 move = search_state.Find_Static_Best_Move(randomn,dif);
-                search_state.showResult(move,false);
+                search_state.showResult(move,true);
             }
         }
         finally

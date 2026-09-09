@@ -192,7 +192,7 @@ public class SantoriniPlay extends commonRobot<SantoriniBoard> implements Runnab
             // set dif so the really bad choices will be avoided
             boardSearchLevel = 0;
 
-            search_state = Setup_For_Search(depth, (double)(TIMEPERMOVE/60.0));
+            search_state = Setup_For_Search(depth, (TIMEPERMOVE/60.0));
             search_state.save_all_variations = SAVE_TREE;
             search_state.allow_killer = KILLER;
             search_state.verbose=verbose;			// debugging

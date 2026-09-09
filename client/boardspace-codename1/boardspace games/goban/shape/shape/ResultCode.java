@@ -45,7 +45,6 @@ public class ResultCode implements Externalizable
 		return(first+posnames[(bitn>>1)]);
 	}
 	
-	@SuppressWarnings("deprecation")
 	public String toString()
 	{   Utf8OutputStream b = new Utf8OutputStream();
     	PrintStream codes = Utf8Printer.getPrinter(b);

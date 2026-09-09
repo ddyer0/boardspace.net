@@ -185,7 +185,6 @@ public class RpcRemoteServer implements RpcInterface,SimpleObserver,PlayConstant
 		if(client!=null) { client.touchPlayer(forPlayer); }
 	}
 
-	@SuppressWarnings("deprecation")
 	public String captureInitialization() 
 	{ return(client.getClass().getName()+" "+forPlayer);	
 	}

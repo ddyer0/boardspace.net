@@ -35,7 +35,6 @@ import lib.RepaintManager.RepaintStrategy;
  * @author ddyer
  *
  */
-@SuppressWarnings("serial")
 public class TextWindow extends Canvas implements MouseListener,MouseMotionListener,MouseWheelListener,RepaintHelper,WindowListener,NullLayoutProtocol 
 {
 	TextContainer area = new TextContainer("");

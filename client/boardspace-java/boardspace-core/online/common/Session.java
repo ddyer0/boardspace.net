@@ -235,7 +235,7 @@ public class Session implements LobbyConstants
 					? new Bitset<ES>(GameInfo.ES.review,GameInfo.ES.game)
 					: new Bitset<ES>(GameInfo.ES.game);  
 		if(isTestServer) { typeClass.set(GameInfo.ES.test); }
-		if(G.debug()) { 
+		if(G.DEBUG) { 
 			typeClass.set(GameInfo.ES.test);
 			typeClass.set(GameInfo.ES.disabled);
 		}
@@ -383,7 +383,7 @@ public class Session implements LobbyConstants
     		if(cl>=0 && cl<len)
     			{ newmap[i] = oldmap[cl];
     			}
-    		else if(G.debug()) 
+    		else if(G.DEBUG) 
     			{ G.print("Color map out of range "+currentGame+" "+cl);
     			}
     		}
@@ -666,7 +666,9 @@ public class Session implements LobbyConstants
 	    boolean canAddRobot =  (playersInSession < maxPlayers)
 	    						&& (mode != Mode.Tournament_Mode)
 	    						&& (submode != JoinMode.Tournament_Mode)
-	    						&& (mode != Mode.Master_Mode);
+	    						&& (mode != Mode.Master_Mode)
+	    						// temporary kludge where Codename1 has broken bots
+	    						&& (!G.isIOS() || G.DEBUG);
 	    return(canAddRobot);
     }
     /**
@@ -708,7 +710,7 @@ public class Session implements LobbyConstants
 		 String frameName = G.isCodename1()?framename : s.get(WebsiteMessage,framename);
 		 XFrame frame =  new XFrame();
 		 frame.setContentPane(theGame);
-		 if(G.debug() ) { frameName += " "+primaryUser.prettyName(); }
+		 if(G.DEBUG ) { frameName += " "+primaryUser.prettyName(); }
 		 frame.setTitle(frameName);
 		 playFrame = frame;
 		 	//LPanel.newLFrame(frameName,theGame);
@@ -823,7 +825,7 @@ public class Session implements LobbyConstants
 			 	frame.setInitialBounds(0,0,G.getFrameWidth(),G.getFrameHeight());
 			 }
 		 	else {
-		 	  if(G.debug()&&G.isTable())
+		 	  if(G.DEBUG&&G.isTable())
 		 	  {
 		 		 frame.setInitialBounds(10, 30, 
 	                		G.tableWidth(),G.tableHeight());

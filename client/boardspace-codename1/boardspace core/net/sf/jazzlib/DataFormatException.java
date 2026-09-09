@@ -45,15 +45,10 @@ package net.sf.jazzlib;
  * @since 1.1
  * @status updated to 1.4
  */
+@SuppressWarnings("serial")
 public class DataFormatException extends Exception
 {
-  /**
-   * Compatible with JDK 1.1+.
-   */
-  @SuppressWarnings("unused")
-private static final long serialVersionUID = 2219632870893641452L;
-
-  /**
+   /**
    * Create an exception without a message.
    */
   public DataFormatException()

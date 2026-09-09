@@ -63,7 +63,6 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
 
 	
 	/** the file from which this image was loaded */
-	@SuppressWarnings("rawtypes")
 	
 	public String file = null;
 	
@@ -121,7 +120,6 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
 	 * @see lib.exCanvas#getAltChipset getAltChipSet
 	 * @return a new instance of this class, or this instance
 	 */
-	@SuppressWarnings("unchecked")
 	public DrawableImage<T> getAltChip(int chipset) { return(this); }
 	/**
 	 * this is the default method called to help build a meaningful, brief value
@@ -267,7 +265,8 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
 		else { G.print("no image for ",this); }
 		}
 		else 
-		{canvas.drawImage(gc, getImage(canvas) , pscale,cx, cy, SQUARESIZE, xscale,jitter,label,artcenter);
+		{
+		 canvas.drawImage(gc, getImage(canvas) , pscale,cx, cy, SQUARESIZE, xscale,jitter,label,artcenter);
 		}
 	}
 	/**

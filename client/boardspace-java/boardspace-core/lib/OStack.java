@@ -111,7 +111,6 @@ public abstract class OStack<T> implements StackIterator<T>,Iterable<T>
 		public OStack() {};
 		public OStack(int sz) { increaseSize(sz); }
 		private int index = 0;
-		@SuppressWarnings("deprecation")
 		public String toString() 
 		{
 			return("<" + getClass().getSimpleName()+" "+index+" ["+((index>0)?data[index-1]:"")+"]>");
@@ -308,20 +307,7 @@ public abstract class OStack<T> implements StackIterator<T>,Iterable<T>
 			  index++;			// do this as a second operation so readers will never see an empty slot
 			  return(this);
 			}
-		public synchronized StackIterator<T>parallelPush(T da)
-		{	// same as push, but synchronized
-			int len = (data==null)?0:data.length;
-			if(index>=len)
-				{ increaseSize((len+1)*2+1);
-				}
-			  //
-			  // is this x=index; index=index+1; data[x] = d;
-			  // or is this data[index] = d; index=index+1;
-			  //
-			  data[index] = da;
-			  index++;			// do this as a second operation so readers will never see an empty slot
-			  return(this);
-		}
+
 		/** remove an element from the stack, and shuffle the array contents 
 		 * return the stack (for compatibility with the StackInterator API)
 		 */

@@ -167,7 +167,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
      * the maximum number of threads to use in a seach.  Fewer may
      * be used if the environment claims there are fewer available.
      */
-    public static final int DEPLOY_THREADS = 4;
+    public static final int DEPLOY_THREADS = Math.max(1,G.getAvailableProcessors()/2)-1;
     public static final int NO_THREADS = 0;
     
     public void setInitialWinRate(UCTNode node,int visits,commonMove m,commonMove mm[]) 
@@ -858,7 +858,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 			 commonMove child = parent.getChild(i);
 						UCTNode node = child.uctNode();
 			 if(salvage==null) { salvage = child; }
-						if(node!=null && (node.getVisits()>=0))
+			 if(node!=null && !node.isKilled())
 						{
 						double win = r.nextDouble();	// assign a random win rate
 						if((best==null) || (win>rate)) 
@@ -878,7 +878,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 					commonMove child = parent.getChild(i);
 					if(salvage==null) { salvage = child; }
 					UCTNode node = child.uctNode();
-					if(node!=null && (node.getVisits()>=0))
+					if(node!=null && !node.isKilled())
 					{
 					double win = node.getWinrate();
 					if(r!=null) { win +=r.nextDouble()*randomization; }

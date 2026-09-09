@@ -72,17 +72,14 @@ public class BSDate extends SystemDate
 	public static String uweekdays[] = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 	public static String months[] = {"jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"};
 
-	@SuppressWarnings("deprecation")
 	public String getDayString()
 	{	int day = getDay();
 		return uweekdays[day];
 	}
-	@SuppressWarnings("deprecation")
 	public String getMonthString()
 	{
 		return months[getMonth()];
 	}
-	@SuppressWarnings("deprecation")
 	public String getDateString()
 	{
 		return ""+getDate();

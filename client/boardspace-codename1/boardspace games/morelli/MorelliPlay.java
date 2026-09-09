@@ -87,7 +87,7 @@ public class MorelliPlay extends commonRobot<MorelliBoard> implements Runnable, 
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (MorelliBoard) gboard;
-        board = (MorelliBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         MONTEBOT = true;
         terminalNodeOptimize = true;
         switch(strategy)

@@ -56,7 +56,6 @@ public class JButton extends Button implements SizeProvider
 		return image;
 	}
 	
-	@SuppressWarnings("deprecation")
 	public JButton(String com,Image image,double setsize) 
 	{ 	super(prepareIconImage(image,setsize)); 
 		command = new Command(com); 
@@ -96,7 +95,7 @@ public class JButton extends Button implements SizeProvider
 			int sz = fm.getHeight()*3/2;
 			int w = im.getWidth();
 			int h = im.getHeight();
-			dim = new Dimension((int)(sz*w/h),sz);
+			dim = new Dimension((sz*w/h),sz);
 		}
 		else if(label!=null)
 		{	// use the actual font metrics to specify the size

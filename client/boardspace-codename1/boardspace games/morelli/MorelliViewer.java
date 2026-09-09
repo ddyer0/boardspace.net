@@ -198,8 +198,8 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
     	SQUARESIZE = CELLSIZE;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(nrows*CELLSIZE);
+    	int boardW = (ncols*CELLSIZE);
+    	int boardH = (nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;
@@ -287,7 +287,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
     	int squareSize = sz/(gb.boardRows);
     	int cellSize = squareSize/4;
     	Setup mainSetup = gb.setup;
-    	MorelliBoard tempB = (MorelliBoard)gb.cloneBoard();
+    	MorelliBoard tempB = gb.cloneBoard();
     	for(int idx = 0;idx<nBoards; idx++)
     	{	if(setups[sidx]==mainSetup) { sidx++; }
     		Setup current = setups[sidx];

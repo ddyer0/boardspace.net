@@ -71,9 +71,9 @@ public class BSDate extends java.util.Date
 	public static String uweekdays[] = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 	public static String months[] = {"jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"};
 	
-	@SuppressWarnings("deprecation")
 	public String getDayString()
-	{	int day = getDay();
+	{	@SuppressWarnings("deprecation")
+	int day = getDay();
 		return uweekdays[day];
 	}
 	@SuppressWarnings("deprecation")

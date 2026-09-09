@@ -93,7 +93,7 @@ public class ShapeNormalizer extends SimpleShape implements ShapeProtocol
 					ResultCode results = resultsarray(mv,mx,my);
 					if(results!=null) 
 					{ int geocode = zhash.Encode_Move_Geometry(mv,mx,my);
-						ResultCode old = (ResultCode)(v.get(results));
+						ResultCode old = (v.get(results));
 						if(old!=null) { old.positions |= geocode; }
 						else { old = new ResultCode(geocode,results.results);
 							v.put(results,old);

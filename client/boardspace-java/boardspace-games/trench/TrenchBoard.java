@@ -355,7 +355,9 @@ class TrenchBoard
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
-        G.Assert(robot==null && Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
+        if(robot==null && DEBUG)
+        	{ G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
+        	}
 
     }
 
@@ -1024,10 +1026,13 @@ class TrenchBoard
 	 CellStack occupied = occupied(who);
 	 if(pickedObject==null)
 	 {
-	 for(int lim = occupied.size()-offset; lim>=0; lim -= skip)
+	 for(int lim = occupied.size()-1; lim>=0; lim--)
 	 {
 		 TrenchCell from = occupied.elementAt(lim);
+		 if(from.cellInThreadGroup(offset,skip))
+		 {
 		 addPieceMoves(all,from,from.topChip(),who);
+		 }
 	 }}
 	 else if(offset==1)
 	 {

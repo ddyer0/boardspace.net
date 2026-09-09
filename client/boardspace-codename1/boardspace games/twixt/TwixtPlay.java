@@ -1071,7 +1071,7 @@ public commonMove Get_Random_Move(Random rand)
 	 	double selectedTotal = 0;
 	 	int selectedIndex = 0;
 	 	double total = 0;
-	 	cell<TwixtCell> allCells[] = (cell<TwixtCell>[])board.getCellArray();
+	 	cell<TwixtCell> allCells[] = board.getCellArray();
 	 	int sz = allCells.length;
 	 	for(int lim = allCells.length,idx = 0; idx<lim; idx++)
 	 	{	TwixtCell c = (TwixtCell)allCells[idx];
@@ -1566,7 +1566,7 @@ public double trainNetwork(GenericNetwork n,double inputs[],double values[],bool
 	public void runGame_train(ViewerProtocol v,final BoardProtocol b,String from,int maxPass,boolean untilWorse)
 	{	boolean onceThrough = false;
 		GameBoard = (TwixtBoard)b;
-		board = (TwixtBoard)GameBoard.cloneBoard();
+		board = GameBoard.cloneBoard();
 	 	InitRobot(v,v.getSharedInfo(),board,null,RobotProtocol.NEUROBOT_LEVEL);
 		
 		int ncells = board.nCells();

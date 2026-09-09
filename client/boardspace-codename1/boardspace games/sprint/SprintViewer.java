@@ -487,7 +487,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     	int cy = G.centerY(rack)-h/10;
     	int nsteps = map.length;
     	int xstep = Math.min(w/(nsteps+1),h*3/4); 
-    	int tileSize = (int)(xstep*1);
+    	int tileSize = (xstep*1);
     	int cx = G.Left(rack)+(w-xstep*nsteps)/2+xstep/2;
     	boolean full = gb.rackIsFull();
     	GC.fillRect(gc,Color.lightGray,rack);
@@ -814,7 +814,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
  		if(leadin) { highlight=null; }
     	boolean draggingBoard = draggingBoard(); 
     	boolean canHit = !draggingBoard && G.pointInRect(highlight,brect);
-    	int cs = Math.max(5,(int)gb.cellSize());
+    	int cs = Math.max(5,gb.cellSize());
     	Rectangle oldClip = GC.combinedClip(gc,brect);
     	//GC.fillRect(gc,new Color(0.8f,0.8f,0.85f),brect);
         //

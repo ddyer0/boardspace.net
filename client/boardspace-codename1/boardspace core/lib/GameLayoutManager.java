@@ -1700,8 +1700,8 @@ public class GameLayoutManager implements UniversalConstants
     	// It's important that it return the same retangle (proportional to unit) to and unit size.
     	//
     	Rectangle box = client.createPlayerGroup(0,0,0,0,(int)unit);
-    	double playerW = Math.ceil((double)(G.Width(box))/unit);		// width of the player box in units
-    	double playerH = Math.ceil((double)(G.Height(box))/unit);		// height of the player box in units
+    	double playerW = Math.ceil(G.Width(box)/unit);		// width of the player box in units
+    	double playerH = Math.ceil(G.Height(box)/unit);		// height of the player box in units
     	double unitsX=0;					// this will be the number of horizontal units the layout requires
     	double unitsY=0;					// this will be the number of vertical units the layout requires
     	double edgeUnitsX=0;				// this will be the number of units chipped off the horizontal axis

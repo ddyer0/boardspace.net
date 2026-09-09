@@ -191,14 +191,14 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         double ncols = b.ncols + 0.5 + (horizontal ? 3 : 0);
         
     	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/ncols,(double)mainH/nrows);
+    	double cs = Math.min(mainW/ncols,mainH/nrows);
     	CELLSIZE = (int)cs;
         RINGRADIUS = CELLSIZE / 2; //ball radius to work with
         BALLRADIUS = (int) (RINGRADIUS * 0.7);
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
     	int boardW = (int)((ncols-(horizontal ? 3 : 0))*CELLSIZE);
-     	int boardH = (int)((nrows-(horizontal?0:3))*CELLSIZE);
+     	int boardH = ((nrows-(horizontal?0:3))*CELLSIZE);
        	int rackW = horizontal ? 3*CELLSIZE : 0;
     	int rackH = horizontal ? 0 : (int)(CELLSIZE*2.7);
     	int extraW = Math.max(0, (mainW-boardW-rackW)/2);
@@ -290,7 +290,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     		int tot = balls[0].height+balls[1].height+balls[2].height; 
     		if(tot>0)
         	{	// squeeze if necessary
-        		xscale = Math.min(xscale, (double)w/((tot+0.75)*size));
+        		xscale = Math.min(xscale, w/((tot+0.75)*size));
         	}
   
     	}
@@ -735,10 +735,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         {	zCell c = (zCell)hp.hitObject;
             PerformAndTransmit("R+ " + c.col + " " + c.row);
         }
-        else if(toCode instanceof ZertzId) {}
-        else {	
-        	throw G.Error("Hit Unknown: %s", toCode);
-        }}
+        }
        generalRefresh();
     }
 

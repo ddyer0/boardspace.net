@@ -1697,7 +1697,7 @@ public double simpleScore(int player,double position_weight,double wood_weight)
 	// value in 0-1 which indicates value of position
 	CellStack occ = occupiedCells[player];
 	int nleft = occ.size();
-	double wood = (double)(nleft*wood_weight)/(nCols*2);// 0-0.5 for the wood
+	double wood = (nleft*wood_weight)/(nCols*2);// 0-0.5 for the wood
 	//G.Assert(wood<=wood_weight,"wood bug");
 	switch(board_state)
 	{
@@ -1709,8 +1709,8 @@ public double simpleScore(int player,double position_weight,double wood_weight)
 		CellStack c = occupiedCells[player];
 		int cs = c.size();
 		if(cs==0) { return 0; }
-		int nMoves = countPieceMoves(player);
-		return (double)nMoves;
+		double nMoves = countPieceMoves(player);
+		return nMoves;
 		}
 	default:
 		if(nleft>0 && position_weight>0)

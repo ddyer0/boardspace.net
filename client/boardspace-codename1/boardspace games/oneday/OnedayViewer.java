@@ -1086,11 +1086,11 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
         		default: break;
         		case RackLocation:
         		case DiscardPile:
-            		featuredCard = (Station)c.topChip(); 
+            		featuredCard = c.topChip(); 
         		}}
         		if(ourTurn && (gb.pickedObject!=null) && (featuredCard==null))
         		{
-        			featuredCard = (Station)gb.pickedObject;
+        			featuredCard = gb.pickedObject;
         		}
         		
         	}}

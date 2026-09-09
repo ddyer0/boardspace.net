@@ -402,7 +402,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
  	}
 	public void makeCommon(HWord w)
 	{
-		HWord a = (HWord)words.remove(w,true);
+		HWord a = words.remove(w,true);
 		if(a!=null)
 		{
 			score -= a.points;

@@ -27,7 +27,7 @@ import java.awt.event.ActionListener;
  * @author ddyer
  *
  */
-@SuppressWarnings({ "serial", "rawtypes" })
+@SuppressWarnings({"rawtypes", "serial" })
 public class DateSelector extends Rectangle implements ActionListener
 {	public enum DateCode implements CellId,EnumMenu
 	{ Year,Month,Day;
@@ -43,8 +43,9 @@ public class DateSelector extends Rectangle implements ActionListener
 	int minYear = 0;		// defaults to whatever the initial year is
 	int maxYear = 0;		// defaults to minYear+1
 	public boolean changed = false;
-	@SuppressWarnings("deprecation")
+	
 	// day of the month
+	@SuppressWarnings("deprecation")
 	public int getDate() { return date.getDate(); }
 	// universal date/time 
 	public long getTime() { return date.getTime(); }

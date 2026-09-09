@@ -738,7 +738,7 @@ class RevisedSeptemberEvaluatorX extends DefaultEvaluator implements Evaluator
   			  }
   		  if(altBest!= null) 
   		  {	G.print("using TRUST to play ",altBest," instead of ",move);
-  		  	move = (Hivemovespec)altBest;
+  		  	move = altBest;
   		  }
   		  }
   	  }

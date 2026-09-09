@@ -120,7 +120,7 @@ public class GounkiPlay extends commonRobot<GounkiBoard> implements Runnable,
      * */
     public void StaticEval()
     {
-    	GounkiBoard evboard = (GounkiBoard)GameBoard.cloneBoard();
+    	GounkiBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
@@ -136,7 +136,7 @@ public class GounkiPlay extends commonRobot<GounkiBoard> implements Runnable,
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (GounkiBoard) gboard;
-        board = (GounkiBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         switch(strategy)
         {
         case WEAKBOT_LEVEL:

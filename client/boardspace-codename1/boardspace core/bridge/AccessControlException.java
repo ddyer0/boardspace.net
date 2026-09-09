@@ -16,6 +16,7 @@
  */
 package bridge;
 
+@SuppressWarnings("serial")
 public class AccessControlException extends Exception {
 
 }

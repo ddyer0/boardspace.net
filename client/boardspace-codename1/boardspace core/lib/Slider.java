@@ -108,7 +108,7 @@ public class Slider extends Rectangle
     		textColor,null,l);
     	 }
     	GC.setColor(gc,barColor);
-    	int limit = (int)((double)(value-min)*width/(max-min));
+    	int limit = (int)((value-min)*width/(max-min));
     	int ysize =(int)(barHeight*height);
     	int yoff = height-ysize;
     	GC.fillRect(gc,x,y+yoff,limit,ysize);

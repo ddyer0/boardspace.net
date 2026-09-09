@@ -895,7 +895,11 @@ void doSwap(replayMode replay)
  	case Puzzle:
  		{int op = pickedObject==null ? MOVE_DROPB : MOVE_PICKB; 	
  		 cell<PrototypeCell> cells[] = getCellArray();
- 		 // the rest of the moves added by the rest of the threads in turn
+ 		 // the rest of the moves added by the rest of the threads in turn.  If we're using the cell array
+ 		 // which is effectively immutable, we can iterate by skip.  If using a separate occupied or empty
+ 		 // array, the cell order is unstable, and instead we have to iterate by 1 and select a subset
+ 		 // with c.cellInThreadGroup(offset,skip) or the equivalent
+ 		 //
  		 for(int step = offset-1,last=cells.length; step<last; step+=skip)
  		 {	PrototypeCell c = (PrototypeCell)cells[step];
  			if(c.topChip()==null)

@@ -116,7 +116,7 @@ public class StymieChip extends chip<StymieChip> implements StymieConstants,Comm
 	} 
  	public StymieChip getAltDisplayChip(cell<?>cc)
     {	StymieCell c = (StymieCell)cc;
- 		return(c.onBoard ? getAltDisplayChip((int)c.altChipIndex) : this);
+ 		return(c.onBoard ? getAltDisplayChip(c.altChipIndex) : this);
     }
 
 	/*

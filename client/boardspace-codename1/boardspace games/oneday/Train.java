@@ -91,8 +91,8 @@ public class Train implements Digestable,OnedayLocation
 		v ^= Stop.Digest(r,nextStop);
 		v ^= Stop.Digest(r,nextStop);
 		v ^= (long)(position*r.nextLong());
-		v ^= (long)(timeAtPosition*r.nextLong());
-		v ^= (long)(currentTime*r.nextLong());
+		v ^= (timeAtPosition*r.nextLong());
+		v ^= (currentTime*r.nextLong());
 		v ^= (status.ordinal()+1)*r.nextLong();
 		v ^= (directionOfTravel+1)*r.nextLong();
 

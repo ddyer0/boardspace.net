@@ -22,7 +22,6 @@ import lib.BulkSimpleHashtable;
 import lib.G;
 import lib.StringStack;
 
-@SuppressWarnings("serial")
 /**
  * a hash table from strings to dictionary entries
  * @author Ddyer

@@ -193,7 +193,7 @@ public class SimpleSprite implements SpriteProtocol
 	{	// calculate the linear range
 		activate(now);
 		double duration = endTime-startTime;
-		double frac = duration<=0 ? 1 : (now-startTime)/(double)(duration);
+		double frac = duration<=0 ? 1 : (now-startTime)/(duration);
 		// expand or compress the range
 		switch(movement)
 		{

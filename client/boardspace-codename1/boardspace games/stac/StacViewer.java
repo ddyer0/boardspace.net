@@ -182,8 +182,8 @@ public class StacViewer extends CCanvas<StacCell,StacBoard>	implements StacConst
     	SQUARESIZE = (int)(cs*3);
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(nrows*CELLSIZE);
+    	int boardW = (ncols*CELLSIZE);
+    	int boardH = (nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;
@@ -335,7 +335,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard>	implements StacConst
                 	highlight.spriteColor = Color.red;  
             	if(!moving)
             	{	// check for a carry move rather than a pawn move
-                		StacMovespec m = (StacMovespec)targets.get(cell);
+                		StacMovespec m = targets.get(cell);
             	int xp = highlight.hit_x;
             	int yp = highlight.hit_y;
             		boolean movingMeeple = (m!=null)

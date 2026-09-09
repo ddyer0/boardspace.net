@@ -76,7 +76,6 @@ public abstract class SystemImage implements ImageObserver
 		setLastUsed(G.Date());
 	}
 
-	@SuppressWarnings("deprecation")
 	public void setImage(com.codename1.ui.Image im) 
 	{
 		synchronized(this)
@@ -294,7 +293,6 @@ public Graphics getGraphics()
 	int clipH = gr.getClipHeight();
 	int tx = gr.getTranslateX();
 	int ty = gr.getTranslateY();
-	@SuppressWarnings("unused")
 	int err = 0;
 	if(tx!=0) { err++; G.print("image tx "+tx+" "+this); }
 	if(ty!=0) { err++; G.print("image ty "+ty+" "+this); }

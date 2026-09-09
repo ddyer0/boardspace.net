@@ -82,7 +82,7 @@ public class ModxPlay extends commonRobot<ModxBoard> implements Runnable, ModxCo
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (ModxBoard) gboard;
-        board = (ModxBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         MONTEBOT = true;
         terminalNodeOptimize = true;
         switch(strategy)

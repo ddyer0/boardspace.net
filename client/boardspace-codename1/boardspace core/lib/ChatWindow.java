@@ -19,7 +19,6 @@ package lib;
 /*
  * this is used to create a standalone chat window for chat rooms
  */
-@SuppressWarnings("serial")
 public class ChatWindow extends exCanvas  implements CanvasProtocol,Runnable
 {	
 	ExtendedHashtable info;

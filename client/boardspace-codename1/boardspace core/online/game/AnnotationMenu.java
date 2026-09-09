@@ -51,7 +51,6 @@ import lib.Tokenizer;
 import online.common.OnlineConstants;
 import online.game.sgf.sgf_property;
 
-@SuppressWarnings("serial")
 /**
  * the main annotation icon extends rectangle so it can be placed and manipulated
  * uniformly with other boxes on the game canvas
@@ -59,6 +58,7 @@ import online.game.sgf.sgf_property;
  * @author ddyer
  *
  */
+@SuppressWarnings("serial")
 public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineConstants
 {
 	static final int ANNOTATION_TRACKING_OFFSET = 100;

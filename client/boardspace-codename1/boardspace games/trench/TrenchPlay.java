@@ -86,7 +86,7 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
     private int MAX_DEPTH = 8;						// search depth.
     private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN+0.25;	// good enough to stop looking
     @SuppressWarnings("unused")
-    private int boardSearchLevel = 0;				// the current search depth
+     private int boardSearchLevel = 0;				// the current search depth
   
     
      /**
@@ -297,7 +297,7 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
                search_state.allow_good_enough = true;
                search_state.verbose = verbose;
                search_state.allow_best_killer = true;
-               search_state.max_threads =DEPLOY_THREADS;
+               search_state.max_threads = DEPLOY_THREADS;
                search_state.save_top_digest = true;	// always on as a background check
                search_state.save_digest=false;	// debugging only
                search_state.check_duplicate_digests = false; 	// debugging only

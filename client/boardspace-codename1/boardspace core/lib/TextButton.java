@@ -27,7 +27,6 @@ import bridge.Color;
  * @author ddyer
  *
  */
-@SuppressWarnings("serial")
 public class TextButton extends ToggleButton 
 {	double rotation=0;
 	Color highlightColor = Color.gray;

@@ -36,7 +36,6 @@ import online.common.OnlineConstants;
  * @author ddyer
  *
  */
-@SuppressWarnings("deprecation")
 public class Login implements SimpleObserver,Config,OnlineConstants
 {	
     
@@ -129,7 +128,6 @@ public class Login implements SimpleObserver,Config,OnlineConstants
     	}
     }
 
-    @SuppressWarnings("deprecation")
 	public boolean initFromWebStart()
     {	boolean captured = false;
     	boolean exit = false;

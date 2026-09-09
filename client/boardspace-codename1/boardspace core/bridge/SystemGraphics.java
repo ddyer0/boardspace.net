@@ -385,12 +385,7 @@ public abstract class SystemGraphics {
 		if(bounds!=null)
 		{	
 		if(logging) { Log.addLog(" bounds ",bounds[0]," ",bounds[1]," ",bounds[2]," ",bounds[3]);}
-		if(bounds instanceof int[])
-		{			
-			return(new Rectangle(bounds[0],bounds[1],bounds[2],bounds[3]));
-		}
-    		
-		return(new Rectangle(0,0,0,0)); 
+		return(new Rectangle(bounds[0],bounds[1],bounds[2],bounds[3]));
 		}
 		return null;
 	}

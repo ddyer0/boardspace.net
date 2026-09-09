@@ -399,7 +399,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     		maxCol = Math.max(maxCol,col);   		
     	}
     	double dim = Math.max(maxCol-minCol,maxRow-minRow);
-    	double cluster = 1-((dim*dim)/(double)(ncols*nrows));
+    	double cluster = 1-((dim*dim)/(ncols*nrows));
     	double goalish = (double)(nrows-maxRow)/nrows;
     	double sizeish = (20-nCells)/20.0;
     	

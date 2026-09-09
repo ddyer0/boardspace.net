@@ -17,8 +17,10 @@
 package online.game;
 
 import java.awt.Rectangle;
+import java.util.Set;
 
 import lib.Random;
+import lib.Digestable;
 import lib.G;
 import lib.HitPoint;
 import lib.IStack;
@@ -236,6 +238,16 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
     	for(int i=0,lim=from.length; i<lim; i++) { to[i] = getCell(from[i]); }
     	return(null);
     }
+    public void getCell(Set<CELLTYPE>to,Set<CELLTYPE>from)
+    {
+    	to.clear();
+    	for(CELLTYPE e : from) { to.add(getCell(e)); }
+    }
+    public void getCell(Set<CELLTYPE> to[],Set<CELLTYPE> from[])
+    {	
+    	for(int i=0,lim=from.length; i<lim; i++) { getCell(to[i],from[i]); }
+    }
+
     /**
      * make array "to" a copy of array "from" using cells from the current board
      * @param to
@@ -454,6 +466,25 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
      	return(true);
      
      }
+    public  boolean sameCells(Set<CELLTYPE>local,Set<CELLTYPE>remote)
+    {   int sz = local.size();
+    	if(remote.size()!=sz) { return(false); }
+    	for(CELLTYPE e : local)
+    	{
+    		if(!remote.contains(e)) 
+    			{ 
+    			remote.contains(e);
+    			return false; 
+    			}
+    	}
+    	return true;
+    }
+    public boolean sameCells(Set<CELLTYPE>local[],Set<CELLTYPE>remote[])
+    {	int ll = local.length;
+      	if(ll!=remote.length) { return(false); }
+      	for(int i=0;i<ll;i++) { if(!sameCells(local[i],remote[i])) { return false; }}
+      	return true;
+    }
     public boolean sameContents(CELLTYPE[][]local,CELLTYPE[][]remote)
     {
     	if(local.length!=remote.length) { return(false); }
@@ -493,7 +524,6 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
     {
  	   return(a==null ? b==null : a.sameCell(b));
     }
-    public long Digest(Random r,CELLTYPE c) { return(c==null)?0:c.Digest(r); }
 
    /**
     * copy an array of cells using copyFrom for each cell
@@ -557,6 +587,24 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
 		return(v);	
 	}
    
+   public long Digest(Random r,Set<CELLTYPE>st)
+	{	long v=0;
+		for(Digestable d : st)
+		{
+			v ^= Digest(r,d);
+		}
+		return(v);	
+	}
+
+   public long Digest(Random r,Set<CELLTYPE>st[])
+	{	long v=0;
+		for(Set<CELLTYPE> d : st)
+		{
+			v ^= Digest(r,d);
+		}
+		return(v);	
+	}
+
    
    /**
     * Digest an array of OStack of cells
@@ -608,7 +656,10 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
    public void reInit(CELLTYPE[] c)
    {	for(CELLTYPE d : c) { if(d!=null) { d.reInit(); }}
    }
-   
+   public void reInit(Set<CELLTYPE>[] c)
+   {	for(Set<CELLTYPE> d : c) { if(d!=null) { d.clear(); }}
+   }
+  
    public void reInit(OStack<?>c[]) { for(OStack<?>a : c) { a.clear(); }}
    /**
     * reinit all the cells in an array of arrays, which may contain nulls.
@@ -681,5 +732,7 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
  			int dis = dr+dq-Math.min(dr,dq);
  			return dis;
  	}
+
+
 
 }

@@ -179,7 +179,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
      * the maximum number of threads to use in a seach.  Fewer may
      * be used if the environment claims there are fewer available.
      */
-    public static final int DEPLOY_THREADS = 4;
+    public static final int DEPLOY_THREADS = Math.max(1,G.getAvailableProcessors()/2)-1;
     public static final int NO_THREADS = 0;
     
     public void setInitialWinRate(UCTNode node,int visits,commonMove m,commonMove mm[]) 

@@ -109,7 +109,6 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
 	}
 		   
 	// add a leaf item
-	@SuppressWarnings("rawtypes")
 	public NativeMenuItemInterface add(String item,ActionListener listener)
 	{
 		JMenuItem newitem = new JMenuItem(item,font);
@@ -195,7 +194,6 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
 		   public String toString() { return("<Box "+jsubmenu.toString()+">"); }
 		   
 		   // add a leaf item
-		   @SuppressWarnings("rawtypes")
 		public NativeMenuItemInterface add(Text item,DrawingObject parent,ActionListener listener)
 		   {	
 			   Icon ic = item.getIcon(parent);
@@ -208,7 +206,6 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
 		   }
 		   
 		   // add a leaf item
-		   @SuppressWarnings("rawtypes")
 		public NativeMenuItemInterface add(String item,ActionListener listener)
 		   {
 			   JMenuItem newitem = new JMenuItem(item,font);
@@ -262,7 +259,6 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
 	   }
 	   
 	   // add a leaf item
-	   @SuppressWarnings("rawtypes")
 	public NativeMenuItemInterface add(Text item,DrawingObject parent,ActionListener listener)
 	   {	
 		   MenuItem newitem = new MenuItem(item.getString(),font);
@@ -272,7 +268,6 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
 	   }
 	   
 	   // add a leaf item
-	   @SuppressWarnings("rawtypes")
 	public NativeMenuItemInterface add(String item,ActionListener listener)
 	   {
 		   MenuItem newitem = new MenuItem(item,font);
@@ -319,7 +314,6 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
 
 
    private Hashtable<NativeMenuItemInterface,Object> popupTarget=null;
-   @SuppressWarnings("rawtypes")
    private ActionListener listener=null;
    private SimpleObserver observer = null;
    private MenuParentInterface parent = null;
@@ -509,7 +503,6 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
      * @param window the window where the menu will appear
      * @param listen the listener for action events associated with the menu
      */
-    @SuppressWarnings("rawtypes")
 	public void newPopupMenu(String title,MenuParentInterface window,ActionListener listen,SimpleObserver o)
     {	popupTarget = new Hashtable<NativeMenuItemInterface,Object>();	
     	listener = listen;
@@ -528,7 +521,6 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
     {
     	return menu.getFont();
     }
-    @SuppressWarnings("rawtypes")
 	public void newPopupMenu(String title,MenuParentInterface window,ActionListener listen)
     {
     	newPopupMenu(title,window,listen,null);

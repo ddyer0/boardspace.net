@@ -196,7 +196,7 @@ public class ShapeLibrary implements Runnable
 		for(int i=0;i<norm.length;i++)
 		{ShapeNormalizer n=norm[i];
 			Integer newkey=n.hashCode();
-			ShapeNormalizer newval = (ShapeNormalizer)keyed_shapes.get(newkey);
+			ShapeNormalizer newval = keyed_shapes.get(newkey);
 			if(newval!=null)
 			{ //System.out.println("Conflict with " + newkey.intValue() + " for " + n);
 				//System.out.println(".. is " + newval + newval.hashCode());
@@ -217,7 +217,7 @@ public class ShapeLibrary implements Runnable
 		for(Enumeration<OneShape> e = shapedata.elements();
 			e.hasMoreElements(); )
 		{
-			BuildOneShape((OneShape)e.nextElement());
+			BuildOneShape(e.nextElement());
 		}	
 	}
 	public void Build_Vectordata()

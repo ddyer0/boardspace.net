@@ -445,7 +445,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
 	            					highlight.hitObject = cell;
 	            					highlight.hitCode = ShogiId.FlipButton;
 	            				}
-	            				ornaments[index].draw(gc,this,(int)(SQUARESIZE*1),xpos,ypos+SQUARESIZE/4,null);
+	            				ornaments[index].draw(gc,this,(SQUARESIZE*1),xpos,ypos+SQUARESIZE/4,null);
 	            			}
 	            		}
 	            	}

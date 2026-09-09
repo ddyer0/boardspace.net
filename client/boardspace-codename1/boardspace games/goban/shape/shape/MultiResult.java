@@ -60,7 +60,7 @@ public class MultiResult implements ResultProtocol,Globals,Serializable
 		return(Hash_MultiResult(m));
 	}
 	static public synchronized MultiResult Hash_MultiResult(MultiResult m)
-	{	MultiResult old = (MultiResult)AllResults.get(m);
+	{	MultiResult old = AllResults.get(m);
 		
 		if(old==null) { old=m; AllResults.put(old,old); Misses++; }
 		else { Hits++; }
@@ -103,7 +103,6 @@ public class MultiResult implements ResultProtocol,Globals,Serializable
 		for(int i=0;i<len;i++) { r.value[i]=(SingleResult)(value[i].LowerOrdinals(val)); }
 		return(Hash_MultiResult(r));
 	}
-	@SuppressWarnings("deprecation")
 	public String toString()
 	{ int len = value.length;
 		return( "#<" + getClass().getName()	+ " " + len + ": " 

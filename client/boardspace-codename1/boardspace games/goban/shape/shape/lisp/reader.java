@@ -56,7 +56,7 @@ public class reader {
 						if(nchars>0) done=true; 
 					}
 					else if (is_singleton_char(ch))
-					{ reread_token(new Character(ch).toString());
+					{ reread_token(String.valueOf(ch));
 						done=true;
 					}
 					else { s.append(ch); nchars++; }
@@ -217,12 +217,11 @@ public class reader {
 		G.print("Adding " + All_Dropped_Shapes.size() + " dropped shapes");  
 		for(Enumeration<Dropped_Shape> e = All_Dropped_Shapes.elements();
 			e.hasMoreElements(); )
-		{Dropped_Shape s=(Dropped_Shape)e.nextElement();
+		{Dropped_Shape s=e.nextElement();
 	   	 lib.BuildOneShape(s);
 		}
 	}
 	/** call readstream to read from an opened stream of some sort */
-	@SuppressWarnings("deprecation")
 	public static Vector<OneShape> ReadStream(InputStream is)
 	{ Vector<OneShape> result=null;
 		reader s = new reader(new InputStreamReader(is));

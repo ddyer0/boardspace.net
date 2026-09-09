@@ -106,7 +106,6 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 	public com.codename1.ui.Container  getShowingOn() { return(null); }
 	public void show(com.codename1.ui.Container c,int x,int y) throws AccessControlException {};	// dummy method
 	Vector<ItemListener>itemListeners=null;
-	@SuppressWarnings("rawtypes")
 	Vector<ActionListener>actionListeners = null;
 	public JMenuItem() 
 	{  setFont(FontManager.menuFont()); 
@@ -137,7 +136,6 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 		if(!itemListeners.contains(listener)) { itemListeners.addElement(listener); }		
 		}
 	
-	@SuppressWarnings("rawtypes")
 	public void addActionListener(ActionListener deferredEvents) 
 	{	if(actionListeners==null) { actionListeners = new Vector<ActionListener>();}
 		actionListeners.add(deferredEvents);

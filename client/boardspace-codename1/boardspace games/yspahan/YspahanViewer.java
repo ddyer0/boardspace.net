@@ -308,8 +308,8 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     	{
        	int extraRowH = rotate ? 0 : extraRows*CELLSIZE;
        	int extraRowW = rotate ? extraRows*CELLSIZE : 0;
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(nrows*CELLSIZE);
+    	int boardW = (ncols*CELLSIZE);
+    	int boardH = (nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW-extraRowW)/2);
     	int extraH = Math.max(0, (mainH-boardH-stateH-extraRowH)/2);
     	int boardX = mainX+extraW;

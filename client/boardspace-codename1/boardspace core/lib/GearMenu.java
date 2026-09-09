@@ -5,7 +5,6 @@ import com.codename1.ui.geom.Rectangle;
 /**
  * this is a utility pop-up menu that has exit and other general options
  */
-@SuppressWarnings("serial")
 public class GearMenu extends Rectangle {
 
 	private exCanvas parent = null;

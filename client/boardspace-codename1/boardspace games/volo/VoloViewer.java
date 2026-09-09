@@ -202,13 +202,13 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
 		int mainH = G.Height(main);
 		
 		// calculate a suitable cell size for the board
-		double cs = Math.min((double)mainW/(ncols+1),(double)mainH/(nrows+1.5));
+		double cs = Math.min((double)mainW/(ncols+1),mainH/(nrows+1.5));
 		CELLSIZE = (int)cs;
 		//G.print("cell "+cs0+" "+cs+" "+bestPercent);
 		// center the board in the remaining space
 	    int stateH = (int)(fh*2.5);
-		int boardW = (int)((ncols+1)*CELLSIZE);
-		int boardH = (int)(nrows*CELLSIZE);
+		int boardW = ((ncols+1)*CELLSIZE);
+		int boardH = (nrows*CELLSIZE);
 		int extraW = Math.max(0, (mainW-boardW)/2);
 		int extraH = Math.max(0, (mainH-boardH-stateH*2)/2);
 		int boardX = mainX+extraW;

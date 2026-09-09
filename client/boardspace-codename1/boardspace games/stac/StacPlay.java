@@ -79,7 +79,7 @@ public class StacPlay extends commonRobot<StacBoard> implements Runnable, StacCo
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (StacBoard) gboard;
-        board = (StacBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         MONTEBOT = true;
         terminalNodeOptimize = true;
         switch(strategy)

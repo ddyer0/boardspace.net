@@ -37,7 +37,6 @@ class test_5171 implements TestAble
 	 	gc.setColor(new Color(0xff0000));
 	 	gc.fillRect(x,y,w,h);
 	 	gc.translate(-1164,-764);
-	 	@SuppressWarnings("unused")
 		Rectangle cclip = (Rectangle)gc.getClip();
 	 	gc.drawImage(background,-12,-4,4329,3050);
 	 	gc.translate(1164,764);

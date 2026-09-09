@@ -205,7 +205,6 @@ public class SimpleMenu {
 			{ selectedItem = mi;
 			  if(downSeen && hp.isUp)
 				  {	
-			@SuppressWarnings("rawtypes")
 				  ActionListener listen[] = mi.getActionListeners();
 				
 				  for(ActionListener l : listen) 

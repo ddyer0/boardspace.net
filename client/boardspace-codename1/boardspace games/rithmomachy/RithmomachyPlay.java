@@ -124,7 +124,7 @@ public class RithmomachyPlay extends commonRobot<RithmomachyBoard> implements Ru
      * */
     public void StaticEval()
     {
-    	RithmomachyBoard evboard = (RithmomachyBoard)GameBoard.cloneBoard();
+    	RithmomachyBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
@@ -140,7 +140,7 @@ public class RithmomachyPlay extends commonRobot<RithmomachyBoard> implements Ru
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (RithmomachyBoard) gboard;
-        board = (RithmomachyBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         switch(strategy)
         {
         case WEAKBOT_LEVEL:

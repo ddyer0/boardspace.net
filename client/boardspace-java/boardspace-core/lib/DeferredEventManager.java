@@ -35,7 +35,6 @@ import javax.swing.event.ListSelectionListener;
  * @author ddyer
  *
  */
-@SuppressWarnings("rawtypes")
 public class DeferredEventManager implements ActionListener,ItemListener,ListSelectionListener
 {
 	private Vector<Object> deferredEvents = new Vector<Object>();

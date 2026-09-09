@@ -195,7 +195,6 @@ public class Component extends com.codename1.ui.Component implements EventListen
     {	//System.out.println("Component background "+this);
     }
 
-    @SuppressWarnings("deprecation")
 	public static String getHierarchy(Container c)
     {
      	StringBuilder b = new StringBuilder();

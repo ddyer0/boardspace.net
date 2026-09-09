@@ -30,7 +30,6 @@ import lib.TextContainer.Op;
  * @author ddyer
  *
  */
-@SuppressWarnings("serial")
 public class TextInputWindow extends exCanvas implements CanvasProtocol, Runnable, FocusListener
 {	int flipInterval = 500;
 	JTextComponent target = null;

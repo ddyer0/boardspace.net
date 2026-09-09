@@ -137,7 +137,7 @@ public class OctilesPlay extends commonMPRobot<OctilesBoard> implements Runnable
      * */
     public void StaticEval()
     {
-    	OctilesBoard evboard = (OctilesBoard)GameBoard.cloneBoard();
+    	OctilesBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         if(val1>=VALUE_OF_WIN) { val0=0.0; }
@@ -154,7 +154,7 @@ public class OctilesPlay extends commonMPRobot<OctilesBoard> implements Runnable
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (OctilesBoard) gboard;
-        board = (OctilesBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         switch(strategy)
         {
         case WEAKBOT_LEVEL:

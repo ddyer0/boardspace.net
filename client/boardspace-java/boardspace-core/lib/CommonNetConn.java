@@ -435,7 +435,6 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
     }
 
     /** public utility function to open a socket on a particular socket numbers */
-    @SuppressWarnings("resource")
 	public final SocketProxy getSocketConnection(String server,int sock) throws IOException
     {	 SocketProxy myS = null;
     	//SocketPermission sp = new SocketPermission(serverName,"connect");
@@ -606,7 +605,6 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
     // decode a byte buffer as UTF8
     final String decodeAsUtf8(byte[]inBuf,int i,int inBufLength)
     {
-       	@SuppressWarnings("resource")
 		Utf8OutputStream buf = new Utf8OutputStream();
         int escape = 0;
         int hexescape = 0;

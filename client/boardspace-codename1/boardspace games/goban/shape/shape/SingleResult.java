@@ -60,7 +60,7 @@ public class SingleResult implements ResultProtocol,Globals,Serializable
 	{ if(testmember==null) 
 		{ testmember = new SingleResult(val); }
 		else { testmember.value=val;}
-		SingleResult oldres = (SingleResult)AllResults.get(testmember);
+		SingleResult oldres = AllResults.get(testmember);
 		if(oldres!=null) 
 		{Hits++; 
 		}
@@ -85,7 +85,6 @@ public class SingleResult implements ResultProtocol,Globals,Serializable
 	
 	
 	/** print the SingleResult in a fairly meaningful way, to assist debugging */
-	@SuppressWarnings("deprecation")
 	public String toString() 
 	{ return( "#<" + getClass().getName()
 		+ " " + getFate() + Ordinal_Move_String[Ordinal_Place_to_Play()]

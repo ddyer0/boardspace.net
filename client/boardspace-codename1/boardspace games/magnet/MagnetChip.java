@@ -42,7 +42,6 @@ public class MagnetChip extends chip<MagnetChip>
 	public ChipId id;
 	private int player = -1;
 	private int upFace = -1;
-	@SuppressWarnings("unused")
 	private int maxFace = -1;
 	private boolean isTrap = false;
 	private MagnetChip promoted = null;

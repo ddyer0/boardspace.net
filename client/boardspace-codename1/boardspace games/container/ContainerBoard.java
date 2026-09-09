@@ -283,9 +283,7 @@ public class ContainerBoard extends RBoard<ContainerCell> implements BoardProtoc
 		{ VERSION_1_FILE = (n==1); 
 		  VERSION_1_DATE = false;
 		  try {
-				@SuppressWarnings("deprecation")
 				BSDate dd = new BSDate(date);
-				@SuppressWarnings("deprecation")
 				BSDate tt = new BSDate("March 8 2011");
 				VERSION_1_DATE = dd.before(tt);
 			} catch (IllegalArgumentException e) {

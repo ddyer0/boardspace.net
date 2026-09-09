@@ -92,6 +92,7 @@ class LogCapture extends Log
 //
 // this class nulls the printStackTrace method to shut up getStackTrace
 //
+@SuppressWarnings("serial")
 class ErrorTrace extends Error 
 { 	public ErrorTrace(String n) { super(n); }
 	public void printStackTrace() { }
@@ -132,6 +133,7 @@ private static InstallerPackage createInstallerPackage()
 	    }
 
 		}
+	@SuppressWarnings("deprecation")
 	public static Object MakeInstance(Class<?>cl)
 	{	try {
 		return (cl.newInstance()); //was clazz.newInstance()
@@ -381,7 +383,6 @@ private static InstallerPackage createInstallerPackage()
      * @param testOnly
      * @return
      */
-    @SuppressWarnings("deprecation")
 	public static Class<?> classForName(String name,boolean testOnly) 
     {	Class<?>cl = namedClasses.get(name);
     	if(!testOnly && (cl==null) && G.isIOS())
@@ -515,7 +516,7 @@ private static InstallerPackage createInstallerPackage()
     
     static public int getPPI() 
 	{ if(isRealInfinityTable()) { return(70); }
-	  int sz = (int)getRealScreenDPI();
+	  int sz = getRealScreenDPI();
 	  if(G.isAndroid()) { sz = Math.max(120, sz); }
 	  // this hack prevents the lobby from entering "scrollable" mode
 	  int limit = SAMSUNG_REDUCED_RESOLUTION ? 210 : 300;
@@ -740,8 +741,8 @@ windroid
     static public String getScreenSize()
     {
     	Display con = Display.getInstance();
-    	int width = (int)con.getDisplayWidth();
-    	int height = (int)con.getDisplayHeight();
+    	int width = con.getDisplayWidth();
+    	int height = con.getDisplayHeight();
     	return(""+width+"x"+height);
     }
 

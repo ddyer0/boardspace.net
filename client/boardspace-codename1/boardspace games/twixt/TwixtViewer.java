@@ -307,7 +307,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     	int mainH = G.Height(main);
         int stateH = fh*5/2;
      	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH)/nrows);
+    	double cs = Math.min(mainW/ncols,(mainH-stateH)/nrows);
     	SQUARESIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
@@ -636,7 +636,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     	int cy = gb.cellToY(cell);
     	int cx = gb.cellToX(cell);
     	int h = G.Height(brect);
-    	double scl = (usePerspective() ? (perspectiveScale(cy,h)*(1.0-(double)(cy-h/6)/(h*6.25))):1);
+    	double scl = (usePerspective() ? (perspectiveScale(cy,h)*(1.0-(cy-h/6)/(h*6.25))):1);
     	int ypos = G.Bottom(brect) - cy;
     	int xpos = G.Left(brect) + cx;
         int sz = (int)(gb.cellSize()*scl);
@@ -651,7 +651,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     	int cy = gb.cellToY(cell);
     	int cx = gb.cellToX(cell);
     	int h = G.Height(brect);
-    	double scl = usePerspective() ? perspectiveScale(cy,h)*(1.0-(double)(cy-h/6)/(h*6.25)):1;
+    	double scl = usePerspective() ? perspectiveScale(cy,h)*(1.0-(cy-h/6)/(h*6.25)):1;
     	int ypos = G.Bottom(brect) - cy;
     	int xpos = G.Left(brect) + cx;
         int sz = (int)(gb.cellSize()*scl);
@@ -674,7 +674,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     		vscale = 0.7;
     		break;
     	}
-    	return vscale*(1.0-(double)(cy-h/6)/(h*4.25));
+    	return vscale*(1.0-(cy-h/6)/(h*4.25));
     }
     private void drawStack(Graphics gc, TwixtBoard gb,TwixtCell cell,HitPoint highlight,Rectangle brect)
     {  	int cy = gb.cellToY(cell);

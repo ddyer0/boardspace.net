@@ -24,7 +24,6 @@ import com.codename1.ui.geom.Rectangle;
  * @author ddyer
  *
  */
-@SuppressWarnings("serial")
 abstract public class ToggleButton extends Rectangle
 {	String name = "";
 	boolean isOn = false;

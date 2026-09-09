@@ -985,8 +985,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     		animationStack.push(dest);
     	}
     }
-    @SuppressWarnings("unused")
-	private void checkOccupied()
+ 	private void checkOccupied()
     {	int ss[] = new int[2];
     	int kc[] = new int[2];
     	for(CheckerCell c = allCells; c!=null; c=c.next)

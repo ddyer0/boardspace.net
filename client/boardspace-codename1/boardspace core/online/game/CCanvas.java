@@ -19,7 +19,6 @@ package online.game;
 import lib.Graphics;
 import lib.HitPoint;
 
-@SuppressWarnings("serial")
 public abstract class CCanvas<CELLTYPE extends cell<?>,BOARDTYPE extends BoardProtocol> extends commonCanvas
 {
 

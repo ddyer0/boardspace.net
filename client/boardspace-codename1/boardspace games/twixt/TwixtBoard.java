@@ -1467,7 +1467,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
 			col = (char)(colNum2 + range3/nrows2);
 			row = row1 + range3%nrows2;
 		}
-		TwixtCell target = getCell((char)col,row);
+		TwixtCell target = getCell(col,row);
 		if((target!=null)
 				&& target.isElgible(color)
 				&& target.isEmptyOrGhost())

@@ -156,7 +156,7 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
      * */
     public void StaticEval()
     {
-    	ChessBoard evboard = (ChessBoard)GameBoard.cloneBoard();
+    	ChessBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
@@ -171,7 +171,7 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (ChessBoard) gboard;
-        board = (ChessBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         boolean reduced = board.variation==Variation.Ultima || board.variation==Variation.CrazyHouse;
         switch(strategy)
         {

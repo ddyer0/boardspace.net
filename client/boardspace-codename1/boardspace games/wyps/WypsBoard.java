@@ -2355,7 +2355,6 @@ public int checkDictionaryWords(DictionaryHash subDictionary,WypsCell rack[],lon
 	 validateMap(0);
 	 validateMap(1);
  }
- @SuppressWarnings("unused")
  public void validateMap(int forplayer)
  {		int used = 0;
  		int mapped = 0;

@@ -30,7 +30,6 @@ import lib.RepaintManager.RepaintStrategy;
  * @author ddyer
  *
  */
-@SuppressWarnings("serial")
 public class TextMouseWindow extends MouseCanvas implements  RepaintHelper,WindowListener , Runnable
 {
 	TextContainer area = new TextContainer("");

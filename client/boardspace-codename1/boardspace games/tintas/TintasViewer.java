@@ -409,7 +409,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
             double yscale = perspective ? (0.99*yp0/G.Height(brect)-0.33)*CELLSIZE : 1.0;
             if (isSource || isDest || (hitCell && showTargets))
              { // checking for pointable position
-           	 	StockArt.SmallO.draw(gc,this,(int)(gb.cellSize()*((perspective ? 0 : 1)+(isSource ? 2 : 3))),xpos,ypos,null);                
+           	 	StockArt.SmallO.draw(gc,this,(gb.cellSize()*((perspective ? 0 : 1)+(isSource ? 2 : 3))),xpos,ypos,null);                
              }
             numberMenu.saveSequenceNumber(cell,xpos,ypos);
 

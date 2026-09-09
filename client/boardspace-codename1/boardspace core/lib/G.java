@@ -1745,7 +1745,9 @@ public static boolean debugOnce() { boolean o = once; once = false; return(o); }
 public static void putGlobal(String p,Object v) 
 { 
 	getGlobals().put(p, v);
-	if("debug".equalsIgnoreCase(p)) { DEBUG = getBoolean((String)v,true);}
+	if("debug".equalsIgnoreCase(p)) 
+		{ DEBUG = Boolean.valueOf((String)v);
+		}
 //G.print("put "+p+" "+v);
 }
 public static Object getGlobal(String p) { return(getGlobals().get(p)); }

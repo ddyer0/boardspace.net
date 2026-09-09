@@ -148,7 +148,7 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
      * */
     public void StaticEval()
     {
-    	CheckerBoard evboard = (CheckerBoard)GameBoard.cloneBoard();
+    	CheckerBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
@@ -164,7 +164,7 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (CheckerBoard) gboard;
-        board = (CheckerBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         terminalNodeOptimize = true;
         switch(strategy)
         {

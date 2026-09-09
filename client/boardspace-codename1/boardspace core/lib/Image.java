@@ -1016,7 +1016,7 @@ public void assureImageLoaded()
 		else {
 			loadImage(url);
 		}
-		setCachedImage(url,(Image)this);
+		setCachedImage(url,this);
 		//G.print("reload "+this);
 	}}
 	if(image==null)

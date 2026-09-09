@@ -96,6 +96,8 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
     //
     private int chips_on_board[] = new int[2];			// number of chips currently on the board
     
+    private CellStack occupiedCells[] = { new CellStack(),new CellStack() };
+    
     public int chipsOnBoard(int forPlayer)
     {
     	int n = chips_on_board[forPlayer];
@@ -156,6 +158,8 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
         G.Assert(pickedObject== from_b.pickedObject, "pickedObject matches");
         G.Assert(sameCell(pickedSource,from_b.pickedSource), "pickedSource matches");
         G.Assert(sameCell(droppedDest,from_b.droppedDest), "droppedDest matches");
+        G.Assert(sameCells(occupiedCells,from_b.occupiedCells),"occupiedCells mismatch");
+        G.Assert(AR.sameArrayContents(chips_on_board,from_b.chips_on_board),"chipsOnBoard mismatch");
          
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
@@ -191,6 +195,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
 		v ^= (r.nextLong()*(board_state.ordinal()*10+whoseTurn));
 		v ^= cell.Digest(r,pickedSource);
 		v ^= chip.Digest(r,pickedObject);
+		v ^= Digest(r,occupiedCells);
         return (v);
     }
    public CannonBoard cloneBoard() 
@@ -220,21 +225,27 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
         unresign = from_b.unresign;
         board_state = from_b.board_state;
         AR.copy(chips_on_board,from_b.chips_on_board);
-        
+        getCell(occupiedCells,from_b.occupiedCells);
         copyFrom(rack,from_b.rack);
         copyFrom(capturedChips,from_b.capturedChips);
         
         AR.copy(townCaptured,from_b.townCaptured);
         getCell(townLocation,from_b.townLocation);
-        if(G.debug()) { sameboard(from_b); }
+        if(robot==null && DEBUG) { sameboard(from_b); }
     }
-    int playerIndex(CannonChip ch) { return(ch.color==playerId[0] ? 0 : 1); }
+    int playerIndex(CannonChip ch) 
+    { 
+    	return(ch.color==playerId[0] 
+    				? 0
+    				: 1 );	// sure to cause an error
+    }
     CannonChip playerChip[]=new CannonChip[] {CannonChip.BlueTown,CannonChip.WhiteTown};
     public void addChip(CannonCell c,CannonChip chip)
     {	
     	if(c.onBoard) 
     		{ int index = playerIndex(chip);
     		  chips_on_board[index]++; 
+    		  occupiedCells[index].QRPush(c);
     		  if(chip.isTown())
     		  {	townLocation[index]=c;
     		    townCaptured[index]=false;
@@ -248,6 +259,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
     	if(c.onBoard) 
     		{ int index = playerIndex(top);
     		  chips_on_board[index]--; 
+     		  occupiedCells[index].QRRemove(c);
     		  if(top.isTown()) 
     		  	{ 
     		  	  townLocation[index]=null;
@@ -285,7 +297,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
        AR.setValue(chips_on_board,0);
        AR.setValue(townCaptured,false);
        AR.setValue(townLocation,null);
-
+       reInit(occupiedCells);
        CannonChip soldier[]= {CannonChip.BlueSoldier,CannonChip.WhiteSoldier};
        for(int colNum=0;colNum<boardColumns;colNum+=2)
     	  {for(int row=2; row<=4; row++)
@@ -365,7 +377,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
     	if(board_state==CannonState.GAMEOVER_STATE) { return(win[player]); }
     	return(false);
     }
-    // look for a win for player.  This algorithm should work for Gobblet Jr too.
+    // look for a win for player. 
     public double ScoreForPlayer(int player,boolean print,boolean dumbot)
     {  	double chipv = 10*chips_on_board[player];
     	double finalv = chipv;
@@ -382,8 +394,10 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
     	int row2 = loc2.row;
     	int edges = 0;
     	int cannons = 0;
-    	for(CannonCell c = allCells; c!=null; c=c.next)
+    	CellStack occupied = occupiedCells[player];
+    	for(int lim=occupied.size(),i=0; i<lim;i++)
     		{
+    		CannonCell c = occupied.elementAt(i);
     		CannonChip top = c.topChip();
     		if((top!=null)&&(top.color==playerId[player])&&top.isSoldier())
     		{	char col = c.col;
@@ -391,12 +405,12 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
     			sum1 += 2.0/Math.sqrt((col-col1)*(col-col1)+(row-row1)*(row-row1));
     			sum2 += 3.0/Math.sqrt((col-col2)*(col-col2)+(row-row2)*(row-row2));
     			for(int dir=0;dir<4;dir++)
-    			{	CannonCell cx = c.exitTo(dir);
+    			{	CannonCell cx = c.fastExitTo(dir);
     				if(cx==null) { edges++; }
     				else 
     				{ CannonChip top1 = cx.topChip();
     				  if(top1==top)
-    				  {	CannonCell cx2 = c.exitTo(dir+4);
+    				  {	CannonCell cx2 = c.fastExitTo(dir+4);
     				    if(cx2==null) { edges++; }
     				    else { CannonChip top2 = cx2.topChip();
     				     	   if(top2==top) { cannons++; }
@@ -466,7 +480,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
     //
     private void dropObject(CannonId dest, char col, int row)
     {
-       G.Assert((pickedObject!=null)&&(droppedDest==null),"ready to drop");
+       if(DEBUG) { G.Assert((pickedObject!=null)&&(droppedDest==null),"ready to drop"); }
        switch (dest)
         {
         default: throw G.Error("Not expecting dest %s",dest);
@@ -524,7 +538,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
     // the board location really becomes empty, and we depend on unPickObject
     // to replace the original contents if the pick is cancelled.
     private void pickObject(CannonId source, char col, int row)
-    {	G.Assert((pickedObject==null)&&(pickedSource==null),"ready to pick");
+    {	if(DEBUG) { G.Assert((pickedObject==null)&&(pickedSource==null),"ready to pick"); }
     	CannonCell c = pickedSource = getCell(source,col,row);
     	
         switch (source)
@@ -535,7 +549,8 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
          	{
          	pickedObject = removeChip(c);
         	if(pickedObject.isTown())
-        		{ int index = playerIndex(pickedObject);
+        		{
+            	int index = playerIndex(pickedObject);
         		  townLocation[index]=null; 
         		  townCaptured[index]=(board_state==CannonState.PLAY_STATE);
         		}
@@ -666,7 +681,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
            	switch(board_state)
         	{	default: throw G.Error("Not expecting robot in state %s",board_state);
         		case PLACE_TOWN_STATE:
-        			G.Assert((pickedObject==null)&&(droppedDest==null),"something is moving");
+        			if(DEBUG) { G.Assert((pickedObject==null)&&(droppedDest==null),"something is moving");}
                     pickObject(m.source, m.from_col, m.from_row);
                     dropObject(CannonId.BoardLocation,m.to_col,m.to_row); 
                     if(replay.animate)
@@ -683,7 +698,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
         	{
         	CannonCell dest = getCell(m.to_col,m.to_row);
         	CannonChip top = dest.topChip();
-        	G.Assert(top!=null,"something captured");
+        	if(DEBUG) { G.Assert(top!=null,"something captured");}
         	m.capture = top;
         	captured = top;
         	removeChip(dest);
@@ -710,11 +725,11 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
         	break;
         case CAPTURE_BOARD_BOARD:
         	{
-       		G.Assert((pickedObject==null)&&(droppedDest==null),"something is moving");
+       		if(DEBUG) { G.Assert((pickedObject==null)&&(droppedDest==null),"something is moving");}
         	CannonCell dest = getCell(m.to_col,m.to_row);
         	CannonChip top = dest.topChip();
         	CannonCell deadPool = capturedChips[nextPlayer[whoseTurn]];
-        	G.Assert(top!=null,"something captured");
+        	if(DEBUG) { G.Assert(top!=null,"something captured"); }
         	m.capture = top;
         	deadPool.addChip(top);
         	pickObject(CannonId.BoardLocation, m.from_col, m.from_row);
@@ -738,7 +753,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
         	switch(board_state)
         	{	default: throw G.Error("Not expecting robot in state %s",board_state);
         		case PLAY_STATE:
-        			G.Assert((pickedObject==null)&&(droppedDest==null),"something is moving");
+        			if(DEBUG) { G.Assert((pickedObject==null)&&(droppedDest==null),"something is moving"); }
         			pickObject(CannonId.BoardLocation, m.from_col, m.from_row);
         			dropObject(CannonId.BoardLocation,m.to_col,m.to_row); 
                     if(replay.animate)
@@ -967,7 +982,11 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
   }
  
  StateStack robotStack = new StateStack();
-  
+ CannonPlay robot = null;
+ public void initRobotValues(CannonPlay r)
+ {
+	 robot = r;
+ }
  /** assistance for the robot.  In addition to executing a move, the robot
     requires that you be able to undo the execution.  The simplest way
     to do this is to record whatever other information is needed before
@@ -1006,7 +1025,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
     //
     public void UnExecute(commonMove m0)
     {	CannonMovespec m = (CannonMovespec)m0;
-        //System.out.println("U "+m+" for "+whoseTurn);
+    	
     	robotDepth--;
     	setState(robotStack.pop());
         switch (m.op)
@@ -1034,10 +1053,11 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
        		CannonCell dest = getCell(m.to_col,m.to_row);
        		CannonCell src = getCell(m.from_col,m.from_row);
        		CannonChip top = removeChip(dest);
-       		G.Assert(top!=null,"something at dest");
+       		if(DEBUG)
+       			{G.Assert(top!=null,"something at dest");
        		G.Assert(src.topChip()==null,"source empty");
+       			}
        		addChip(src,top);
-
         	}
         	/*$FALL-THROUGH$*/
         case SHOOT2_BOARD_BOARD:
@@ -1073,14 +1093,14 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
         	setWhoseTurn(m.player);
         }
  }
- int getTownMoves(CommonMoveStack  v,int who)
+ int getTownMoves(CommonMoveStack  v,int offset,int skip,int who)
  {	int n=0;
  	int homeRow = (who==FIRST_PLAYER_INDEX) ? boardRows : 1;
- 	for(int i=1;i<(boardColumns-1);i++)
- 	{	char col = (char)('A'+i);
+ 	for(int i=offset;i<boardColumns;i+=skip)
+ 	{	char col = (char)('A'+i-1);
  		if(getCell(col,homeRow).topChip()==null)
  		{	n++;
- 			if(v!=null) { v.addElement(new CannonMovespec(MOVE_RACK_BOARD,playerId[who],who,0,col,homeRow)); }
+ 			if(v!=null) { v.push(new CannonMovespec(MOVE_RACK_BOARD,playerId[who],who,0,col,homeRow)); }
  		}
  	}
  	return(n);
@@ -1113,7 +1133,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
  					  // move forward, capture sideways or forward
  					  n++;
  					  if(v!=null)
- 						  {v.addElement(new CannonMovespec(op,playerId[who],who,c.col,c.row,nx.col,nx.row));
+ 						  {v.push(new CannonMovespec(op,playerId[who],who,c.col,c.row,nx.col,nx.row));
  						  }
  					  }
  					}
@@ -1145,19 +1165,19 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
  				// try slide moves and cannon moves
  				for(int dir=0;dir<CELL_FULL_TURN;dir++)
  				{	// next 2 are friends, we have a cannon
- 					CannonCell nx = c.exitTo(dir);
+ 					CannonCell nx = c.fastExitTo(dir);
  					if(nx!=null)
  					{
  					CannonChip nxtop = nx.topChip();
  					if(top==nxtop)
  					{
- 					nx = nx.exitTo(dir);
+ 					nx = nx.fastExitTo(dir);
  					if(nx!=null)
  					{
  					nxtop = nx.topChip();
  					if(top==nxtop)
  					{// 3 in a row
- 					nx = nx.exitTo(dir);
+ 					nx = nx.fastExitTo(dir);
  					if(nx!=null)
  						{
  						nxtop=nx.topChip();
@@ -1166,7 +1186,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
  							// we can slide or shoot
  							n++;
  							if(v!=null) 
- 							{ v.addElement(new CannonMovespec(SLIDE_BOARD_BOARD,playerId[who],who,c.col,c.row,nx.col,nx.row));
+ 							{ v.push(new CannonMovespec(SLIDE_BOARD_BOARD,playerId[who],who,c.col,c.row,nx.col,nx.row));
  							}
  							
  						// now two possible shooting moves
@@ -1178,12 +1198,12 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
  						{	// shoot 2
  							n++;
  							if(v!=null)
- 							{v.addElement(new CannonMovespec(SHOOT2_BOARD_BOARD,playerId[who],who,c.col,c.row,nx.col,nx.row));
+ 							{v.push(new CannonMovespec(SHOOT2_BOARD_BOARD,playerId[who],who,c.col,c.row,nx.col,nx.row));
  							}
  						}
  						if(nx!=null)
  						{	// shoot 2
- 							nx = nx.exitTo(dir);
+ 							nx = nx.fastExitTo(dir);
  							if(nx!=null)
  							{
  							nxtop = nx.topChip();
@@ -1191,7 +1211,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
  							{
  								n++;
  	 							if(v!=null)
- 	 							{v.addElement(new CannonMovespec(SHOOT3_BOARD_BOARD,playerId[who],who,c.col,c.row,nx.col,nx.row));
+ 	 							{v.push(new CannonMovespec(SHOOT3_BOARD_BOARD,playerId[who],who,c.col,c.row,nx.col,nx.row));
  	 							}
  							}
  							}
@@ -1208,16 +1228,17 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
  	return(n);
  }
  
- int getSoldierMoves(CommonMoveStack  v,int who)
+ int getSoldierMoves(CommonMoveStack  v,int offset,int skip,int who)
  {	int n=0;
-
- 	for(CannonCell c = allCells;
- 	    c!=null;
- 	    c = c.next)
- 	{	
+ 	CellStack occupied = occupiedCells[who];
+ 	for(int i=0,lim=occupied.size(); i<lim; i++)
+ 	{	CannonCell c = occupied.elementAt(i);
+ 		// note we can't simply take i+=skip because the order of cells is occupied is indeterminate
+ 		if(c.cellInThreadGroup(offset,skip))
+ 		{
  		n += getSoldierMovesFor(c,c.topChip(),v,who);
  	}
- 		
+ 	}
  	return(n);
  }
  boolean hasLegalMoves(int who)
@@ -1246,24 +1267,24 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
  	}
  	return(h);
  }
- int getMovesFor(CommonMoveStack  v,int who)
- {	int n=0;
+ private void getMovesFor(CommonMoveStack  v,int offset,int skip,int who)
+ {	
 	switch (board_state)
 	{
 	default: throw G.Error("Not implemented");
 	case PLACE_TOWN_STATE:
-		n += getTownMoves(v,who);
+		getTownMoves(v,offset,skip,who);
 		break;
 	case PLAY_STATE:
-		n += getSoldierMoves(v,who);
+		getSoldierMoves(v,offset,skip,who);
 		break;
 	}
-	return(n);
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
- 	getMovesFor(all,whoseTurn);
-  	return(all);
+ public CommonMoveStack getMoveList(CommonMoveStack all,int offset,int skip)
+ {
+		getMovesFor(all,offset,skip,whoseTurn);
+		return all;
  }
  
+
 }

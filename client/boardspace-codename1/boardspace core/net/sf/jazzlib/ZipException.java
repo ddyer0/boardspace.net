@@ -46,14 +46,10 @@ import java.io.IOException;
  * @author Per Bothner
  * @status updated to 1.4
  */
+@SuppressWarnings("serial")
 public class ZipException extends IOException
 {
-  /**
-   * Compatible with JDK 1.0+.
-   */
-  @SuppressWarnings("unused")
-private static final long serialVersionUID = 8000196834066748623L;
-
+ 
   /**
    * Create an exception without a message.
    */

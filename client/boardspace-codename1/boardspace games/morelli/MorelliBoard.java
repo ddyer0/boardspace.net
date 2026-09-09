@@ -1059,9 +1059,12 @@ public boolean hasLegalMoves(MorelliCell c,MorelliChip top,int who)
  	{
  	default: throw G.Error("Not expecting state %s", board_state);
  	case Play:
- 		for(int i=offset-1,lim=occupiedCells.size(); i<lim; i+=skip)
+ 		for(int i=0,lim=occupiedCells.size(); i<lim; i++)
  		{	MorelliCell c = occupiedCells.elementAt(i);
+ 			if(c.cellInThreadGroup(offset,skip))
+ 			{
  			getMovesFor(all,c,c.topChip(),whoseTurn);
+ 			}
  		}
  		if(all.size()==0) { all.addElement(new MorelliMovespec(MOVE_GAMEOVER,whoseTurn)); }
  		break;

@@ -36,7 +36,6 @@ package lib;
  *
  */
 
-@SuppressWarnings("deprecation")
 public class IntIntHashtable implements Cloneable
     {
     /// The hash table data.

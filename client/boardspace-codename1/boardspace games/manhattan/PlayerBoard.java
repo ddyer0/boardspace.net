@@ -187,7 +187,7 @@ public class PlayerBoard implements ManhattanConstants
 		{	for(int y=0;y<rows && idx<size; y++)
 			{
 			ManhattanCell cell = c.elementAt(idx);
-			cell.setPosition(boardRect,(int)(left+y*xstep),(int)(t+x*ystep));
+			cell.setPosition(boardRect,(left+y*xstep),(t+x*ystep));
 			idx++;
 			}
 		}

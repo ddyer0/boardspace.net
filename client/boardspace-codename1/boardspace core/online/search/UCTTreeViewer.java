@@ -151,7 +151,7 @@ public class UCTTreeViewer extends TreeViewer
 						UCTNode n = kid.uctNode();
 						if(n!=null) { kid.setEvaluation( uct 
 										? n.getUct()
-										: Math.abs(n.getVisits())); 
+										:n.getVisits()); 
 								}
 						else { kid.setEvaluation(0); }
 					}

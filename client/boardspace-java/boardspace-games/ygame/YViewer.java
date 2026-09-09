@@ -206,8 +206,8 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
     	CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(nrows*CELLSIZE);
+    	int boardW = (ncols*CELLSIZE);
+    	int boardH = (nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;
@@ -354,7 +354,7 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
         // this enumerates the cells in the board in an arbitrary order.  A more
         // conventional double xy loop might be needed if the graphics overlap and
         // depend on the shadows being cast correctly.
-    	int CS = (int)(CELLSIZE);
+    	int CS = (CELLSIZE);
     	if(bb.pickedObject!=null) { content = null; }
          for(YCell cell = gb.allCells; cell!=null; cell=cell.next)
           {  /*
@@ -381,7 +381,7 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
             int xpos = G.Left(brect) + gb.cellToX(cell);
             if(cell.drawChip(gc,this,drawhighlight ? highlight : null,CS,xpos,ypos,null))
             {	
-            	StockArt.SmallO.draw(gc,this,(int)(CS*2),xpos,ypos,null);   
+            	StockArt.SmallO.draw(gc,this,(CS*2),xpos,ypos,null);   
             }
             /* verify the edge mask of board cells
             G.setColor(gc, Color.white);
@@ -533,7 +533,7 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
          * are already in place, to disappear until the animation finishes.  The actual drawing
          * is done by drawSprites at the end of redrawBoard
          */
-        startBoardAnimations(replay,bb.animationStack,(int)CELLSIZE,MovementStyle.Simultaneous);
+        startBoardAnimations(replay,bb.animationStack,CELLSIZE,MovementStyle.Simultaneous);
         
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
 		if(replay.animate) { playSounds(mm); }

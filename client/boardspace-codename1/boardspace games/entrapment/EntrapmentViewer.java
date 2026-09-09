@@ -214,8 +214,8 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
     	SQUARESIZE = CELLSIZE*2;
         int C2 = CELLSIZE/2;
 
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(ncols*CELLSIZE);
+    	int boardW = (ncols*CELLSIZE);
+    	int boardH = (ncols*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = (mainH-boardH)/2;
     	int boardX = mainX+extraW;

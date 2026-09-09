@@ -109,7 +109,7 @@ public class OneShape extends SimpleShape implements Globals,ShapeProtocol,Exter
 				if(!MatchesSomeIsomer(isomers,pts))
 				{
 					isomers.addElement(pts);
-					isomer_codes.addElement(new Integer(Encode_Isomer(j,i)));
+					isomer_codes.addElement(Encode_Isomer(j,i));
 				}
 				pts = zhash.Rotate_Points(pts);
 			}
@@ -119,8 +119,8 @@ public class OneShape extends SimpleShape implements Globals,ShapeProtocol,Exter
 			ShapeNormalizer norm[] = new ShapeNormalizer[siz];
 			for(int i=0; i<siz; i++)
 			{ norm[i] = new ShapeNormalizer(this,
-				(LocationProvider[])(isomers.elementAt(i)),
-					((Integer)(isomer_codes.elementAt(i))).intValue());
+				(isomers.elementAt(i)),
+					((isomer_codes.elementAt(i))).intValue());
 			}
 			return(norm);
 		}
@@ -180,7 +180,7 @@ public class OneShape extends SimpleShape implements Globals,ShapeProtocol,Exter
 				}
 				
 				for(int i=oldlen,j=0;i<newlen;i++,j++) 
-				{ newres[i]= (ResultCode)intermediate_results.elementAt(j);
+				{ newres[i]= intermediate_results.elementAt(j);
 				}
 				OneShape sh = new OneShape(this.name + " " + copy.name,points,newres);
 				return(sh);
@@ -189,8 +189,8 @@ public class OneShape extends SimpleShape implements Globals,ShapeProtocol,Exter
 	}
 	@Override
 	public int compareTo(OneShape o) {
-		long a = (long)hashCode();
-		long b = (long)o.hashCode();
+		long a = hashCode();
+		long b = o.hashCode();
 		return(a>b ? 1 : a==b ? 0 : -1);
 	}
 	

@@ -113,7 +113,7 @@ public class KhetPlay extends commonRobot<KhetBoard> implements Runnable,
      * */
     public void StaticEval()
     {
-    	KhetBoard evboard = (KhetBoard)GameBoard.cloneBoard();
+    	KhetBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
@@ -129,7 +129,7 @@ public class KhetPlay extends commonRobot<KhetBoard> implements Runnable,
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (KhetBoard) gboard;
-        board = (KhetBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         switch(strategy)
         {
         case WEAKBOT_LEVEL:

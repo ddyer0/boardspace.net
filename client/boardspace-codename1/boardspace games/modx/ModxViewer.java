@@ -209,8 +209,8 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
     	SQUARESIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(ncols*SQUARESIZE);
-    	int boardH = (int)(ncols*SQUARESIZE);
+    	int boardW = (ncols*SQUARESIZE);
+    	int boardH = (ncols*SQUARESIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;

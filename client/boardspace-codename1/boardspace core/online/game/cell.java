@@ -86,7 +86,6 @@ public abstract class cell<FINALTYPE
 	public int getWidth() { return lastSize(); }
 	public int getHeight() { return lastSize(); }
 	public static long classHash = 0;
-	
 	public SpriteStack animations = null;	// if not null, could be an animation where we're the destination
 	/**
 	 * add an animation to this cell.
@@ -122,7 +121,6 @@ public abstract class cell<FINALTYPE
 	  return(0);
 	}
 
-	@SuppressWarnings("deprecation")
 	public long getClassHash()
 	{
 		if(classHash==0)
@@ -349,6 +347,19 @@ public abstract class cell<FINALTYPE
 	 */
 	public int row;				// row for this cell, in the board's coordinate system
 
+	/** 
+	 * the problem is that for multithreaded traversal of a list of cells, the order
+	 * of cells is indeterminate, so we need something other than taking every n'th
+	 * cell out of the list.  This uses row,col and modulo arithmetic to create n 
+	 * unique subset
+	 * @param offset
+	 * @param skip
+	 * @return
+	 */
+	public final boolean cellInThreadGroup(int offset,int skip)
+	{
+		return (col+row)%skip+1==offset;
+	}
 	/** 
 	 * copy the contents of this cell from "from". This method
 	 * is typically wrapped by subclasses encapsulate the copy process.
@@ -619,7 +630,6 @@ public abstract class cell<FINALTYPE
 	/**
 	 * a default printer which describes location and contents.
 	 */
-	@SuppressWarnings("deprecation")
 	public String toString() { return("<"+getClass().getName()+" "+G.printCol(col)+row+ "=" + contentsString()+ ">"); }
 
     /**
@@ -700,11 +710,10 @@ public abstract class cell<FINALTYPE
      * this is used to remove a cell from the network of links in the board, as is necessary for the
      * center cell in tzaar
      */
-    @SuppressWarnings("unchecked")
 	public void unCrossLink()
     {
 		for(int i=0;i<adjacent.length;i++)
-		{	FINALTYPE rev = (FINALTYPE)adjacent[i];
+		{	FINALTYPE rev = adjacent[i];
 			if(rev!=null) 
 				{ adjacent[i]=null;
 				  rev.unCrossLinkTo(this);

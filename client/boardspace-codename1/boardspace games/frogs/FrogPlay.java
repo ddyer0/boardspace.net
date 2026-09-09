@@ -154,7 +154,7 @@ public class FrogPlay extends commonMPRobot<FrogBoard> implements Runnable,
      * */
     public void StaticEval()
     {
-            FrogBoard evboard = (FrogBoard)(GameBoard.cloneBoard());
+            FrogBoard evboard = (GameBoard.cloneBoard());
             String msg = "Eval is ";
             for(int i=0,lim=evboard.nPlayers(); i<lim; i++)
             {	msg += " "+ScoreForPlayer(evboard,i,true);

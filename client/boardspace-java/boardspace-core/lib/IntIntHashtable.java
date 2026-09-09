@@ -1,3 +1,10 @@
+// IntHashtable - a Hashtable that uses ints as the keys
+//
+// This is 90% based on JavaSoft's java.util.Hashtable.
+//
+// Visit the ACME Labs Java page for up-to-date versions of this and other
+// fine Java utilities: http://www.acme.com/java/
+
 /*
 	Copyright 2006-2023 by Dave Dyer
 

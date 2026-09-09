@@ -61,7 +61,6 @@ import online.search.SimpleRobotProtocol;
  * replaced by a sweep that follows open lanes from the goal squares, and is blocked by opposing pieces
  *  
 */
-@SuppressWarnings("serial")
 public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements ArimaaConstants
 {
     static final String Arimaa_SGF = "Arimaa"; // sgf game name

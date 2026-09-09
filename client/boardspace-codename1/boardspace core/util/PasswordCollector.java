@@ -349,7 +349,6 @@ public class PasswordCollector extends JPanel
 	 	return(language);
 	 }
 	 
-	@SuppressWarnings("deprecation")
 	 private boolean performRegistration()
 	 {	errorMessage = "";
 		 String name = nameField.getText().trim();
@@ -641,7 +640,7 @@ public class PasswordCollector extends JPanel
 	 private StringPair lastIndex = null;
 	 private void doLink()
 	 {
-		 StringPair selected = (StringPair)linkField.getSelectedItem();
+		 StringPair selected = linkField.getSelectedItem();
 		 if((selected!=null) && selected!=lastIndex)
 		 {	String val = selected.value;
 		 	lastIndex = selected;
@@ -919,8 +918,6 @@ public class PasswordCollector extends JPanel
     private static String password2 = "";
     private static String country = "";
     private static String email = "";
-    @SuppressWarnings("deprecation")
-    
     private void captureValues(boolean always)
     {	if(always || !isGuest)
     	{

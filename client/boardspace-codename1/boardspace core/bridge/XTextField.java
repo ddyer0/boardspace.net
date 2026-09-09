@@ -16,13 +16,15 @@
  */
 package bridge;
 
-public class XTextField extends JTextField  {
+public class XTextField extends TextField  {
 	
 
 	public XTextField(int i) { super(i);	}
 
 	public XTextField(String string) { super(string); }
 
+	public XTextField() { super(); }
+	
 
 
 }

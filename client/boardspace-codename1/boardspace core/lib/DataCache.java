@@ -72,7 +72,6 @@ import bridge.JTextArea;
 import bridge.MalformedURLException;
 import bridge.URL;
 import bridge.URLConnection;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -422,7 +421,6 @@ public class DataCache implements Runnable,Config
 	public static String getCacheName(File cacheDir)
 	{
 		try {
-			@SuppressWarnings("resource")
 			InputStream s = new FileInputStream(new File(cacheDir,CACHENAME));
 			if(s!=null)
 			{

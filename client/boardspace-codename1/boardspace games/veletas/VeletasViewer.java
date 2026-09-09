@@ -214,12 +214,12 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
 		int mainH = G.Height(main);
 		
 		// calculate a suitable cell size for the board
-		double cs = Math.min((double)mainW/(ncols+(positionBelow?0:1)),(double)(mainH/(nrows+(positionBelow?1:0))));
+		double cs = Math.min((double)mainW/(ncols+(positionBelow?0:1)),(mainH/(nrows+(positionBelow?1:0))));
 		SQUARESIZE = (int)cs;
 		//G.print("cell "+cs0+" "+cs+" "+bestPercent);
 		// center the board in the remaining space
-		int boardW = (int)((ncols+(positionBelow ? 0 : 1))*SQUARESIZE);
-		int boardH = (int)(nrows*SQUARESIZE);
+		int boardW = ((ncols+(positionBelow ? 0 : 1))*SQUARESIZE);
+		int boardH = (nrows*SQUARESIZE);
 		int extraW = Math.max(0, (mainW-boardW)/2);
 		int extraH = Math.max(0, (mainH-boardH-(positionBelow?SQUARESIZE:0))/2);
 		int boardX = mainX+extraW;

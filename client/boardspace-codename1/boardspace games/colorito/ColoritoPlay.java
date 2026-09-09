@@ -127,7 +127,7 @@ public class ColoritoPlay extends commonRobot <ColoritoBoard>implements Runnable
      * */
     public void StaticEval()
     {
-    	ColoritoBoard evboard = (ColoritoBoard)GameBoard.cloneBoard();
+    	ColoritoBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
@@ -143,7 +143,7 @@ public class ColoritoPlay extends commonRobot <ColoritoBoard>implements Runnable
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (ColoritoBoard) gboard;
-        board = (ColoritoBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         switch(strategy)
         {
         case WEAKBOT_LEVEL:

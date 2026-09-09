@@ -158,7 +158,7 @@ public class XiangqiPlay extends commonRobot<XiangqiBoard> implements Runnable, 
      * */
     public void StaticEval()
     {
-    	XiangqiBoard evboard = (XiangqiBoard)GameBoard.cloneBoard();
+    	XiangqiBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
@@ -174,7 +174,7 @@ public class XiangqiPlay extends commonRobot<XiangqiBoard> implements Runnable, 
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (XiangqiBoard) gboard;
-        board = (XiangqiBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         switch(strategy)
         {
         case WEAKBOT_LEVEL:
@@ -255,7 +255,7 @@ public class XiangqiPlay extends commonRobot<XiangqiBoard> implements Runnable, 
                 move = search_state.Find_Static_Best_Move(randomn,dif);
                	if((move!=null) && (move.op==MOVE_NULL))
                 {	
-            		move = (XiangqiMovespec)search_state.Nth_Good_Move(1,0.0);	// second best
+            		move = search_state.Nth_Good_Move(1,0.0);	// second best
                 	if(move.evaluation()<=-VALUE_OF_WIN) 
                 	{
                 		move = new XiangqiMovespec(MOVE_RESIGN,board.whoseTurn);

@@ -147,7 +147,7 @@ public class TriadPlay extends commonMPRobot<TriadBoard> implements Runnable, Tr
      * */
     public void StaticEval()
     {
-            TriadBoard evboard = (TriadBoard)(GameBoard.cloneBoard());
+            TriadBoard evboard = (GameBoard.cloneBoard());
             String msg = "Eval is ";
             for(int i=0,lim=evboard.nPlayers(); i<lim; i++)
             {	msg += " "+ScoreForPlayer(evboard,i,true);

@@ -37,6 +37,7 @@ public class Polygon
 			{ path.moveTo(x,y); } 
 			else { path.lineTo(x,y); }
 	}
+	@SuppressWarnings("cast")
 	public  void addPoint(Point p)
 	{
 		addPoint((int)p.getX(),(int)p.getY());

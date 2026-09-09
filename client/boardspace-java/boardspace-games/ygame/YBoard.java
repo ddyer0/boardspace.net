@@ -962,10 +962,13 @@ void doSwap(replayMode replay)
  		if(offset==1) { all.push(new Ymovespec(SWAP,whoseTurn)); }
 		//$FALL-THROUGH$
 	case Play:
-	 	for(int idx= offset-1, lim = emptyCells.size(); idx<lim; idx += skip)
+	 	for(int idx= 0, lim = emptyCells.size(); idx<lim; idx++)
 	 	{
 	 	 YCell c = emptyCells.elementAt(idx);
+	 	 if(c.cellInThreadGroup(offset,skip))
+	 	 {
 	 	 all.addElement(new Ymovespec(MOVE_DROPB,c,whoseTurn));
+	 	 }
 	 	}
 	 	break;
  	}

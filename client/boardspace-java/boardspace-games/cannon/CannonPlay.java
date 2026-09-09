@@ -37,7 +37,8 @@ public class CannonPlay extends commonRobot<CannonBoard> implements Runnable,
 {   private boolean SAVE_TREE = false;				// debug flag for the search driver
 	private boolean KILLER = false;					// probably ok for all games with a 1-part move
 	private boolean FIXED_DEPTH = false;
-	static final double VALUE_OF_WIN = 1000000.0;
+	private static final double VALUE_OF_WIN = 1000000.0;
+    private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN+0.25;	// good enough to stop looking
     static final int RANDOMIZED_DEPTH = 6;	// depth when randomizing outcomes (no alpha beta)
     static final int WEAKBOT_DEPTH = 8;
     static final int DUMBOT_DEPTH = 9;
@@ -53,7 +54,17 @@ public class CannonPlay extends commonRobot<CannonBoard> implements Runnable,
     {
     }
 
+    // not needed for alpha-beta searches, which do not use threads
+    public RobotProtocol copyPlayer(String from)	// from is the thread name
+    {	RobotProtocol c = super.copyPlayer(from);
+    	CannonPlay cc = (CannonPlay)c;
+     	// consider this carefully, normally if the board knows about the robot,
+    	// it should be the robot that runs it, not the master robot
+    	cc.board.initRobotValues(cc);
+    	return(c);
+    }
 
+    
 /** undo the effect of a previous Make_Move.  These
  * will always be done in reverse sequence
  */
@@ -68,14 +79,21 @@ public class CannonPlay extends commonRobot<CannonBoard> implements Runnable,
     { 
         board.RobotExecute(m);
     }
+    
+    CommonMoveStack movelist = new ParallelCommonMoveStack();
 
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
-    public CommonMoveStack  List_Of_Legal_Moves()
-    {   return(board.GetListOfMoves());
+    public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
+    {   
+    	// there's a subtle point here that easily results in bugs.  This can't use
+    	// the form that parallelizes getMoveList as long as the move generation
+    	// depends on CellStack, which has an unstable order of elements.
+    	// experiment showed that using TreeSet, which is stable, is very expensive
+    	return getMoveList(movelist,threads);
     }
     
     
@@ -137,7 +155,10 @@ public class CannonPlay extends commonRobot<CannonBoard> implements Runnable,
         	MAX_DEPTH = WEAKBOT_DEPTH;
         	DUMBOT = true;
         	break;
-        case DUMBOT_LEVEL:
+        case TESTBOT_LEVEL_1:
+        	useThreads = 0;
+			//$FALL-THROUGH$
+		case DUMBOT_LEVEL:
         	MAX_DEPTH = DUMBOT_DEPTH;
          	DUMBOT=true;
         	break;
@@ -149,6 +170,7 @@ public class CannonPlay extends commonRobot<CannonBoard> implements Runnable,
          	MAX_DEPTH = BESTBOT_DEPTH;
         	DUMBOT=false;
         	break;
+        	
         default: throw G.Error("Not expecting strategy %s",strategy);
         }
     }
@@ -163,8 +185,9 @@ public class CannonPlay extends commonRobot<CannonBoard> implements Runnable,
  */
  public void PrepareToMove(int playerIndex)
  {	InitBoardFromGame();
+ 	board.initRobotValues(this);
  }
- 
+ int useThreads = DEPLOY_THREADS;
  public commonMove DoFullMove()
     {
 	 commonMove move = null;
@@ -172,7 +195,7 @@ public class CannonPlay extends commonRobot<CannonBoard> implements Runnable,
 				? ((board.moveNumber <= 8) ? (20 - board.moveNumber) : 0)
 				: 0;
      int depth = randomn>0?Math.min(RANDOMIZED_DEPTH,MAX_DEPTH):MAX_DEPTH;	// search depth
-	 Search_Driver search_state = FIXED_DEPTH
+ 	 Search_Driver search_state = FIXED_DEPTH
 			 	? Setup_For_Search(depth,false)
 			 	: Setup_For_Search(depth, TIME_LIMIT);
         try
@@ -202,13 +225,14 @@ public class CannonPlay extends commonRobot<CannonBoard> implements Runnable,
             search_state.save_top_digest = true;
             search_state.save_digest=false;	// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
-            search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.good_enough_to_quit = GOOD_ENOUGH_VALUE;
+            search_state.max_threads = useThreads;
             search_state.allow_good_enough = true;
 
             if (move == null)
             {
                 move = search_state.Find_Static_Best_Move(randomn,dif);
-                search_state.showResult(move,false);
+                search_state.showResult(move,true);
             }
         }
         finally

@@ -190,7 +190,7 @@ public class Base64 implements CommonConfig {
    private static void appendCh(StringBuilder b,int ch)
    {
    	if(ch>=10) { appendCh(b,ch/10); };
-   	b.append((char)((char)('0'+ch%10)));
+   	b.append((char)('0'+ch%10));
    }
 /**
  * a simple http-safe encoding for strings that may contain unexpected characters
@@ -204,7 +204,7 @@ public static String encodeAlphaNumeric(String s)
 	StringBuilder out = new StringBuilder();
 	for(int i=0;i<s.length();i++)
 	{	char ch = s.charAt(i);
-		if(G.isLetterOrDigit((char)ch)) { out.append(ch); }
+		if(G.isLetterOrDigit(ch)) { out.append(ch); }
 		else 
 		{ out.append('%');
 		  appendCh(out,ch);

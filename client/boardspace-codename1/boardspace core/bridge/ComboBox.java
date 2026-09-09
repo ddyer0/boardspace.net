@@ -41,7 +41,6 @@ class ComboBoxDialog extends Dialog  implements SizeProvider
 	  setTitleComponent(new Label(Image.createImage(1,1)));
 	}
 
-	@SuppressWarnings("deprecation")
 	public Command show(int top,int bot,int left,int right,boolean title,boolean modal)
 	{
 		return super.show(Math.max(top, G.minimumFeatureSize()),bot,left,right,title,modal);
@@ -130,7 +129,6 @@ public class ComboBox extends com.codename1.ui.ComboBox<JMenuItem>
 	            int listH = content.getPreferredH()
 	                    + contentStyle.getVerticalMargins();
 
-	            @SuppressWarnings("deprecation")
 				Container title = popupDialog.getTitleArea();
 	            listH += title.getPreferredH()+title.getStyle().getVerticalMargins() ;
 
@@ -168,7 +166,6 @@ public class ComboBox extends com.codename1.ui.ComboBox<JMenuItem>
 	            int lineh = FontManager.getFontSize(c);
 	            top -= lineh;
 	            bottom +=lineh;
-	            @SuppressWarnings("deprecation")
 				Command out =  popupDialog.show(Math.max(top, 0),
 	                    Math.max(bottom, 0),
 	                    Math.max(left, 0),

@@ -432,14 +432,25 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	
 
 	public void setLocalBounds(int inX,int inY,int inWidth,int inHeight)
-	{   Dimension dim = getMinimumSize();
+	{   
+		setLocalBounds(inX,inY,inWidth,inHeight,true);
+		if(G.Width(fullRect)>inWidth)
+		{
+			setLocalBounds(inX,inY,inWidth,inHeight,false);
+		}
+	}
+	
+	private void setLocalBounds(int inX,int inY,int inWidth,int inHeight,boolean includeMiddle)
+	{
+		Dimension dim = getMinimumSize();
 		double rawscale = G.getDisplayScale();
 		SCALE = rawscale;
 		int minw = (int)(G.Width(dim)*SCALE);
 		boolean wideMode = inWidth>inHeight && inWidth>=minw*1.6;
+		int playingWidth = (includeMiddle ? s_PLAYINGIMAGEWIDTH : 0);
+		int barWidth = DEFAULT_SCROLL_BAR_WIDTH;
 		{
-		double s_minw = (s_USERIMAGEWIDTH+s_GAMEIMAGEWIDTH+2*ScrollArea.getDefaultScrollbarWidth()+s_PLAYINGIMAGEWIDTH);
-		
+		double s_minw = (s_USERIMAGEWIDTH+s_GAMEIMAGEWIDTH+2*barWidth+playingWidth);
 		{
 		int gameH = wideMode ? inHeight : inHeight*3/4;
 		if(wideMode)
@@ -447,12 +458,15 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 			double spare = inWidth-s_minw*2;
 			if(spare>0)
 			{
-				SCALE = Math.max(SCALE,Math.min(gameH/(s_GAMEHEIGHT*1.2),((double)(spare/2+s_minw)/s_minw)));
+				SCALE = Math.max(SCALE,Math.min(gameH/(s_GAMEHEIGHT*1.2),((spare/2+s_minw)/s_minw)));
 			}
 		}
 		else if(inWidth>s_minw)
 			{	// expand to fill the width, but preserve a minimim of a full game panel
-				SCALE = Math.max(SCALE,Math.min(gameH/(s_GAMEHEIGHT*1.2),(double)inWidth/s_minw));
+				SCALE = Math.max(SCALE,Math.min(gameH/(s_GAMEHEIGHT*1.2),inWidth/s_minw));
+			}
+		if(!includeMiddle){
+			SCALE = inWidth/s_minw;
 			}
 		}}
 		
@@ -467,9 +481,9 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		PLAYERCELLSIZE = (int)(s_PLAYERCELLSIZE*scale);
 		GAMEHEIGHT = (int)(s_GAMEHEIGHT*scale);
 		GAMEIMAGEWIDTH = (int)(s_GAMEIMAGEWIDTH*scale);
-		int SCROLLBARWIDTH = (int)(ScrollArea.getDefaultScrollbarWidth());
+		int SCROLLBARWIDTH = (int)(barWidth*scale);
 		USERIMAGEWIDTH = (int)(s_USERIMAGEWIDTH*scale);
-		int PLAYINGIMAGEWIDTH = (int)(s_PLAYINGIMAGEWIDTH*scale);
+		int PLAYINGIMAGEWIDTH = (int)(playingWidth*scale);
 		USERHEIGHT = (int)(s_USERHEIGHT*scale);
 		int MINIMUM_X_OFFSET = (int)(s_MINIMUM_X_OFFSET*scale);
 		PLAYERTITLEYOFFSET = (int)(s_PLAYERTITLEYOFFSET*scale);
@@ -763,6 +777,9 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		    // draw waiting room number at the right
 		    GC.Text(inG,sstr,xpos,polyYoffset+h/3);
 		    }}
+		int playingWidth = G.Width(playingRect);
+		if(playingWidth>0)
+		{
 		  GameInfo game = null;
 		  if(nameSession!=null && nameSession.isAGameOrReviewRoom() )
 		  {	  // not for a non-game room
@@ -774,17 +791,20 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		  if(game!=null)
 			  {	// we're operating the an X offeset zero at the user image rect
 				boolean high = user==highlightedUserGame;
-				Rectangle r = new Rectangle(USERIMAGEWIDTH,polyYoffset-h/2,G.Width(playingRect),h);
+				Rectangle r = new Rectangle(USERIMAGEWIDTH,polyYoffset-h/2,playingWidth,h);
 				GC.Text(inG, true, r,Color.white,null,s.get(game.gameName));
 				GC.frameRect(inG, high?AttColor:Color.blue,r);
 			  }
 	}
+	}
 	private void drawWantToPlay(Graphics g)
 	{
+		int w = G.Width(playingRect);
+		if(w>0)
+		{
 		int left = G.Left(playingRect);
 		int top = G.Top(ownerRect);
 		int h = G.Height(ownerRect);
-		int w = G.Width(playingRect);
 		int aw = w-h/4;
 		GC.fillRect(g,Color.blue,left,top,w,h);
 		GC.frameRect(g, Color.black, left,top,w,h);
@@ -798,7 +818,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		int tleft =  left+h/20;
 		int tw = GC.Text(g, true,tleft, top+h/3,aw,h*2/3,color,null,s.get(name));
 		StockArt.Pulldown.draw(g,this,selected?2*h/6:3*h/12,tleft+aw/2+tw/2+h/10,top+2*h/3,"");
-
+		}
 	}
 	private void drawLobbyHelp(Graphics inG,HitPoint hp)
 	{

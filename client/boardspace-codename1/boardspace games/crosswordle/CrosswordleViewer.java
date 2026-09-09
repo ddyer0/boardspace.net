@@ -334,8 +334,8 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	// center the board in the remaining space
        	int mainX = G.Left(main);
     	int mainY = G.Top(main);
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(nrows*CELLSIZE);
+    	int boardW = (ncols*CELLSIZE);
+    	int boardH = (nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
        	layout.returnFromMain(extraW,extraH);
@@ -773,10 +773,10 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     		for(int i=0; i<everyoneCap.size(); i++)
 		{	int count = everyone.elementAt(i);
 			totalCount += count;
-			int barW = Math.max(2,(int)(count*hscale));
+			int barW = Math.max(2,(count*hscale));
 			GC.Text(gc,true,x,y,w/20,vspace,Color.white,null,everyoneCap.elementAt(i));
 			GC.fillRect(gc,Color.blue,gx,y+vspace/4,barW,vspace*3/4);
-			GC.Text(gc,false,gx+barW,y,w/10,vspace,Color.white,null," "+(int)(count*100/everyoneCount)+"%");
+			GC.Text(gc,false,gx+barW,y,w/10,vspace,Color.white,null," "+(count*100/everyoneCount)+"%");
 			y += vspace;
 			if(!drawn && totalCount*2>=everyoneCount)
 			{	GC.setColor(gc,Color.green);
@@ -798,10 +798,10 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
    		for(int i=0; i<personalCap.size(); i++)
 		{	int count = personal.elementAt(i);
 			totalCount += count;
-			int barW = Math.max(2,(int)(count*hscale));
+			int barW = Math.max(2,(count*hscale));
 			GC.Text(gc,true,x,y,w/20,vspace,Color.white,null,personalCap.elementAt(i));
 			GC.fillRect(gc,Color.blue,gx,y+vspace/4,barW,vspace*3/4);
-			GC.Text(gc,false,gx+barW,y,w/10,vspace,Color.white,null," "+(int)(count*100/personalCount)+"%");
+			GC.Text(gc,false,gx+barW,y,w/10,vspace,Color.white,null," "+(count*100/personalCount)+"%");
 			y += vspace;
 			if(!drawn && totalCount*2>=personalCount)
 			{	GC.setColor(gc,Color.green);

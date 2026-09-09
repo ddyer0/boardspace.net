@@ -102,7 +102,8 @@ public class ServerSocket implements ServerSocketProxy
 	            	while(listening) 
 	            	{	
 	                	final int connection = sockImpl.listen();
-	            		final ServerConnection sc = (ServerConnection)scClass.newInstance();
+	            		@SuppressWarnings("deprecation")
+						final ServerConnection sc = (ServerConnection)scClass.newInstance();
 	            		if(connection>=0) {
 	                        //sc.setConnected(true);
 	                    	final NativeInputStream insock = new NativeInputStream(sockImpl,connection);

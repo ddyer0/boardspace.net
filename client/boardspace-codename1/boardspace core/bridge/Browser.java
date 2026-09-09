@@ -80,7 +80,7 @@ public class Browser extends XFrame implements BrowserNavigationCallback,ActionL
 	boolean FIX_HTTP = false;	// this depends on the build hint android.xapplication_attr=android:usesCleartextTraffic="true"
 	BrowserComponent b = new BC();
 	JPanel top = new JPanel();
-	XTextField url = new XTextField(120);
+	JTextField url = new JTextField(120);
 	JButton back = new JButton("Back");
 	public Browser(String name,String initialUrl)
 	{

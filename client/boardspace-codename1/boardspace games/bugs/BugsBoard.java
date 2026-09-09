@@ -248,7 +248,6 @@ public class BugsBoard
 		r.shuffle(map);
 		activeDeck.reInit();
 		int min = 9999;
-		@SuppressWarnings("unused")
 		int carnivore = 0;
 		while((cats.size()<N_ACTIVE_CATEGORIES
 				|| activeDeck.height()<deckSize)

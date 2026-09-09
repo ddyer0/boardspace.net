@@ -133,7 +133,6 @@ public variation gamevariation = variation.hive;
     
     
     // temporary list of destination cells allocate as a resource for speed
-    @SuppressWarnings("unchecked")
 	private CellStack[]tempDestResource = new CellStack[6];
     private int tempDestIndex=-1;
     
@@ -183,11 +182,11 @@ public variation gamevariation = variation.hive;
 		nsteps--;
 		if(direction==0) { direction=1; }
 		//System.out.println("s "+source+direction);
-		for(int i=1;i<=CELL_FULL_TURN;i++)
+		for(int i=0;i<CELL_FULL_TURN;i++)
 		{	// this is convoluted so the animation of ants can make them take 
 			// the shorter path instead of the clockwise path.  stepDirection
 			// is normally 1. The animation also tries -1 for ants.
-			int dir = (stepDirection*i+direction+CELL_FULL_TURN)%CELL_FULL_TURN;
+			int dir = ((stepDirection*i)+direction+CELL_FULL_TURN)%CELL_FULL_TURN;
 			HiveCell c = source.fastExitTo(dir);
 			if( (c!=firstC)			// not looped around
 				&& (c!=prevC)		// not backtracking
@@ -343,6 +342,7 @@ public variation gamevariation = variation.hive;
     	if(cell.height()>0) { return false; }
 		if(cell.hasOtherColorAdjacent(targetColor)) { return(occupiedCells.size()==1); }
     	if(cell.hasOwnColorAdjacent(targetColor)) { return true; }
+		if(occupiedCells.size()==0) { return(true); }
 		return false;
     }
     public boolean legalToDropAdjacent(HiveCell cell,HiveId targetColor)
@@ -1790,9 +1790,11 @@ public variation gamevariation = variation.hive;
     	 * try to make ants take the shortest route
     	 */
     	HiveCell p[] = pathHash.get(dest);
-    	if(po.type==PieceType.ANT&&p!=null)
+    	if(p!=null && (po.type==PieceType.ANT||po.type==PieceType.MOSQUITO))
     	{
     	CellStack antPath = new CellStack();
+    	pathHash.clear();
+    	dests.clear();
     	slither(true,0,pickedSource,null,true,pickedSource,dests,antPath,false);
     	HiveCell p2[] = pathHash.get(dest);
     	if(p2!=null && p2.length<p.length) { p=p2; }
@@ -2294,7 +2296,11 @@ boolean addPillbugEnemyFlips(CommonMoveStack all,HiveCell c,HivePiece bug)
 					{	// move from one to another cell adjacent to the pillbug
 						// use exactBugId so the piece will be flagged with w or b
 						if(all==null) { return(true); }
-						all.addElement(new Hivemovespec(whoseTurn,MOVE_PMOVE_DONE,top,dest,c));
+						commonMove newm = new Hivemovespec(whoseTurn,MOVE_PMOVE_DONE,top,dest,c);
+						// in rare circumstances, if a mosquito and real pillbug can do the same flip
+						// there could be a duplicate move.  Since we're using duplicates as a 
+						// debugging feature, we need to check explicitly
+						all.pushNew(newm);
 					}
 				}
 			}}
@@ -2414,6 +2420,7 @@ boolean GetListOfMoves1(CommonMoveStack all,boolean onlyWinning,int offset,int s
 	case CONFIRM_STATE:
 	case CONFIRM_SWAP_STATE:
 	case AcceptPending:
+	case DrawPending:
 	case DeclinePending:
 		if(offset==1) { all.push(new Hivemovespec(whoseTurn,MOVE_DONE));}
 		break;
@@ -2482,6 +2489,7 @@ boolean GetListOfMoves1(CommonMoveStack all,boolean onlyWinning,int offset,int s
 	 	}}
 	 	returnTempDest(tempDests);
 	 	}
+		
 	}}
 		
 	boolean hasDropMoves = all==null ? some : all.size()>0;
@@ -2490,9 +2498,11 @@ boolean GetListOfMoves1(CommonMoveStack all,boolean onlyWinning,int offset,int s
  	HiveId targetColor = playerColor(whoseTurn);
  	HiveCell oql = pieceLocation.get(playerQueen(whoseTurn^1));
  	// now add the moves of pieces already in play
- 	for(int idx=offset-1,lim=occupiedCells.size(); idx<lim; idx+=skip) 
+ 	for(int idx=0,lim=occupiedCells.size(); idx<lim; idx++) 
  	{	
  		HiveCell c =  occupiedCells.elementAt(idx);
+ 		if(c.cellInThreadGroup(offset,skip))
+ 		{
  		HivePiece bug = c.topChip();
  		if(bug.color==targetColor)	
  		{
@@ -2527,16 +2537,16 @@ boolean GetListOfMoves1(CommonMoveStack all,boolean onlyWinning,int offset,int s
  				if(all==null) { returnTempDest(tempDests); return(true); }
  				if(dest.pillbug_dest)
  				{	
- 	 				all.addElement(new Hivemovespec(whoseTurn,MOVE_PMOVE_DONE,bug,dest,c));
+ 	 				all.push(new Hivemovespec(whoseTurn,MOVE_PMOVE_DONE,bug,dest,c));
  				}
  				else
  				{
- 				all.addElement(new Hivemovespec(whoseTurn,	MOVE_MOVE_DONE,bug,dest,c));
+ 				all.push(new Hivemovespec(whoseTurn,	MOVE_MOVE_DONE,bug,dest,c));
  				}
  			}}
  			returnTempDest(tempDests);
  			}
- 			}
+ 			}}
  		if(debug && !onlyWinning && G.debug() && (all!=null)) 
  			{ verifyMoves(all); }
  		}
@@ -2547,8 +2557,9 @@ boolean GetListOfMoves1(CommonMoveStack all,boolean onlyWinning,int offset,int s
  				&& (all.size()>1)
  				&& !hasOnboardMoves(nextPlayer[whoseTurn])
  			) 
-		{ all.addElement(new Hivemovespec(whoseTurn,MOVE_OFFER_DRAW)); 
+		{ all.push(new Hivemovespec(whoseTurn,MOVE_OFFER_DRAW)); 
 		}
+ 	
  	return(some);
  }
 
@@ -2597,6 +2608,16 @@ int smallHexDist(char x1c, int y1, char x2c, int y2) {
  	}
 	
  }
+ 	public void checkOccupied()
+ 	{	int count = 0;
+ 		for(HiveCell c = allCells; c!=null; c=c.next)
+ 		{	boolean filled = c.topChip()!=null;
+ 			boolean isin = occupiedCells.contains(c);
+ 			G.Assert(isin==filled,"mismatch");
+ 			if(filled) { count++; }
+ 		}
+ 		G.Assert(count==occupiedCells.size(),"missing occupied");
+ 	}
 
  
 }

@@ -202,8 +202,8 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
     	SQUARESIZE = CELLSIZE;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(ncols*CELLSIZE);
+    	int boardW = (ncols*CELLSIZE);
+    	int boardH = (ncols*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW-(below ? 0 : SQUARESIZE*2))/2);
     	int extraH = Math.max(0, (mainH-boardH-(below ? SQUARESIZE*2 : 0))/2);
     	int boardX = mainX+extraW;

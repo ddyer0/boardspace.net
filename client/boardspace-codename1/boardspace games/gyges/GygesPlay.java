@@ -83,7 +83,7 @@ public class GygesPlay extends commonRobot<GygesBoard> implements Runnable,
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (GygesBoard) gboard;
-        board = (GygesBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         MONTEBOT = true;
         terminalNodeOptimize = true;
         switch(strategy)

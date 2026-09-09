@@ -123,7 +123,6 @@ public class BugCard extends BugsChip implements BugsConstants , CompareTo<BugsC
 	 * @param w
 	 * @param h
 	 */
-	@SuppressWarnings("unused")
 	private void drawCardBackground(Graphics gc,int xp, int yp, int w,int h)
 	{
 		boolean isWater = profile.hasWaterHabitat();

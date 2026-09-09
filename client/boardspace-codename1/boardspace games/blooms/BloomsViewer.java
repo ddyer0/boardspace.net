@@ -204,8 +204,8 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/(ncols),(double)mainH/nrows);
         CELLSIZE = (int)cs;
-     	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(nrows*CELLSIZE);
+     	int boardW = (ncols*CELLSIZE);
+    	int boardH = (nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;

@@ -309,7 +309,7 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
      * */
     public void StaticEval()
     {
-    	ArimaaBoard evboard = (ArimaaBoard)GameBoard.cloneBoard();
+    	ArimaaBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
@@ -326,7 +326,7 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (ArimaaBoard) gboard;
-        board = (ArimaaBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         board.acceptPlacement();
         SEARCH_LEVEL = strategy;
         MONTEBOT = false;
@@ -474,7 +474,7 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
                 {
                 	if(move.op==MOVE_NULL)
                     {	
-                		move = (ArimaaMovespec)search_state.Nth_Good_Move(1,0.0);	// second best
+                		move = search_state.Nth_Good_Move(1,0.0);	// second best
                     	if(move.evaluation()<=-VALUE_OF_WIN) 
                     	{
                     		move = new ArimaaMovespec(MOVE_RESIGN,board.whoseTurn);

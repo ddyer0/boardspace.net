@@ -102,7 +102,6 @@ public class TextArea extends com.codename1.ui.TextArea
 	public Dimension getMinimumSize() { return(new Dimension(100,40)); } 
 
 	MouseAdapter mouse = new MouseAdapter(this);
-	@SuppressWarnings("rawtypes")
 	public void addActionListener(ActionListener t) { mouse.addActionListener(t); }
 	public void addMouseListener(MouseListener m) { mouse.addMouseListener(m); }
 	public void addMouseMotionListener(MouseMotionListener m) { mouse.addMouseMotionListener(m); }

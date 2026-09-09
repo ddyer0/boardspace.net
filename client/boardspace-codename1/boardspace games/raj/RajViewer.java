@@ -1335,7 +1335,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	drawStack(gc,cards,canHit?hp:null,sz,l+topPart, t+2*h/3,step,0, pl.hiddenShowCards);
     	}
     	if(playedCard!=null)
-    	{	drawStack(gc,playedCard,hp,(int)(topPart*3),l+w/2, t+h/4,
+    	{	drawStack(gc,playedCard,hp,(topPart*3),l+w/2, t+h/4,
     			0 ,0, pl.hiddenShowCards);
     	}
     	//drawPlayerBoard(gc,hp,hp,b,pl,new Rectangle(l,t+topPart,w,h-topPart),true);

@@ -18,6 +18,7 @@ package bridge;
 
 import java.io.IOException;
 
+@SuppressWarnings("serial")
 public class MalformedURLException extends IOException {
 
 }

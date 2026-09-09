@@ -340,7 +340,7 @@ public class ZipOutputStream extends DeflaterOutputStream implements ZipConstant
     int numEntries = 0;
     int sizeEntries = 0;
     
-	Enumeration<ZipEntry> ee = (Enumeration<ZipEntry>)entries.elements();
+	Enumeration<ZipEntry> ee = entries.elements();
     while (ee.hasMoreElements())
       {
 	ZipEntry entry = ee.nextElement();

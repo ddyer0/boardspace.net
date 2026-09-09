@@ -176,8 +176,8 @@ public class TouchMagnifier {
 
     	MouseManager mouse = client.getMouse();
 		int ssize = getMagnifierSourceSize()/2;	// offset to the center of the unmagnified source
-       	int ax = (int)((mouse.getX()-ssize) /* *scale */);	// on IOS, scale is not needed
-    	int ay = (int)((mouse.getY()-ssize) /* *scale */);
+       	int ax = ((mouse.getX()-ssize) /* *scale */);	// on IOS, scale is not needed
+    	int ay = ((mouse.getY()-ssize) /* *scale */);
     	g2.scale(scale, scale);
     	g2.translate(-ax, -ay);
     	client.drawClientCanvas(g2,false,hp);

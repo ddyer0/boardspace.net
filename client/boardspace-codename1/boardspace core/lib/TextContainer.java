@@ -49,7 +49,6 @@ import java.util.Set;
  * @author Ddyer
  *
  */
-@SuppressWarnings("serial")
 public class TextContainer extends Rectangle implements AppendInterface,KeyListener
 {	
 	private boolean hasFocus = false;
@@ -437,19 +436,19 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 			GC.fillRect(g,backgroundColor,this);
 			GC.frameRect(g,Color.black,x,y,width,height);		
 			Rectangle from = GC.getStringBounds(g,fm,line);
-			int maxx = (int)from.getWidth();
+			int maxx = from.getWidth();
 			int availableWidth = width-endmargin;
 			if(maxx>availableWidth && lineLen>0)	// does not all fit
 			{	// if the carat is not at the end, shorten at the left until the carat is visible
 				int pos = carat;
 				String leftpart = line.substring(0,pos);
 				Rectangle left = GC.getStringBounds(g,fm,leftpart);
-				int caratX = (int)left.getWidth();
+				int caratX = left.getWidth();
 				while(caratX>=availableWidth/2 && charsDeletedAtLeft<pos)
 				{	charsDeletedAtLeft++;
 					leftpart = line.substring(charsDeletedAtLeft,pos);
 					left = GC.getStringBounds(g,fm,leftpart);
-					caratX = (int)left.getWidth();
+					caratX = left.getWidth();
 				}
 				
 				if(caratX<availableWidth && pos<lineLen)
@@ -458,7 +457,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 					pos++;
 					leftpart = line.substring(charsDeletedAtLeft,pos);
 					left =  GC.getStringBounds(g,fm,leftpart);
-					caratX= (int)left.getWidth();
+					caratX= left.getWidth();
 					} 
 					while((caratX<availableWidth) && (pos<lineLen));
 				}
@@ -468,14 +467,14 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 					charsDeletedAtLeft--;
 					leftpart = line.substring(charsDeletedAtLeft,pos);
 					left =  GC.getStringBounds(g,fm,leftpart);
-					caratX= (int)left.getWidth();
+					caratX= left.getWidth();
 				}
 				
 				charsDeletedAtRight = lineLen-pos;
 				line = line.substring(charsDeletedAtLeft,pos);
 				lineLen = line.length();
 				from = GC.getStringBounds(g,fm,line);
-				maxx = (int)from.getWidth();
+				maxx = from.getWidth();
 
 				
 				if(charsDeletedAtLeft>0)
@@ -491,8 +490,8 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		{	
 		Rectangle sbounds = GC.getStringBounds(g,fm,line,select,selectEnd);
 		Rectangle leftBounds = GC.getStringBounds(g,fm,line,0,select);
-		int xx = (int)leftBounds.getWidth();
-		GC.fillRect(g, Color.lightGray, lineX+xx, lineY-lineh/2,(int)sbounds.getWidth(),lineh/2);
+		int xx = leftBounds.getWidth();
+		GC.fillRect(g, Color.lightGray, lineX+xx, lineY-lineh/2,sbounds.getWidth(),lineh/2);
 		GC.setColor(g,foregroundColor);
 		}
 		
@@ -572,7 +571,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		  if(caratBeforeLine>=0)
 			  {	// if the carat position is in the last line
 				  Rectangle beforeCarat = GC.getStringBounds(g,fm, line,0,caratBeforeLine);
-				  int pos = lineX+(int)beforeCarat.getWidth();
+				  int pos = lineX+beforeCarat.getWidth();
 			  GC.drawLine(g, pos ,lineY-fm.getHeight(), pos ,lineY); 
 			}
 		}
@@ -753,8 +752,8 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 				Rectangle line0P = GC.getStringBounds(g,fm,line,0,line0);
 				Rectangle line1P = GC.getStringBounds(g,fm,line,0,line1);
 				GC.setColor(g,Color.lightGray);
-				int left = (int)(xpos+line0P.getWidth());
-				int right = (int)(xpos+line1P.getWidth());
+				int left = (xpos+line0P.getWidth());
+				int right = (xpos+line1P.getWidth());
 				GC.fillRect(g, left, realY-lineh/2,right-left,lineh/2);
 			}
 			
@@ -848,7 +847,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		for(int i=1;i<linelen;i++)
 		{
 			Rectangle rect = GC.getStringBounds(g,fm, line,0,i);
-			int thisW = (int)rect.getWidth();
+			int thisW = rect.getWidth();
 			if(thisW>x)
 				{	
 					return(i+(fulllen-linelen)-1); 
@@ -862,7 +861,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		for(int i=0;i<linelen;i++)
 		{
 			Rectangle rect = GC.getStringBounds(g,fm, line,0,i);
-			int thisW = (int)rect.getWidth();
+			int thisW = rect.getWidth();
 			if(thisW>=x)
 				{ 	if((thisW-x)*2>(thisW-prevW)) { i--;}
 					return(i); 

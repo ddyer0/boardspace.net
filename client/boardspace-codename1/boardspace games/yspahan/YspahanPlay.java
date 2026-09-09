@@ -96,7 +96,7 @@ public class YspahanPlay extends commonMPRobot<YspahanBoard> implements Runnable
     {
         InitRobot(v, info, strategy);
         GameBoard = (YspahanBoard) gboard;
-        board = (YspahanBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         int numPlayer = GameBoard.nPlayers();
 
         robotAI = new IYspahanPlayStrat[numPlayer]; 

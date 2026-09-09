@@ -122,7 +122,7 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
      * */
     public void StaticEval()
     {
-    	EntrapmentBoard evboard = (EntrapmentBoard)GameBoard.cloneBoard();
+    	EntrapmentBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
@@ -138,7 +138,7 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (EntrapmentBoard) gboard;
-        board = (EntrapmentBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         strategy = strat;
         switch(strat)
         {

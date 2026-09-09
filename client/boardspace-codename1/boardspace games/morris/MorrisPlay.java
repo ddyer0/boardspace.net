@@ -80,7 +80,7 @@ public class MorrisPlay extends commonRobot<MorrisBoard> implements Runnable, Mo
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (MorrisBoard) gboard;
-        board = (MorrisBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         MONTEBOT = true;
         terminalNodeOptimize = true;
         switch(strategy)
