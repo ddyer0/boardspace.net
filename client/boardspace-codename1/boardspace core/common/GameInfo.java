@@ -190,13 +190,18 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 
 	public boolean fastEnoughForRobot(Bot robotn)
 	{	if(useSpeedLimits && robots!=null)
-		{double speed = G.cpuSpeed();
+		{
+		 // special exclusion kludge for parpavm damage
+		 if(G.isIOS() && !G.DEBUG &&
+				 "Arimaa".equalsIgnoreCase(familyName)) 
+		 	{ return false; }
+		 double speed = G.cpuSpeed();
 		 for(int i=0;i<robots.length;i++)
 		 {
 			 if(robots[i]==robotn)
 			 {
 				 double robostandard =  robotSpeed[i]; 
-				 return((speed/robostandard)>0.25  );
+				 return((speed/robostandard)>0.75  );
 			 }
 		 }
 		 
@@ -1012,20 +1017,20 @@ synchronized(allGames) {
 	// racing games
 	{ GameInfo mm = put(new GameInfo(310,ES.game,39,"AA",RacingGames,"Arimaa","Arimaa",
 			OneBotPlus,
-			new double[]{0.41,0.01},
+			new double[]{1,0.01},
 			"arimaa.ArimaaViewer","/arimaa/english/Arimaa%20Game%20Rules.htm","about_arimaa.html",
 			"/arimaa/english/arimaa-video.html",
 			false, GoldOverSilver));
 	  mm.groupSortKey = "00070";
 	  mm = put(new GameInfo(311,ES.game,39,"AA",RacingGames,"Arimaa","Arimaa_Blitz",
 				OneBotPlus,
-				new double[]{0.41,0.01},
+				new double[]{1,0.01},
 				"arimaa.ArimaaViewer","/arimaa/english/Arimaa%20Game%20Rules.htm","about_arimaa.html",
 				"/arimaa/english/arimaa-video.html",
 				false, GoldOverSilver));
 	  mm = put(new GameInfo(312,ES.game,39,"AA",RacingGames,"Arimaa","Arimaa_Grand",
 				OneBotPlus,
-				new double[]{0.41,0.01},
+				new double[]{1,0.01},
 				"arimaa.ArimaaViewer","/arimaa/english/Arimaa%20Game%20Rules.htm","about_arimaa.html",
 				"/arimaa/english/arimaa-video.html",
 				false, GoldOverSilver));

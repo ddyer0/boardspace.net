@@ -35,7 +35,9 @@ public class SantoriniPlay extends commonRobot<SantoriniBoard> implements Runnab
     RobotProtocol
 {   
 	private boolean SAVE_TREE = false;				// debug flag for the search driver
-	
+	static final double VALUE_OF_WIN = 10000000.0;
+	static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN+0.25;
+
 	private boolean KILLER = false;					// probably ok for all games with a 1-part move
 	private int WEAKBOT_DEPTH = 12;
 	private int DUMBOT_DEPTH = 14;
@@ -67,14 +69,29 @@ public class SantoriniPlay extends commonRobot<SantoriniBoard> implements Runnab
         boardSearchLevel++;
     }
 
+    static int MaxMoves = 40;
+    CommonMoveStack movelist = new ParallelCommonMoveStack(MaxMoves);
+    
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {   return(board.GetListOfMoves());
-    }
+    {   movelist.clear();
+    	// move generation for Santorini is sufficiently simple, its 
+    	// not worth the trouble to split it for threads
+    	CommonMoveStack all = board.GetListOfMoves(movelist);
+    	if(G.DEBUG)
+    	{
+    	int nmoves= all.size();
+    	if(nmoves>MaxMoves)
+    	{
+    	G.print("move stack size increased to ",nmoves);
+    	MaxMoves = nmoves;
+    	}}
+    	return all;
+     }
     
     
 
@@ -106,7 +123,7 @@ public class SantoriniPlay extends commonRobot<SantoriniBoard> implements Runnab
 
     	}
         double val0 = ScoreForPlayer(board,playerindex,false);
-        double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
+        double val1 = ScoreForPlayer(board,playerindex^1,false);
         return(val0-val1);
     }
     /**
@@ -195,17 +212,19 @@ public class SantoriniPlay extends commonRobot<SantoriniBoard> implements Runnab
             search_state = Setup_For_Search(depth, (double)(TIMEPERMOVE/60.0));
             search_state.save_all_variations = SAVE_TREE;
             search_state.allow_killer = KILLER;
+            search_state.allow_best_killer = KILLER;
             search_state.verbose=verbose;			// debugging
             search_state.save_top_digest = true;
             search_state.save_digest=false;			// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
-            search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.good_enough_to_quit = GOOD_ENOUGH_VALUE;
+            search_state.max_threads = DEPLOY_THREADS;
             search_state.allow_good_enough = true;
 
             if (move == null)
             {
                 move = search_state.Find_Static_Best_Move(randomn,dif);
-                search_state.showResult(move,false);
+                search_state.showResult(move,true);
             }
         }
         finally
@@ -256,7 +275,7 @@ public class SantoriniPlay extends commonRobot<SantoriniBoard> implements Runnab
  {	int player = lastMove.player;
  	boolean win = board.WinForPlayer(player);
  	if(win) { return(0.8+0.2/(1+boardSearchLevel)); }
- 	boolean win2 = board.WinForPlayer(nextPlayer[player]);
+ 	boolean win2 = board.WinForPlayer(1^player);
  	if(win2) { return(- (0.8+0.2/(1+boardSearchLevel))); }
  	return(0);
  }

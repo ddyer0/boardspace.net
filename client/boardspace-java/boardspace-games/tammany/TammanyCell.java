@@ -120,11 +120,6 @@ public class TammanyCell extends stackCell<TammanyCell,TammanyChip> implements T
 	/** upcast racklocation to our local type */
 	public TammanyId rackLocation() { return((TammanyId)rackLocation); }
 
-	public static boolean sameCell(TammanyCell f[],TammanyCell g[])
-	{	if(f.length!=g.length) { return(false); }
-		for(int i=0;i<f.length;i++) { if (!f[i].sameCell(g[i])) { return(false); }}
-		return(true);
-	}
 
 	static void copyFrom(TammanyCell f[],TammanyCell of[])
 	{	for(int i=0;i<f.length; i++) { f[i].copyFrom(of[i]); }

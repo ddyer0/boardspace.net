@@ -17,12 +17,13 @@
 package santorini;
 
 import bridge.*;
-import common.GameInfo;
 
 import com.codename1.ui.geom.Rectangle;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.AR;
@@ -611,7 +612,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
  */
     public commonMove ParseNewMove(String st, int player)
     {
-        return (new SantoriniMovespec(st, player));
+        return (new SantoriniMovespec(b,st, player));
     }
     
 

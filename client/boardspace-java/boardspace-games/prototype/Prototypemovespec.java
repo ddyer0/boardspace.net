@@ -48,9 +48,7 @@ public class Prototypemovespec
 
     //
     // variables to identify the move
-    PrototypeId source; // where from/to
-    char to_col; // for from-to moves, the destination column
-    int to_row; // for from-to moves, the destination row
+    PrototypeCell to;
     PrototypeChip chip;
     
     // these provide an interface to log annotations that will be seen in the game log
@@ -62,10 +60,11 @@ public class Prototypemovespec
     } // default constructor
 
     /* constructor */
-    public Prototypemovespec(String str, int p)
+    public Prototypemovespec(PrototypeBoard b,String str, int p)
     {
-        parse(new Tokenizer(str), p);
+        parse(b,new Tokenizer(str), p);
     }
+    
     public Prototypemovespec(int opc , int p)
     {
     	op = opc;
@@ -74,11 +73,10 @@ public class Prototypemovespec
     /** constructor for robot moves.  Having this "binary" constor is dramatically faster
      * than the standard constructor which parses strings
      */
-    public Prototypemovespec(int opc,char col,int row,int who)
+    public Prototypemovespec(int opc,PrototypeCell dest,int who)
     {
     	op = opc;
-     	to_col = col;
-    	to_row = row;
+    	to = dest;
     	player = who;
     }
 
@@ -91,18 +89,14 @@ public class Prototypemovespec
         Prototypemovespec other = (Prototypemovespec) oth;
 
         return ((op == other.op) 
-				&& (source == other.source)
-				&& (to_row == other.to_row) 
-				&& (to_col == other.to_col)
+        		&& cell.sameCellLocation(to,other.to)
 				&& (player == other.player));
     }
 
-    public void Copy_Slots(Prototypemovespec to)
-    {	super.Copy_Slots(to);
-        to.to_col = to_col;
-        to.to_row = to_row;
-        to.source = source;
-        to.chip = chip;
+    public void Copy_Slots(Prototypemovespec toc)
+    {	super.Copy_Slots(toc);
+        toc.to = to;
+        toc.chip = chip;
     }
 
     public commonMove Copy(commonMove to)
@@ -123,7 +117,7 @@ public class Prototypemovespec
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(Tokenizer msg, int p)
+    private void parse(PrototypeBoard b,Tokenizer msg, int p)
     {
         String cmd = firstAfterIndex(msg);
         player = p;
@@ -135,15 +129,14 @@ public class Prototypemovespec
         	
         case MOVE_DROPB:
 		case MOVE_PICKB:
-            source = PrototypeId.BoardLocation;
-            to_col = msg.charToken();
-            to_row = msg.intToken();
-
+            char to_col = msg.charToken();
+            int to_row = msg.intToken();
+            to = b.getCell(to_col,to_row);
             break;
 
         case MOVE_DROP:
         case MOVE_PICK:
-            source = PrototypeId.valueOf(msg.nextToken());
+        	to = b.getCell(PrototypeId.valueOf(msg.nextToken()));
             break;
 
         case MOVE_START:
@@ -180,14 +173,14 @@ public class Prototypemovespec
         switch (op)
         {
         case MOVE_PICKB:
-            return icon(v,to_col , to_row);
+            return icon(v,to.col , to.row);
 
 		case MOVE_DROPB:
-            return icon(v,to_col ,to_row);
+            return icon(v,to.col ,to.row);
 
         case MOVE_DROP:
         case MOVE_PICK:
-            return icon(v,source.name());
+            return icon(v,to.rackLocation().name());
 
         case MOVE_DONE:
             return TextChunk.create("");
@@ -211,11 +204,11 @@ public class Prototypemovespec
         {
         case MOVE_PICKB:
 		case MOVE_DROPB:
-	        return G.concat(opname , to_col , " " , to_row);
+	        return G.concat(opname , to.col , " " , to.row);
 
         case MOVE_DROP:
         case MOVE_PICK:
-            return G.concat(opname , source.name());
+            return G.concat(opname , to.rackLocation().name());
 
         case MOVE_START:
             return G.concat(indx,"Start P" , player);

@@ -90,7 +90,5 @@ public class RajCell extends stackCell<RajCell,RajChip> implements RajConstants
     	{ super.drawChip(gc, drawOn, piece, SQUARESIZE, xscale, e_x,e_y,thislabel); 
     	}
     }
-    public static boolean sameCell(RajCell c,RajCell d)
-    {	return((c==null)?d==null:c.sameCell(d));
-    }
+ 
 }

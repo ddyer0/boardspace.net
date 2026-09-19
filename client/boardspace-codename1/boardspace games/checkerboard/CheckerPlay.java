@@ -87,13 +87,15 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
         board.RobotExecute(mm);
     }
 
+    ParallelCommonMoveStack movelist = new ParallelCommonMoveStack();
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {   return(board.GetListOfMoves(board.robotDepth==0));
+    {   movelist.clear();
+    	return(board.GetListOfMoves(movelist,board.robotDepth==0));
     }
     
     
@@ -232,7 +234,7 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
 
             if (board.DoneState())
             { // avoid problems with gameover by just supplying a done
-                move = new CheckerMovespec("Done", board.whoseTurn);
+                move = new CheckerMovespec(MOVE_DONE, board.whoseTurn);
             }
 
             // it's important that the robot randomize the first few moves a little bit.
@@ -253,6 +255,7 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
             Search_Driver search_state = Setup_For_Search(depth, false);
             search_state.save_all_variations = SAVE_TREE;
             search_state.allow_killer = KILLER;
+            search_state.max_threads = DEPLOY_THREADS;
             search_state.verbose=verbose;			// debugging
             search_state.save_top_digest = true;	// always on as a background check
             search_state.save_digest=false;	// debugging only

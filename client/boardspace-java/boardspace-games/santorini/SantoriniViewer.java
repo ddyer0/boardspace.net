@@ -610,7 +610,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
  */
     public commonMove ParseNewMove(String st, int player)
     {
-        return (new SantoriniMovespec(st, player));
+        return (new SantoriniMovespec(b,st, player));
     }
     
 

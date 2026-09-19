@@ -408,16 +408,17 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		return res[0];		
 	}
 
-	private JButton getTabButton(TopFrameProtocol f,Image im,String newName)
-	{
-		JButton b = null;
+	private JButton getTabButton(JButton old,Image im,String newName)
+	{	String nn = newName!=null ? newName : "";
+		JButton b = old==null ? new JButton(nn,SystemFont.defaultFontSize()) : old;
 		if(im!=null)
 		{	
-			b = new JButton(im);
+			b.setImage(im);
 			
 		}
 		else
-		{	b = new JButton(newName!=null ? newName : "",SystemFont.defaultFontSize());
+		{
+			b.setName(nn);
 		}
 		b.setUIID("ButtonMasterForm");
 		return b;
@@ -427,12 +428,14 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	// changes its name.
 	public void setTabName(TopFrameProtocol f,String newName,Image im)
 	{	JButton old = tabFrames.get(f);
-		JButton b = getTabButton(f,im,newName);
+		JButton b = getTabButton(old,im,newName);
 		Container tabs = masterForm.getTabs();
-		if(old!=null) { tabs.remove(old); }
-		tabs.addC(b);
+		if(old==null) 
+			{ 
+			tabs.addC(b);
+			b.addActionListener(this);
+			}	
 		tabFrames.put(f,b);
-		b.addActionListener(this);
 		adjustTabStyles();
 		Container finaltab = masterForm.getTabs();
 		G.runInEdt(new Runnable() { public void run() { finaltab.revalidate(); }});

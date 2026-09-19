@@ -17,7 +17,6 @@
 package lib;
 
 import com.codename1.ui.geom.Rectangle;
-
 import bridge.Color;
 
 /**

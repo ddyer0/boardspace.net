@@ -34,7 +34,7 @@ public class LyngkMovespec extends commonMove
     static final int MOVE_DROP = 205; // drop a chip
     static final int MOVE_PICKB = 206; // pick from the board
     static final int MOVE_DROPB = 207; // drop on the board
-    static final int MOVE_FROM_TO = 208;	// move to claim a color
+    static final int MOVE_CLAIM = 208;	// move to claim a color
     static final int MOVE_BOARD_BOARD = 209;// move to stack on the board
  
     static
@@ -45,18 +45,14 @@ public class LyngkMovespec extends commonMove
         	"Pickb", MOVE_PICKB,
         	"Drop", MOVE_DROP,
         	"Dropb", MOVE_DROPB,
-        	"Claim", MOVE_FROM_TO,
+        	"Claim", MOVE_CLAIM,
         	"Move", MOVE_BOARD_BOARD);
   }
 
     //
     // variables to identify the move
-    LyngkId source; // where from/to
-    char to_col; 	// for from column
-    int to_row; 	// for from row
-    LyngkId dest;
-    char from_col;
-    int from_row;
+    LyngkCell to = null;
+    LyngkCell from = null;
     LyngkCell target=null;
     LyngkCell target2=null;
     public LyngkMovespec()
@@ -64,16 +60,16 @@ public class LyngkMovespec extends commonMove
     } // default constructor
 
     /* constructor for the viewer */
-    public LyngkMovespec(String str, int p)
+    public LyngkMovespec(LyngkBoard b,String str, int p)
     {
-        parse(new Tokenizer(str), p);
+        parse(b,new Tokenizer(str), p);
     }
     // constructor for robot claim color moves
-    public LyngkMovespec(LyngkId from,LyngkId to,int pl)
+    public LyngkMovespec(int opc,LyngkCell fr,LyngkCell t,int pl)
     {	player = pl;
-    	op = MOVE_FROM_TO;
-    	source = from;
-    	dest = to;
+    	op = opc;
+    	from = fr;
+    	to = t;
     }
     // constructor for robot done/pass/resign
     public LyngkMovespec(int opc,int pl)
@@ -81,16 +77,7 @@ public class LyngkMovespec extends commonMove
     	op = opc;
     	player = pl;
     }
-    // constructor for robot stacking moves
-    public LyngkMovespec(LyngkCell from, LyngkCell to,int pl)
-    {	player = pl;
-    	source = dest = LyngkId.BoardLocation;
-    	op = MOVE_BOARD_BOARD;
-    	from_col = from.col;
-    	from_row = from.row;
-    	to_col = to.col;
-    	to_row = to.row;
-     }
+
 
     /**
      * This is used to check for equivalent moves "as specified" not "as executed", so
@@ -101,25 +88,17 @@ public class LyngkMovespec extends commonMove
         LyngkMovespec other = (LyngkMovespec) oth;
 
         return ((op == other.op) 
-				&& (source == other.source)
-				&& (to_row == other.to_row) 
-				&& (to_col == other.to_col)
-				&& (from_col == other.from_col)
-				&& (from_row == other.from_col)
-				&& (dest == other.dest)
+				&& cell.sameCellLocation(from,other.from)
+				&& cell.sameCellLocation(to,other.to)
 				&& (player == other.player));
     }
 
-    public void Copy_Slots(LyngkMovespec to)
-    {	super.Copy_Slots(to);
-        to.to_col = to_col;
-        to.to_row = to_row;
-        to.from_row = from_row;
-        to.from_col = from_col;
-        to.source = source;
-        to.dest = dest;
-        to.target = target;
-        to.target2 = target2;
+    public void Copy_Slots(LyngkMovespec t)
+    {	super.Copy_Slots(t);
+    	t.to = to;
+    	t.from = from;
+    	t.target = target;
+        t.target2 = target2;
     }
 
     public commonMove Copy(commonMove to)
@@ -140,7 +119,7 @@ public class LyngkMovespec extends commonMove
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(Tokenizer msg, int p)
+    private void parse(LyngkBoard b,Tokenizer msg, int p)
     {
         String cmd = firstAfterIndex(msg);
         player = p;
@@ -151,38 +130,29 @@ public class LyngkMovespec extends commonMove
         case MOVE_UNKNOWN:
         	throw G.Error("Can't parse %s", cmd);
         	
-        case MOVE_FROM_TO:
-        	source = LyngkId.find(msg.nextToken());
-        	dest = LyngkId.find(msg.nextToken());
+        case MOVE_CLAIM:
+        	from = b.getCell(LyngkId.find(msg.nextToken()));
+        	to = b.getCell(LyngkId.find(msg.nextToken()));
          	break;
    
         case MOVE_BOARD_BOARD:
-        	source = LyngkId.BoardLocation;
-            from_col = msg.charToken();
-            from_row = msg.intToken();
-            dest = LyngkId.BoardLocation;	
-            to_col = msg.charToken();
-            to_row = msg.intToken();
+        	from = b.getCell(msg.charToken(),msg.intToken());
+        	to = b.getCell(msg.charToken(),msg.intToken());
             break;
         case MOVE_DROPB:
-        	dest = LyngkId.BoardLocation;	
-        	to_col = msg.charToken();
-        	to_row = msg.intToken();
+        	to = b.getCell(msg.charToken(),msg.intToken());
         	break;
-
 		case MOVE_PICKB:
-            source = LyngkId.BoardLocation;
-            from_col = msg.charToken();
-            from_row = msg.intToken();
-            to_row = msg.intToken(); 	// picked index in puzzle mode
+			from = b.getCell(msg.charToken(),msg.intToken());
+			to = b.getCell((char)('A'+msg.intToken()),1);   // picked index in puzzle mode
             break;
 
         case MOVE_DROP:
-        	dest = LyngkId.get(msg.nextToken());
+        	to = b.getCell(LyngkId.get(msg.nextToken()));
         	break;
         	
         case MOVE_PICK:
-            source = LyngkId.get(msg.nextToken());
+            from = b.getCell(LyngkId.get(msg.nextToken()));
 
             break;
 
@@ -207,18 +177,18 @@ public class LyngkMovespec extends commonMove
     {
         switch (op)
         {
-        case MOVE_FROM_TO:
+        case MOVE_CLAIM:
  
         	return("");
  
         case MOVE_BOARD_BOARD:
-        	return(""+from_col+from_row+"-"+to_col+to_row);
+        	return(""+from.col+from.row+"-"+to.col+to.row);
         	
         case MOVE_PICKB:
-            return (""+from_col + from_row+"-");
+            return (""+from.col + from.row+"-"+(to.col-'A'));
 
 		case MOVE_DROPB:
-            return (""+to_col + to_row);
+            return (""+to.col + to.row);
 
         case MOVE_DROP:
             return ("");
@@ -276,22 +246,22 @@ public class LyngkMovespec extends commonMove
         // review mode
         switch (op)
         {
-        case MOVE_FROM_TO:
-        	return(opname+source.shortName+" "+dest.shortName);
+        case MOVE_CLAIM:
+        	return(opname+from.rackLocation().shortName+" "+to.rackLocation().shortName);
         	
         case MOVE_BOARD_BOARD:
-        	return(opname+ from_col+" "+from_row+" "+to_col+" "+to_row);
+        	return(opname+ from.col+" "+from.row+" "+to.col+" "+to.row);
         	
         case MOVE_PICKB:
-	        return (opname+ from_col + " " + from_row+" "+to_row);
+	        return (opname+ from.col + " " + from.row+" "+to.row);
 
 		case MOVE_DROPB:
-	        return (opname + to_col + " " + to_row);
+	        return (opname + to.col + " " + to.row);
 
         case MOVE_DROP:
-            return (opname +dest.shortName);
+            return (opname +to.rackLocation().shortName);
         case MOVE_PICK:
-            return (opname +source.shortName);
+            return (opname +from.rackLocation().shortName);
 
         case MOVE_START:
             return (indx+"Start P" + player);

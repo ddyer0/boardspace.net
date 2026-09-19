@@ -126,7 +126,7 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
-    CommonMoveStack movelist = new ParallelCommonMoveStack();
+    CommonMoveStack movelist = new ParallelCommonMoveStack(60);
     public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
     {	CommonMoveStack ml = getMoveList(movelist,threads);
     	/*

@@ -126,7 +126,7 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
-    CommonMoveStack movelist = new ParallelCommonMoveStack();
+    CommonMoveStack movelist = new ParallelCommonMoveStack(60);
     public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
     {	CommonMoveStack ml = getMoveList(movelist,threads);
     	/*
@@ -457,7 +457,7 @@ public commonMove Random_Good_Move(Search_Driver search,int n,double dif)
             search_state.save_all_variations = SAVE_TREE;
             //search_state.use_nullmove = NULLMOVE;
             search_state.verbose = verbose;
-            search_state.max_threads = useThreads ? DEPLOY_THREADS : 0;
+            search_state.max_threads = useThreads ? DEPLOY_THREADS: 0;
              //search_state.allow_killer = true;
             search_state.allow_best_killer = KILLER_HEURISTIC;
             search_state.save_top_digest=true;	// always on background check on the robot

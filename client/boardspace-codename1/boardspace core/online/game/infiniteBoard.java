@@ -192,8 +192,7 @@ public abstract class infiniteBoard<CELLTYPE extends cell<CELLTYPE>> extends fBo
 	 		CELLTYPE c = createInitialCell(col,row);
 	 		linkAdjacentCells(c);
 	 	}
-	 	G.Assert((allCells==null && other.allCells==null) 
-	 				|| allCells.sameCellLocation(other.allCells),"cells match");
+	 	G.Assert(cell.sameCellLocation(allCells,other.allCells),"cells match");
 		super.copyFrom(other);
 	 	ncols = other.ncols;
 	 	nrows = other.nrows;

@@ -77,7 +77,6 @@ public class SpanglesCell extends chipCell<SpanglesCell,SpanglesChip> implements
 	public boolean sameCell(SpanglesCell other)
 	{
 		return(super.sameCell(other)
-				&& ((nextOccupied==other.nextOccupied)
-						|| ((nextOccupied!=null) && nextOccupied.sameCellLocation(other.nextOccupied))));	
+				&& sameCellLocation(nextOccupied,other.nextOccupied));	
 	}
 }

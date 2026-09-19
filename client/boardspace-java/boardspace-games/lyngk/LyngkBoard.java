@@ -472,7 +472,10 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
     	}
       	return (NothingMoving);
     }
-
+    protected LyngkCell getCell(LyngkId source)
+    {
+    	return getCell(source,'@',-1);
+    }
     /**
      * get the cell represented by a source code, and col,row
      * @param source
@@ -715,7 +718,7 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
 
         case MOVE_DROPB:
         	{
-			LyngkCell dest =  getCell(LyngkId.BoardLocation,m.to_col,m.to_row);
+			LyngkCell dest =  getCell(m.to);
 			boolean stepped = false;
 			if(isSource(dest)) 
 				{ unPickObject(); 
@@ -741,11 +744,11 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
 				}
         	}
              break;
-        case MOVE_FROM_TO:
+        case MOVE_CLAIM:
         case MOVE_BOARD_BOARD:
         	{
-        	LyngkCell from = getCell(m.source,m.from_col,m.from_row);
-        	LyngkCell to = getCell(m.dest,m.to_col,m.to_row);
+        	LyngkCell from = getCell(m.from);
+        	LyngkCell to = getCell(m.to);
         	boolean stepped = false;
         	if(!robotBoard)
         	{
@@ -765,7 +768,7 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
         	      to.lastPlaced = dropStep;
         	      dropStep++;
         	}
-     	  	if(m.op==MOVE_FROM_TO) 
+     	  	if(m.op==MOVE_CLAIM) 
       	  		{ 
       	  		// this will be a robot move which is not reversible, 
       	  		// but we need to save undo info in the unusual case
@@ -778,7 +781,7 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
  		case MOVE_PICKB:
         	// come here only where there's something to pick, which must
  			{
- 			LyngkCell src = getCell(m.source,m.from_col,m.from_row);
+ 			LyngkCell src = getCell(m.from);
  			if(isDest(src)) { unDropObject(); }
  			else
  			{
@@ -788,7 +791,7 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
  				m.target = new LyngkCell(src);
  	        }
 
- 			pickObject(src,m.to_row);	// to_row is starting level
+ 			pickObject(src,m.to==null ? 0 : m.to.col-'A');	// to_row is starting level
         	switch(board_state)
         	{
         	case Puzzle:
@@ -803,7 +806,7 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
         case MOVE_DROP: // drop on chip pool;
         	if(pickedStack.height()>0)
         	{
-            LyngkCell dest = getCell(m.dest,m.to_col,m.to_row);
+            LyngkCell dest = getCell(m.to);
             if(isSource(dest)) { unPickObject(); }
             else
             	{ dropObject(dest,replay,null);
@@ -930,7 +933,7 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
 
         if (Execute(m,replayMode.Replay))
         {	
-        	if ((m.op==MOVE_FROM_TO)||(m.op == MOVE_DONE)||(m.op==MOVE_PASS))
+        	if ((m.op==MOVE_CLAIM)||(m.op == MOVE_DONE)||(m.op==MOVE_PASS))
             {
             }
             else if (DoneState())
@@ -964,10 +967,10 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
         case MOVE_DONE:
             break;
         	
-        case MOVE_FROM_TO:	// prints as CLAIM
+        case MOVE_CLAIM:	// prints as CLAIM
         	{	int ncap = robotHeight.pop();
-        		LyngkCell from = getCell(m.source,m.from_col,m.from_row);
-        		LyngkCell to = getCell(m.dest,m.to_col,m.to_row);
+        		LyngkCell from = getCell(m.from);
+        		LyngkCell to = getCell(m.to);
         		to.transferTo(from, to.height()-1);
         		while(ncap-- > 0)
         		{	LyngkCell src = captures[whoseTurn];
@@ -979,8 +982,8 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
         	break;
         case MOVE_BOARD_BOARD:
         	{
-        		LyngkCell from = getCell(m.source,m.from_col,m.from_row);
-        		LyngkCell to = getCell(m.dest,m.to_col,m.to_row);
+        		LyngkCell from = getCell(m.from);
+        		LyngkCell to = getCell(m.to);
         		int h = robotHeight.pop();
         		if(to.height()==0)	// was a capture
         			{	
@@ -1040,7 +1043,7 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
  				if(!andMove && (all==null)) { return(true); }
  				if(!andMove || hasMovesAfterClaiming(who,c.topChip()))
  				{
- 				if(all!=null) { all.push(new LyngkMovespec(c.rackLocation(),dest.rackLocation(),who)); }
+ 				if(all!=null) { all.push(new LyngkMovespec(MOVE_CLAIM,c,dest,who)); }
  				some = true;
  				}
  			}
@@ -1142,17 +1145,17 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
 	 		  else if(all==null) { return(true); }
 	 		  int newHeight = moving.height()+to.height();
 	 		  int limit = variation.heightLimit();
-	 		  G.Assert(!to.onBoard || (newHeight<=limit), "illegal stack plan");
+	 		  if(DEBUG) { G.Assert(!to.onBoard || (newHeight<=limit), "illegal stack plan"); }
 	 		  if(all!=null) 
 	 		  	{ 
 	 		  	  if(robotBoard && (newHeight==InstantWinHeight))
 	 		  	  {	// return just the winning move
 	 		  		all.clear();  
-	 		  		all.push(new LyngkMovespec(moving,to,who)); 
+	 		  		all.push(new LyngkMovespec(MOVE_BOARD_BOARD,moving,to,who)); 
 	 		  		instantWin = true;
 	 		  		return(true);
 	 		  	  }
-	 		  	  all.push(new LyngkMovespec(moving,to,who)); 
+	 		  	  all.push(new LyngkMovespec(MOVE_BOARD_BOARD,moving,to,who)); 
 	 		  	}
 	 		  some = true;
 	 		}}
@@ -1205,10 +1208,10 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
 		 		switch(p.op)
 		 		{
 		 		default: break;
-		 		case MOVE_FROM_TO:
+		 		case MOVE_CLAIM:
 		 		case MOVE_BOARD_BOARD: 
 		 		{
-		 			LyngkCell c = getCell(p.dest,p.to_col,p.to_row);
+		 			LyngkCell c = getCell(p.to);
 		 			targets.put(c,p);
 		 		}
 		 		}
@@ -1222,9 +1225,9 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
 		 		switch(p.op)
 		 		{
 		 			default: break;
-		 			case MOVE_FROM_TO:
+		 			case MOVE_CLAIM:
 		 			case MOVE_BOARD_BOARD: 
-		 			LyngkCell c = getCell(p.source,p.from_col,p.from_row);
+		 			LyngkCell c = getCell(p.from);
 		 			targets.put(c,p);
 		 		}
 		 	}
@@ -1238,7 +1241,7 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
  // than the "natural" randomness of simply picking one of the possible
  // moves. The particular choices here have unknown effects, but the
  // overall strength of play seems to be at least as good as the natural
- public commonMove Get_Random_Move(Random rand)
+ public commonMove Get_Random_Move(Random rand,CommonMoveStack all)
  {
 	 instantWin = false;
 	 switch(board_state)
@@ -1263,8 +1266,8 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
 				LyngkCell c = unclaimedColors[idx];
 				if(c.topChip()!=null)
 				{
-					return(new LyngkMovespec(c.rackLocation(),
-								playerColors[whoseTurn].rackLocation(),
+					return(new LyngkMovespec(MOVE_CLAIM,c,
+								playerColors[whoseTurn],
 								whoseTurn));
 				}
 			}
@@ -1273,7 +1276,7 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
 	case Play:
 	 {	int lim = filledCells.size();
 		int start = rand.nextInt(lim);
-		CommonMoveStack all = new CommonMoveStack();
+		all.clear();
 		// if regular moves are possible, select a random starting piece
 		// and pick a random one of it's possible moves.  This tends to 
 		// over-represent the non-lyngk moves relative to the set of all
@@ -1331,8 +1334,8 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
 	 return(false);
  }
  // entry point for the robot
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	
  	if(!getListOfMoves(all))
 		{ all.push(new LyngkMovespec(MOVE_PASS,whoseTurn)); 
 		}

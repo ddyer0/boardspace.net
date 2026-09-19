@@ -265,7 +265,7 @@ class ArimaaBoard extends squareBoard<ArimaaCell> implements BoardProtocol,Arima
         G.Assert(stackIndex==from_b.stackIndex,"stackIndex matches");
         for(int idx=0; idx<stackIndex;idx++)
         {
-        	G.Assert(ArimaaCell.sameCell(pickedSourceStack[idx],from_b.pickedSourceStack[idx]),"same source stack");
+        	G.Assert(cell.sameCell(pickedSourceStack[idx],from_b.pickedSourceStack[idx]),"same source stack");
         	G.Assert(ArimaaCell.sameCell(droppedDestStack[idx],from_b.droppedDestStack[idx]),"same source stack");
         }
         // do not include deststack.  it contains similar but not identical elements

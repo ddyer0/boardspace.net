@@ -24,7 +24,7 @@ import online.game.BaseBoard.BoardState;
 public interface SantoriniConstants 
 {	static final int DEFAULT_COLUMNS = 5;	// 5x5 board
 	static final int DEFAULT_ROWS = 5;
-	static final double VALUE_OF_WIN = 10000000.0;
+	
 	static final String Santorini_INIT = "santorini";	//init for standard game
 	static final String GodSelectDescription = "Select two gods to be used in this game"; 
 	static final String GodChooseDescription = "Choose the god you will follow";
@@ -96,6 +96,7 @@ public interface SantoriniConstants
     	BoardLocation(null),
     	RightView(null),
     	GodsId(null),
+    	GodHome(null),
     	// gods
     	Apollo("Apollo"),
     	Artemis("Artemis"),

@@ -118,8 +118,6 @@ public class GipfCell extends stackCell<GipfCell,GipfChip> implements PlacementP
 				return(cc.rowOfNInDirection(n-1,chip,dir)); }
 		return(false);
 	}
-	public static boolean sameCell(GipfCell c,GipfCell d) { return((c==null)?(d==null):c.sameCell(d)); }
-
 
 	public int getLastPlacement(boolean empty) {
 		return empty ? lastEmptied : lastPlaced;

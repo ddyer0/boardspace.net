@@ -2,7 +2,8 @@
 
 @interface bridge_InstallerPackageImpl : NSObject {
 }
-
+-(NSString*)setDrawers:(BOOL)param;
+-(NSString*)eval:(NSString*)param;
 -(NSString*)getPackages;
 -(NSString*)getOSInfo;
 -(NSString*)getHostName;

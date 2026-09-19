@@ -67,9 +67,6 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
 	 * 
 	 */
 	public boolean save_all_variations = false; // if true, save more information for the full search tree
-
-	public int recheck_evaluations = G.DEBUG ? 1003 : 0;
-	public double recheck_slop = 0.01;
 	public RobotProtocol robot = null;
 	public void setRobot(RobotProtocol r) { robot = r; }
 	public long evalAndSortTime = 0;
@@ -796,8 +793,8 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         {
         G.print("EvalAndSort "
         			+(evalAndSortTime/(evalAndSortCalls*1e3))+"uS/call "
-        			+evalAndSortCalls+" eval "+((evalAndSortEval*100)/evalAndSortTime)+"%"
-        			+((threadPoolSize==0)?" no threads" : " "+threadPoolSize+" threads"));
+        			+evalAndSortCalls+" eval "+((evalAndSortEval*100)/evalAndSortTime)+"% "+(int)(evalAndSortEval/1e6)+"mS"
+        			+((threadPoolSize==0)?" no threads" : " "+threadPoolSize+" threads"+" evtime "+(int)(threadEvalTime/1e6)+"mS"));
         }
     }
     //
@@ -899,6 +896,8 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     
     public Sthread threadPool[] = null;
     private int threadPoolSize = 0;
+    long threadEvalTime = 0;
+
     public void createThreadPool()
     {
     	threadPool = null;
@@ -941,7 +940,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     	if(p!=null)
     	{
     		for(int i=0;i<p.length;i++)
-    		{
+    		{	threadEvalTime +=p[i].evalTime;
     			p[i].setExit();
     		}
     	}}
@@ -1004,11 +1003,15 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     		}
     	return null;
     }
-    private void recheckMove(commonMove mm)
+    private void recheckMove(commonMove mm,double recheckMoveEval)
     {
     	double was = mm.local_evaluation();
     	Static_Evaluate_Move(mm);
     	double is = mm.local_evaluation();
+    	if(recheckMoveEval!=was)
+    	{
+    		G.Error("stored evaluation changed, was ",recheckMoveEval," is ",was);
+    	}
     	if(Math.abs(was-is)>recheck_slop)
     	{
     		G.Error("move ",mm," was ",was," is ",is);
@@ -1063,7 +1066,6 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         commonMove promoted = (use_nullmove_promotions && (nullm!=null)) ? nullm.best_move() : null;
         // if not a player change, no nullmove promotions should occur
         if((sz>0) && (promoted!=null) && (mvec[0].player!=promoted.player)) { promoted=null; }
-        
         if(save_digest) 
 		{ b = robot.getBoard();
 		  search_moven = b.moveNumber();
@@ -1106,6 +1108,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         int finIndex = startIndex;
         commonMove best = null;
         commonMove recheckMove = null;
+        double recheckMoveEval = 0;
         double bestEval = 0;
         try {
         Sthread.waitForIdle(threadPool);
@@ -1139,15 +1142,16 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         	if(mm!=null)
         	{ 
         	mvec[finIndex++] = mm; 
+        	double localEval = mm.local_evaluation();
         	if(recheck_evaluations>0 && total_evaluations%recheck_evaluations==0)
         	{
         		recheckMove = mm;
+        		recheckMoveEval = localEval;
         	}
         	if(usedKiller==mm) 
         	{
         		killer_helped++;
         	}
-        	double localEval = mm.local_evaluation();
         	if(best==null || localEval>bestEval) 
         		{ bestEval = localEval; best = mm;
         		}
@@ -1190,6 +1194,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
                 	// it merely flags moves that were originally positioned 
                 	// by the killer heuristic
                 	mm.set_local_evaluation(NaN);
+                	if(mm==recheckMove) { recheckMove = null; }
                   }}
               }
 
@@ -1247,7 +1252,6 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         if(has_nullmove)
         {	// remove the nullmove and ignore the promoted move, since all are terminals, we want the real order
         	mvec[0] = mvec[sz-1];
-        	mvec[sz-1]=null;		// poison this, it shouldn't be seen
         	extra = 0;
         	sz--;
         }
@@ -1255,7 +1259,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         }
         if(recheckMove!=null)
         {
-        	recheckMove(recheckMove);
+        	recheckMove(recheckMove,recheckMoveEval);
         
         }
         // subtle point here.  If all the moves are terminals, we may apply the depth limit optimization

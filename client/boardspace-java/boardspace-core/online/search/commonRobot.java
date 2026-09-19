@@ -178,8 +178,15 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
     /**
      * the maximum number of threads to use in a seach.  Fewer may
      * be used if the environment claims there are fewer available.
+     * Actual measurement shows diminishing returns rathern than
+     * linear speedups for more threads.
+     * 
+     0 helpers (serial)	113,610	—	113,610	1.00x
+	 1 helper (2-way)	70,881	79,889	150,770	1.33x
+	 4 helpers (5-way)	42,235	214,967	257,202	2.26x
+	 7 helpers (8-way)	36,435	350,328	386,763	3.40x 
      */
-    public static final int DEPLOY_THREADS = Math.max(1,G.getAvailableProcessors()/2)-1;
+    public static final int DEPLOY_THREADS = Math.max(1,Math.min(4,G.getAvailableProcessors()/2-1));
     public static final int NO_THREADS = 0;
     
     public void setInitialWinRate(UCTNode node,int visits,commonMove m,commonMove mm[]) 
@@ -1057,7 +1064,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	   }
 	   
 
-
+	   private int moveCycles = 0;
 	   /**
 	    * get the move list partitioned among the threads and the master thread
 	    * This is intended to be compatible
@@ -1067,6 +1074,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	    */
 	   public CommonMoveStack  getMoveList(CommonMoveStack all,Sthread threads[])
 	    {	all.clear();
+	    	boolean debug = all.debug = search_driver.recheck_evaluations!=0;
 	    	if(threads==null)
 	    	{
 	    		return board.getMoveList(all,1,1);
@@ -1086,6 +1094,15 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	    	catch (Throwable e)
 	    	{
 	    		search_driver.Abort_Search_In_Progress(""+e);
+	    	}
+	    	if(debug && (moveCycles++ % search_driver.recheck_evaluations==0 ))
+	    	{	CommonMoveStack ap = getMoveList(new CommonMoveStack(),null);
+	    		G.Assert(ap.size()==all.size(),"wrong number of moves generated, is %s should be %s",all.size(),ap.size());
+	    		for(int i=0;i<ap.size();i++) 
+	    			{ commonMove check = ap.elementAt(i);
+	    			  G.Assert(all.contains(check),"missing move %s",check);
+	    			}
+	    		
 	    	}
 	        return all;
 	    	}

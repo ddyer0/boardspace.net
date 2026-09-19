@@ -73,7 +73,4 @@ public class PalabraCell extends stackCell<PalabraCell,PalabraChip> implements P
     	{ super.drawChip(gc, drawOn, piece, SQUARESIZE, xscale, e_x,e_y,thislabel); 
     	}
     }
-    public static boolean sameCell(PalabraCell c,PalabraCell d)
-    {	return((c==null)?d==null:c.sameCell(d));
-    }
 }

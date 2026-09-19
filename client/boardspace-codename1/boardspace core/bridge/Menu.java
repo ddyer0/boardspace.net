@@ -133,6 +133,13 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 	{ 	super(msg);
 		title = msg;
 		finishInit();
+		if(msg!=null)
+		{ 
+		JMenuItem m = getItem(0);
+		m.setBackground(Color.white);
+		Font mf = m.getFont();
+		m.setFont(FontManager.deriveFont(mf,(int)(mf.getPixelSize()+2),mf.getStyle()));
+		}
 	}
 	public int getComponentIndex(JMenu m) 
 	{	Object impl = m.getImplementation();

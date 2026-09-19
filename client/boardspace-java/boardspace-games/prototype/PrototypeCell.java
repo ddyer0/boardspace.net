@@ -79,6 +79,7 @@ public class PrototypeCell
 		super.copyFrom(ot);
 		lastDropped = ot.lastDropped;
 		lastPicked = ot.lastPicked;
+		privateIndex = ot.privateIndex;
 	}
 	/**
 	 * reset back to the same state as when newly created.  This is used
@@ -88,6 +89,7 @@ public class PrototypeCell
 	{	super.reInit();
 		lastDropped = -1;
 		lastPicked = -1;
+		privateIndex = -1;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public PrototypeCell(PrototypeChip cont)

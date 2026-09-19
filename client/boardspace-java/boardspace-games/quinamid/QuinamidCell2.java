@@ -52,5 +52,4 @@ public class QuinamidCell2 extends chipCell<QuinamidCell2,QuinamidChip> implemen
 		return(dis>=5);
 	}
 
-	public static boolean sameCell(QuinamidCell2 c,QuinamidCell2 d) { return((c==null)?(d==null):c.sameCell(d)); }
 }

@@ -59,9 +59,6 @@ public class VolcanoCell extends stackCell<VolcanoCell,Pyramid>
 			}
 		}
 	}
-	public static boolean sameCell(VolcanoCell c1,VolcanoCell c2)
-	{	return((c1==c2) || ((c1!=null)&&(c1.sameCell(c2))));
-	}
 	public void swapContents(VolcanoCell c2)
 	{	
 		for(int dep=0;dep<Pyramid.nSizes;dep++)

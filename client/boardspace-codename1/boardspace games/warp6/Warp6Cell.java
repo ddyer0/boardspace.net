@@ -45,7 +45,6 @@ public class Warp6Cell extends chipCell<Warp6Cell,Warp6Chip> implements Warp6Con
 	public WarpId rackLocation() { return((WarpId)rackLocation); }
 	public void reInit() { chip = null;  }
 
-	public static boolean sameCell(Warp6Cell c,Warp6Cell d) { return((c==null)?(d==null):c.sameCell(d)); }
 	
 	public Warp6Chip removeChip()
 	{	Warp6Chip cc = topChip();

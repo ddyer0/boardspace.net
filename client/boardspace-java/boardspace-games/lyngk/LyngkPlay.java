@@ -123,7 +123,7 @@ public class LyngkPlay extends commonRobot<LyngkBoard> implements Runnable,
  */
     public void Unmake_Move(commonMove m)
     {	LyngkMovespec mm = (LyngkMovespec)m;
-        board.UnExecute(mm);
+           board.UnExecute(mm);
         boardSearchLevel--;
     }
 /** Called from the search driver to make a move, saving information needed to 
@@ -136,14 +136,15 @@ public class LyngkPlay extends commonRobot<LyngkBoard> implements Runnable,
         boardSearchLevel++;
     }
 
+    CommonMoveStack movelist = new CommonMoveStack();
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {
-        return(board.GetListOfMoves());
+    {	movelist.clear();
+        return(board.GetListOfMoves(movelist));
     }
 
 /** prepare the robot, but don't start making moves.  G is the game object, gboard
@@ -224,7 +225,7 @@ public commonMove Get_Random_Move(Random rand)
 {	//return(board.Get_Random_Checker_Move(rand));
 	if(FASTRANDOM)
 		{
-		commonMove m = board.Get_Random_Move(rand);
+		commonMove m = board.Get_Random_Move(rand,movelist);
 		if(m!=null) { return(m); }
 		}
 	// fall back on the standard method

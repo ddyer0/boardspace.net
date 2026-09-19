@@ -639,7 +639,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
  */
     public commonMove ParseNewMove(String st, int player)
     {
-        return (new CheckerMovespec(st, player));
+        return (new CheckerMovespec(b,st, player));
     }
     
 
@@ -871,7 +871,8 @@ private void playSounds(commonMove m)
 				if(b.movingObjectIndex()>=0)
 				{ Hashtable<CheckerCell,CheckerMovespec>moves = b.getTargets();
 				  CheckerMovespec m = moves.get(b.getCell(cell));
-				  if((m!=null)&&(m.op==MOVE_JUMP)) { PerformAndTransmit("Dropc "+m.target_col+" "+m.target_row+" "+m.to_col+" "+m.to_row); }
+				  if((m!=null)&&(m.op==MOVE_JUMP)) 
+				  	{ PerformAndTransmit("Dropc "+m.target.col+" "+m.target.row+" "+m.to.col+" "+m.to.row); }
 				  else { PerformAndTransmit("Dropb "+cell.col+" "+cell.row); }
 				}
 				else if(chip!=null)

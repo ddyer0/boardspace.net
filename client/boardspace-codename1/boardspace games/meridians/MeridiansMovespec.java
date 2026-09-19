@@ -48,23 +48,18 @@ public class MeridiansMovespec
 
     //
     // variables to identify the move
-    MeridiansId source; // where from/to
-    char to_col; // for from-to moves, the destination column
-    int to_row; // for from-to moves, the destination row
+    MeridiansCell from; // where from/to
     MeridiansChip chip;
     
-    // these provide an interface to log annotations that will be seen in the game log
-    String gameEvents[] = null;
-    public String[] gameEvents() { return(gameEvents); }
 
     public MeridiansMovespec()
     {
     } // default constructor
 
     /* constructor */
-    public MeridiansMovespec(String str, int p)
+    public MeridiansMovespec(MeridiansBoard b,String str, int p)
     {
-        parse(new Tokenizer(str), p);
+        parse(b,new Tokenizer(str), p);
     }
     public MeridiansMovespec(int opc , int p)
     {
@@ -74,11 +69,10 @@ public class MeridiansMovespec
     /** constructor for robot moves.  Having this "binary" constor is dramatically faster
      * than the standard constructor which parses strings
      */
-    public MeridiansMovespec(int opc,char col,int row,int who)
+    public MeridiansMovespec(int opc,MeridiansCell c,int who)
     {
     	op = opc;
-     	to_col = col;
-    	to_row = row;
+    	from = c;
     	player = who;
     }
 
@@ -92,17 +86,13 @@ public class MeridiansMovespec
         MeridiansMovespec other = (MeridiansMovespec) oth;
 
         return ((op == other.op) 
-				&& (source == other.source)
-				&& (to_row == other.to_row) 
-				&& (to_col == other.to_col)
+				&& cell.sameCellLocation(from,other.from)
 				&& (player == other.player));
     }
 
     public void Copy_Slots(MeridiansMovespec to)
     {	super.Copy_Slots(to);
-        to.to_col = to_col;
-        to.to_row = to_row;
-        to.source = source;
+        to.from = from;
         to.chip = chip;
     }
 
@@ -124,7 +114,7 @@ public class MeridiansMovespec
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(Tokenizer msg, int p)
+    private void parse(MeridiansBoard b,Tokenizer msg, int p)
     {
         String cmd = firstAfterIndex(msg);
         player = p;
@@ -136,15 +126,12 @@ public class MeridiansMovespec
         	
         case MOVE_DROPB:
 		case MOVE_PICKB:
-            source = MeridiansId.BoardLocation;
-            to_col = msg.charToken();
-            to_row = msg.intToken();
-
-            break;
+			from = b.getCell(msg.charToken(),msg.intToken());
+           break;
 
         case MOVE_DROP:
         case MOVE_PICK:
-            source = MeridiansId.valueOf(msg.nextToken());
+            from = b.getCell(MeridiansId.valueOf(msg.nextToken()));
             break;
 
         case MOVE_START:
@@ -175,19 +162,19 @@ public class MeridiansMovespec
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
         switch (op)
         {
         case MOVE_PICKB:
-            return icon(v,to_col , to_row);
+            return icon(v,from.col , from.row);
 
 		case MOVE_DROPB:
-            return icon(v,to_col ,to_row);
+            return icon(v,from.col ,from.row);
 
         case MOVE_DROP:
         case MOVE_PICK:
-            return icon(v,source.name());
+            return icon(v,from.rackLocation().name());
 
         case MOVE_DONE:
             return TextChunk.create("");
@@ -211,11 +198,11 @@ public class MeridiansMovespec
         {
         case MOVE_PICKB:
 		case MOVE_DROPB:
-	        return G.concat(opname , to_col , " " , to_row);
+	        return G.concat(opname , from.col , " " , from.row);
 
         case MOVE_DROP:
         case MOVE_PICK:
-            return G.concat(opname , source.name());
+            return G.concat(opname , from.rackLocation().name());
 
         case MOVE_START:
             return G.concat(indx,"Start P" , player);

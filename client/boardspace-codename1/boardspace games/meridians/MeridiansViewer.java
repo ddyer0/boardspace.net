@@ -691,7 +691,7 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
  */
     public commonMove ParseNewMove(String st,int pl)
     {
-        return (new MeridiansMovespec(st, pl));
+        return (new MeridiansMovespec(bb,st, pl));
     }
 /**
  * prepare to add nmove to the history list, but also edit the history

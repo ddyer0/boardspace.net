@@ -503,7 +503,8 @@ public class Session implements LobbyConstants
 	  }
 	
 	public boolean canIUseThisRobot(Bot n)
-	{	return((currentGame!=null) 
+	{	
+		return((currentGame!=null) 
 				&& (n.idx>=0)
 				&& currentGame.fastEnoughForRobot(n));
 	}
@@ -669,7 +670,8 @@ public class Session implements LobbyConstants
 	    						&& (submode != JoinMode.Tournament_Mode)
 	    						&& (mode != Mode.Master_Mode)
 	    						// temporary kludge where Codename1 has broken bots
-	    						&& (!G.isIOS() || G.DEBUG);
+	    						//&& (!G.isIOS() || G.DEBUG)
+	    						;
 	    return(canAddRobot);
     }
     /**

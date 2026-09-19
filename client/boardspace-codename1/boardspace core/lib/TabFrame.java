@@ -55,10 +55,7 @@ public class TabFrame extends Frame
 
 
 	public void setJMenuBar(JMenuBar m) { jMenuBar = m;  }
-	public void addToMenuBar(JMenu m)
-	{	
-		addToMenuBar(m,null);
-	}
+
 	public void setVisible(boolean vis)
 	{	
 		super.setVisible(vis);
@@ -108,7 +105,8 @@ public class TabFrame extends Frame
 				}
 			if(isNew) {  MasterForm.getMasterPanel().adjustTabStyles(); }
 		}
-		if(l!=null) { m.addItemListener(l); }
+		if(l!=null) 
+			{ m.addItemListener(l); }
 	}
 
 	

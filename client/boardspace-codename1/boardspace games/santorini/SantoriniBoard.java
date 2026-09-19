@@ -73,7 +73,15 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
     public SantoriniCell sourceCell() { return(pickedSourceStack.top()); }
     public SantoriniCell destCell() { return(droppedDestStack.top()); }
     private SantoriniCell lastManDestination = null;
-
+    public static SantoriniCell[] godCell= new SantoriniCell[SantoriniChip.Gods.length];
+    static {
+    	for (int i=0;i<SantoriniChip.Gods.length;i++)
+    	{
+    		SantoriniCell c = new SantoriniCell(SantorId.GodHome,i);
+    		c.addChip(SantoriniChip.Gods[i]);
+    		godCell[i] = c;
+    	}
+    }
     public SantoriniCell lastManDestination()
     { return(lastManDestination);
     }
@@ -245,6 +253,8 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
 			return unplacedMan(cylinder_rack);
 		case Reserve_Rack:
 			return reserve[row];
+		case GodHome:
+			return godCell[row];
 		case BoardLocation:
 			return getCell(col,row);
 		default: throw G.Error("not extected");
@@ -255,8 +265,6 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
    		switch(c.rackLocation())
     	{
    		default: throw G.Error("Not expecting");
-   		case GodsId:
-   			return(gods);
     	case Cube_Rack:	
     		return(cube_rack[c.row]);
     	case Cylinder_Rack:
@@ -398,14 +406,6 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
     }
 
 
-   public boolean uniformRow(int player,SantoriniCell cell,int dir)
-    {	for(SantoriniCell c=cell.exitTo(dir); c!=null; c=c.exitTo(dir))
-    	{    SantoriniChip cup = c.topChip();
-    	     if(cup==null) { return(false); }	// empty cell
-    	     if(cup.chipNumber()!=player) { return(false); }	// cell covered by the other player
-    	}
-    	return(true);
-    }
     void setGameOver(boolean winCurrent,boolean winNext)
     {	if(winCurrent && winNext) { winCurrent=false; } // simultaneous win is a win for player2
     	win[whoseTurn]=winCurrent;
@@ -416,15 +416,15 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
     {	int n=0;
     	SantoriniChip top = loc.topChip();
     	for(int dir=0;dir<CELL_FULL_TURN;dir++)
-		{	SantoriniCell adj = loc.exitTo(dir);
-			if(isDestForMan(whoseTurn,top,loc,adj,true)) { n++; }
+		{	SantoriniCell adj = loc.fastExitTo(dir);
+			if(isDestForMan(whoseTurn,top,loc,adj,true)) { n += adj.height(); }
 		}    	
     	return(n);
     }
     private boolean playerCanMove(SantoriniCell loc)
     {	SantoriniChip top = loc.topChip();
     	for(int dir=0;dir<CELL_FULL_TURN;dir++)
-    		{	SantoriniCell adj = loc.exitTo(dir);
+    		{	SantoriniCell adj = loc.fastExitTo(dir);
     			if(isDestForMan(whoseTurn,top,loc,adj,true)) { return(true); }
     		}
     	return(false);
@@ -453,7 +453,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
     	boolean hades = activeGod(nextPlayer[who])==SantorId.Hades;
        	for(int dir=0;dir<CELL_FULL_TURN;dir++)
        	{
-       		SantoriniCell d = c.exitTo(dir);
+       		SantoriniCell d = c.fastExitTo(dir);
        		if((d!=null)
        				&& d.topChip().isTile() 
        				&& ((activeGod(nextp)!=SantorId.Cleo) || (d!=lastBuild[nextp]))
@@ -557,7 +557,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
    	    		if(!victim.isMan())
    	    		{	// must be push rather than swap
    	    			int dir = findDirection(src,to);
-   	    			src = to.exitTo(dir);
+   	    			src = to.fastExitTo(dir);
    	    		}
    	    		SantoriniChip top = src.removeTop();
     			to.addChip(top);
@@ -923,8 +923,8 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
         		case MoveOnLevelState:
         		case MoveOpponentState:
         			G.Assert((pickedObject==null),"nothing is moving");
-        			SantoriniCell from = getCell(m.from_col, m.from_row);
-        			SantoriniCell to = getCell(m.to_col,m.to_row); 
+        			SantoriniCell from = getCell(m.from);
+        			SantoriniCell to = getCell(m.to); 
         			if(replay.animate)
         			{
         				animationStack.push(from);
@@ -936,7 +936,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
         			{	SantoriniCell destination = from;
         				if(push) 
         					{ int dir = findDirection(from,to); 
-        					  destination = to.exitTo(dir);
+        					  destination = to.fastExitTo(dir);
         					}
         				SantoriniChip opponent = to.removeTop();
         				G.Assert(opponent.isMan(),"should be a man");
@@ -963,7 +963,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
         case MOVE_DROPB:
         	{
         	boolean suppliedSource = (pickedObject==null);
-			SantoriniCell dst = getCell(m.to_col, m.to_row); 
+			SantoriniCell dst = getCell(m.to); 
         	if(pickedObject==null)
         	{	// supply the implied object
         		SantoriniCell src = null;
@@ -1007,7 +1007,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
 				if(push)
 				{
 					int dir = findDirection(src,dst);
-					newloc = dst.exitTo(dir);
+					newloc = dst.fastExitTo(dir);
 				}
 				dst.removeTop();
 				checkForWin(nextPlayer[whoseTurn],dst,newloc);
@@ -1035,7 +1035,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
         case MOVE_PICKB:
         	// come here only where there's something to pick, which must
         	// be a temporary p
-        	if(isDest(getCell(m.from_col,m.from_row)))
+        	if(isDest(getCell(m.from)))
         		{ 	
         			unDropObject(); 
         			if(board_state==SantoriniState.BuildAgain_State)
@@ -1045,7 +1045,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
         			}
         		}
         	else 
-        		{ pickBoardCell(getCell(m.from_col, m.from_row));
+        		{ pickBoardCell(getCell(m.from));
         		}
  
             break;
@@ -1057,7 +1057,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
         case MOVE_PICK:
 			{
  			if(pickedObject!=null) { unPickObject();  }
- 			SantoriniCell src = getCell(m.source,m.from_col,m.from_row);
+ 			SantoriniCell src = getCell(m.from);
  
 		    pickedSourceStack.push(src);
 		    pickedObject = src.topChip();
@@ -1091,7 +1091,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
             break;
         case MOVE_SELECT:
         	{
-        	int nselected = toggleSelection(m.from_row);
+        	int nselected = toggleSelection(m.from.row);
          	switch(board_state)
         	{
         	case GodSelect:
@@ -1159,32 +1159,35 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
     public boolean canForceBack(SantoriniCell from,SantoriniCell to)
     {
     	int dir = findDirection(from,to);
-    	SantoriniCell next = to.exitTo(dir);
+    	SantoriniCell next = to.fastExitTo(dir);
     	return((next!=null) && next.topChip().isTile());
     }
-    public boolean isDestForMan(int who,SantoriniChip man,SantoriniCell from,SantoriniCell to,boolean canAscend)
+    private boolean buildForMyGod(SantoriniCell from,SantoriniCell to,SantoriniChip top,int who)
     {	
-		if(to!=null)
-		{	int otherPlayer = nextPlayer[who];
-			SantoriniChip top = to.topChip();
 			SantorId myGod = activeGod(who);
-			SantorId hisGod = activeGod(otherPlayer);
 			boolean apollo = myGod==SantorId.Apollo;
 			boolean ares = myGod==SantorId.Ares;
-			boolean hades = hisGod==SantorId.Hades;
-			boolean cleo = hisGod==SantorId.Cleo;
-		if((top.isTile() && (!cleo ||  (to!=lastBuild[otherPlayer])))
-			|| ((apollo|ares) 
+    	return ((apollo|ares) 
 					&& top.isMan() 
 					&& (top.playerIndex()!=who)
 					&& (!ares || canForceBack(from,to))
-					&& (!apollo || canBuildFrom(to))
-					)
-			)
+				&& (!apollo || canBuildFrom(to)));
+    }
+    
+    public boolean isDestForMan(int who,SantoriniChip man,SantoriniCell from,SantoriniCell to,boolean canAscend)
+    {	
+		if(to!=null)
+		{	int otherPlayer =who^1;
+			SantoriniChip top = to.topChip();
+			SantorId hisGod = activeGod(otherPlayer);
+			
+		if((top.isTile() && ((hisGod!=SantorId.Cleo) ||  (to!=lastBuild[otherPlayer])))
+			|| buildForMyGod(from,to,top,who))
 		{
 	    	boolean noUp = !canAscend || movedUp[otherPlayer];
 			int sheight = from.tileHeight();	// compensate if man still standing
 			int dheight = to.tileHeight();
+			boolean hades = hisGod==SantorId.Hades;
 			if(hades && dheight<sheight) { return(false); }
 			return(dheight<=sheight+(noUp?0:1));
 		}}
@@ -1270,24 +1273,24 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
         {
         case MOVE_SELECT:
         	{
-        	toggleSelection(m.from_row);
+        	toggleSelection(m.from.row);
         	}
         	break;
         case MOVE_DOME:
         case MOVE_DROPB:
         	{
-        	SantoriniCell c = getCell(m.to_col,m.to_row);
+        	SantoriniCell c = getCell(m.to);
         	pickBoardCell(c);
         	acceptPlacement();
         	}
         	break;
         case MOVE_PUSH:
        		{
-        	SantoriniCell c = getCell(m.to_col,m.to_row);
+        	SantoriniCell c = getCell(m.to);
         	pickBoardCell(c);
-        	SantoriniCell d = getCell(m.from_col,m.from_row);
+        	SantoriniCell d = getCell(m.from);
         	int dir = findDirection(d,c);
-        	SantoriniCell e = c.exitTo(dir);
+        	SantoriniCell e = c.fastExitTo(dir);
         	SantoriniChip ch = e.removeTop();
         	G.Assert(ch.isMan(),"should be a man");
         	c.addChip(ch);
@@ -1299,9 +1302,9 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
        		break;
         case MOVE_SWAPWITH:
         	{
-        	SantoriniCell c = getCell(m.to_col,m.to_row);
+        	SantoriniCell c = getCell(m.to);
         	pickBoardCell(c);
-        	SantoriniCell d = getCell(m.from_col,m.from_row);
+        	SantoriniCell d = getCell(m.from);
         	SantoriniChip ch = d.removeTop();
         	G.Assert(ch.isMan(),"should be a man");
         	c.addChip(ch);
@@ -1313,9 +1316,9 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
         	break;
         case MOVE_BOARD_BOARD:
         	{
-        	SantoriniCell c = getCell(m.to_col,m.to_row);
+        	SantoriniCell c = getCell(m.to);
         	pickBoardCell(c);
-        	SantoriniCell d = getCell(m.from_col,m.from_row);
+        	SantoriniCell d = getCell(m.from);
         	dropBoardCell(d);
         	acceptPlacement();
         	lastManDestination = null;
@@ -1401,22 +1404,22 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
 			 case MOVE_DONE: 
 				 break;
 			 case MOVE_DROP:
-				 res.put(getCell(m.source,m.from_col,m.from_row),m);
+				 res.put(getCell(m.from),m);
 				 break;
 			 case MOVE_PICK:
-				 res.put(getCell(m.source,m.from_col,m.from_row),m);
+				 res.put(getCell(m.from),m);
 				 break;
 			 case MOVE_BOARD_BOARD:	
 			 case MOVE_SWAPWITH:
 			 case MOVE_PUSH:
 			 case MOVE_PICKB:
-				 res.put(getCell(m.from_col,m.from_row),m);
+				 res.put(getCell(m.from),m);
 				 break;
 			 case MOVE_DROPB:
 			 case MOVE_DROP_SWAP:
 			 case MOVE_DROP_PUSH:
 			 case MOVE_DOME:
-				 res.put(getCell(m.to_col,m.to_row),m);
+				 res.put(getCell(m.to),m);
 				 break;
 			 }
 		 }
@@ -1425,14 +1428,14 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
 	 }
  }
  CommonMoveStack GetListOfUIMoves()
- {	CommonMoveStack all = GetListOfMoves();
+ {	CommonMoveStack all = GetListOfMoves(new CommonMoveStack(SantoriniPlay.MaxMoves));
  	{
  	SantoriniCell d = (pickedObject==null) ? destCell() : null;
- 	if(d!=null && d.onBoard) { all.push(new SantoriniMovespec(whoseTurn,MOVE_PICKB,d.col,d.row)); }
+ 	if(d!=null && d.onBoard) { all.push(new SantoriniMovespec(whoseTurn,MOVE_PICKB,d)); }
  	}
  	{
  	SantoriniCell s = sourceCell();
- 	if(s!=null && s.onBoard) { all.push(new SantoriniMovespec(whoseTurn,MOVE_DROPB,s.col,s.row)); }
+ 	if(s!=null && s.onBoard) { all.push(new SantoriniMovespec(whoseTurn,MOVE_DROPB,s)); }
  	}
  	return(all);
  }
@@ -1442,7 +1445,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
  	{SantoriniChip toph = c.topChip();
  	 if(toph.isMan() && (toph.playerIndex()!=who))	{ return(true); } 	// apollo or ares push/swap
 	 for(int dir=0;dir<CELL_FULL_TURN;dir++)
-		{	SantoriniCell e = c.exitTo(dir);
+		{	SantoriniCell e = c.fastExitTo(dir);
 			if(e!=null)
 			{
 			SantoriniChip top = e.topChip();
@@ -1461,7 +1464,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
  {	boolean some = false;
  	SantoriniChip top = (ch0==null) ? c.topChip() : ch0;
  	for(int dir=0;dir<CELL_FULL_TURN;dir++)
-		{	SantoriniCell e = c.exitTo(dir);
+		{	SantoriniCell e = c.fastExitTo(dir);
 			if((e!=origin)
 				&& (origin!=null))
 			{	// artemis, can't move back to the origin,
@@ -1471,7 +1474,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
 				for(int lim=all.size()-1; lim>=0; lim--)
 				{
 					SantoriniMovespec m = (SantoriniMovespec)all.elementAt(lim);
-					if((m.to_col==e.col) && (m.to_row==e.row))
+					if((m.to.col==e.col) && (m.to.row==e.row))
 					{
 						e = null;
 						break;
@@ -1497,7 +1500,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
 				SantoriniCell src = origin==null ? c : origin;
 				SantoriniMovespec newmove = 
 						new SantoriniMovespec(whoseTurn /*not who */,op,
-								src.col,src.row,e.col,e.row);
+								src,e);
 				
 				all.push(newmove);
 			}
@@ -1508,7 +1511,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
 						: (activeGod(who)==SantorId.Ares)
 							? MOVE_DROP_PUSH
 							: MOVE_DROP_SWAP;
-			all.addElement(new SantoriniMovespec(whoseTurn /* not who */,op,e.col,e.row));
+			all.push(new SantoriniMovespec(whoseTurn /* not who */,op,e));
 			}
 			some = true;
 			}
@@ -1553,9 +1556,9 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
 			{
  			SantoriniMovespec m = (SantoriniMovespec)all.elementAt(lim);
  			SantoriniCell oldsrc = (pickedObject==null) 
- 									? getCell(m.from_col,m.from_row)
+ 									? getCell(m.from)
  									: sourceCell();
- 			SantoriniCell newsrc = getCell(m.to_col,m.to_row);
+ 			SantoriniCell newsrc = getCell(m.to);
  			boolean slaveOfLove = isSlaveOfLove(who,newsrc);
  			addManMoves(all,who,newsrc,pickedObject,slaveOfLove,oldsrc,canAscend);
 			}
@@ -1572,7 +1575,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
  	boolean hades = nextGod==SantorId.Hades;
  	boolean cleo = nextGod==SantorId.Cleo;
  	for(int dir=0;dir<CELL_FULL_TURN;dir++)
-	 {	SantoriniCell d = from.exitTo(dir);
+	 {	SantoriniCell d = from.fastExitTo(dir);
 	 	if((d!=null)
 	 			&& (!cleo || (d!=lastBuild[nextP]))	// space excluded by cleo
 	 			&& (!slaveOfLove || isSlaveOfLove(who,d)))
@@ -1596,49 +1599,62 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
 			if(c!=null && canBuildAndMove(who,c))
 			{	
 				for(int dir=0;dir<CELL_FULL_TURN;dir++)
-				 {	SantoriniCell d = c.exitTo(dir);
+				 {	SantoriniCell d = c.fastExitTo(dir);
 				 	if(d!=null
 				 			&& d.topChip().isTile()
 				 			&& hasMovesAfterBuild(who,c,d))
 				 	{	
-				 		addBuildMove(all,d,who);
+				 		addBuildMove(all,d,true,who);
 				 	}
 				 }
 			}
 		}}
  }
- private void addBuildMove(CommonMoveStack all,SantoriniCell d,int who)
+ private void addBuildMove(CommonMoveStack all,SantoriniCell d,boolean checkDup,int who)
  {
 	 switch(d.height())
 		{
 		case 4:
-			all.addElement(new SantoriniMovespec(who,MOVE_DOME,d.col,d.row));
+			{
+			commonMove m =new SantoriniMovespec(who,MOVE_DOME,d);
+			if(!checkDup || !all.contains(m))
+			{
+			all.push(m);
+			}}
 			break;
 		default:
-			all.addElement(new SantoriniMovespec(who,MOVE_DROPB,d.col,d.row));
+			{
+			commonMove m = new SantoriniMovespec(who,MOVE_DROPB,d);
+			if(!checkDup || !all.contains(m))
+			{ all.push(m);
+			}
 			if((pickedObject==null)
 				&& (activeGod(who)==SantorId.Atlas))
 				{
-				all.addElement(new SantoriniMovespec(who,MOVE_DOME,d.col,d.row));							
+				m = new SantoriniMovespec(who,MOVE_DOME,d);
+				if(!checkDup || !all.contains(m))
+					{	all.push(m);					
+					}
+				}
 				}
 	}
  }
  private void addBuildMoves(CommonMoveStack all,SantoriniCell c,int who,SantoriniCell except)
  {
 	 for(int dir=0;dir<CELL_FULL_TURN;dir++)
-	 {	SantoriniCell d = c.exitTo(dir);
+	 {	SantoriniCell d = c.fastExitTo(dir);
 		if((d!=null) 
 				&& (d.topChip().isMainTile())
 				&& (d!=except)
 				&& canDrop(pickedObject,d))
-			{	addBuildMove(all,d,who);			
+			{	addBuildMove(all,d,false,who);			
 			}
 		} 
  }
  private boolean canBuildFrom(SantoriniCell c)
  {
 	 for(int dir=0;dir<CELL_FULL_TURN;dir++)
-	 {	SantoriniCell d = c.exitTo(dir);
+	 {	SantoriniCell d = c.fastExitTo(dir);
 		if((d!=null) 
 				&& (d.topChip().isMainTile())) 
 			{ return(true); 
@@ -1647,8 +1663,8 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
 	 return(false);
  }
 
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	
  	switch(board_state)
  	{
  	default: throw G.Error("Not implemented for state %s",board_state);
@@ -1664,8 +1680,9 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
  		boolean sel[] = godSelections();
  		for(int lim=gods.height()-1; lim>=0; lim--)
  		{
- 			if(!sel[lim]) { all.push(new SantoriniMovespec(whoseTurn,MOVE_SELECT,
- 					SantoriniChip.findGodIndex(gods.chipAtIndex(lim)))); 
+ 			if(!sel[lim]) 
+ 			{ all.push(new SantoriniMovespec(whoseTurn,MOVE_SELECT,
+ 					godCell[SantoriniChip.findGodIndex(gods.chipAtIndex(lim))])); 
  			}
  		}}
  		break;
@@ -1677,7 +1694,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
  		// place a man on an unoccupied space
  		for(SantoriniCell c=allCells; c!=null; c=c.next)
  		{	if(c.topChip().isMainTile())
- 			{	all.addElement(new SantoriniMovespec(whoseTurn,MOVE_DROPB,c.col,c.row));
+ 			{	all.addElement(new SantoriniMovespec(whoseTurn,MOVE_DROPB,c));
  			}
  		}
  		break;
@@ -1700,7 +1717,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
  	case BuildAgain_State:
  		{
  	 	 	SantoriniCell e = lastBuild[whoseTurn];
- 	 	 	all.addElement(new SantoriniMovespec(whoseTurn,MOVE_DROPB,e.col,e.row));		
+ 	 	 	all.push(new SantoriniMovespec(whoseTurn,MOVE_DROPB,e));		
  	 	 	all.push(new SantoriniMovespec(whoseTurn,MOVE_DONE));
  		}
  		break;

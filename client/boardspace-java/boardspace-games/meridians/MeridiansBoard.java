@@ -64,9 +64,9 @@ class MGroup extends OStack<MeridiansCell>
 			c.sweep_counter = sweep;
 			c.group = this;
 			push(c);
-			for(int dir=c.geometry.n; dir>0; dir--)
+			for(int dir=c.geometry.n-1; dir>=0; dir--)
 			{
-				MeridiansCell d = c.exitTo(dir);
+				MeridiansCell d = c.fastExitTo(dir);
 				if((d!=null) && (d.topChip()==color)) { findGroup(d,sweep); }
 			}
 		}
@@ -571,6 +571,10 @@ class MeridiansBoard
     {
     	return((c==null)?null:getCell(c.rackLocation(),c.col,c.row));
     }
+    protected MeridiansCell getCell(MeridiansId id)
+    {
+    	return getCell(id,'@',-1);
+    }
 	// pick something up.  Note that when the something is the board,
     // the board location really becomes empty, and we depend on unPickObject
     // to replace the original contents if the pick is cancelled.
@@ -779,7 +783,7 @@ class MeridiansBoard
 				  pickedObject = playerChip[pl]; 
 				  pickedSourceStack.push(getPlayerCell(pl));
 				}
-			MeridiansCell dest =  getCell(MeridiansId.BoardLocation,m.to_col,m.to_row);
+			MeridiansCell dest =  getCell(m.from);
 			
 			if(isSource(dest)) 
 				{ unPickObject(); 
@@ -808,7 +812,7 @@ class MeridiansBoard
  		case MOVE_PICKB:
         	// come here only where there's something to pick, which must
  			{
- 			MeridiansCell src = getCell(m.source,m.to_col,m.to_row);
+ 			MeridiansCell src = getCell(m.from);
  			if(isDest(src)) { unDropObject(); }
  			else
  			{
@@ -829,7 +833,7 @@ class MeridiansBoard
         case MOVE_DROP: // drop on chip pool;
         	if(pickedObject!=null)
         	{
-            MeridiansCell dest = getCell(m.source,m.to_col,m.to_row);
+            MeridiansCell dest = getCell(m.from);
             if(isSource(dest)) { unPickObject(); }
             else 
             	{
@@ -879,10 +883,8 @@ class MeridiansBoard
         default:
         	cantExecute(m);
         }
-        if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
-
-        //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
-        return (true);
+ 
+         return (true);
     }
 
     // legal to hit the chip storage area
@@ -973,7 +975,7 @@ class MeridiansBoard
             break;
             
         case MOVE_DROPB:
-        	SetBoard(getCell(m.to_col,m.to_row),null);
+        	SetBoard(getCell(m.from),null);
         	break;
         case MOVE_RESIGN:
             break;
@@ -993,7 +995,7 @@ class MeridiansBoard
 	 	{ for(int lim=emptyCells.size()-1; lim>=0; lim--)
 	 		{
 	 		MeridiansCell c = emptyCells.elementAt(lim);
-	 		all.push(new MeridiansMovespec(MOVE_DROPB,c.col,c.row,who));
+	 		all.push(new MeridiansMovespec(MOVE_DROPB,c,who));
 	 		}
 	 	}
 	 else
@@ -1008,7 +1010,7 @@ class MeridiansBoard
 				{	
 					if(d.sweep_counter!=sweep_counter)
 					{
-						all.push(new MeridiansMovespec(MOVE_DROPB,d.col,d.row,who));
+						all.push(new MeridiansMovespec(MOVE_DROPB,d,who));
 						d.sweep_counter = sweep_counter;
 					}
 				}
@@ -1018,8 +1020,8 @@ class MeridiansBoard
 
  }
 
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	
  	switch(board_state)
  	{
  	case Gameover: break;
@@ -1029,7 +1031,7 @@ class MeridiansBoard
  			 	    c!=null;
  			 	    c = c.next)
  			 	{	if(c.topChip()==null)
- 			 		{all.addElement(new MeridiansMovespec(op,c.col,c.row,whoseTurn));
+ 			 		{all.addElement(new MeridiansMovespec(op,c,whoseTurn));
  			 		}
  			 	}
  		}
@@ -1124,14 +1126,14 @@ class MeridiansBoard
  public Hashtable<MeridiansCell, MeridiansMovespec> getTargets() 
  {
  	Hashtable<MeridiansCell,MeridiansMovespec> targets = new Hashtable<MeridiansCell,MeridiansMovespec>();
- 	CommonMoveStack all = GetListOfMoves();
+ 	CommonMoveStack all = GetListOfMoves(new CommonMoveStack());
  	for(int lim=all.size()-1; lim>=0; lim--)
  	{	MeridiansMovespec m = (MeridiansMovespec)all.elementAt(lim);
  		switch(m.op)
  		{
  		case MOVE_PICKB:
  		case MOVE_DROPB:
- 			targets.put(getCell(m.to_col,m.to_row),m);
+ 			targets.put(getCell(m.from),m);
  			break;
  		case MOVE_SWAP:
  		case MOVE_RESIGN:

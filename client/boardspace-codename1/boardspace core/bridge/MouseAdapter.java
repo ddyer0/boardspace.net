@@ -205,7 +205,6 @@ public class MouseAdapter
 		mouseListeners.clear();
 		mouseMotionListeners.clear();
 		actionListeners.clear();
-
 		component = null;
 	}
 	
@@ -225,6 +224,13 @@ public class MouseAdapter
 		if(actionListeners==null) { actionListeners = new Vector<ActionListener>(); }
 		if(!actionListeners.contains(m)) { actionListeners.addElement(m); }
 		addSystemActionListener();
+	}
+	public void removeActionListener(ActionListener m)
+	{
+		if(actionListeners!=null) 
+		{
+			actionListeners.remove(m);
+		}
 	}
 	private void removeSystemActionListeners()
 	{

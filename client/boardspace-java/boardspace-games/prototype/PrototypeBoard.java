@@ -407,12 +407,12 @@ class PrototypeBoard
     {	PrototypeChip old = c.topChip();
     	if(c.onBoard)
     	{
-    	if(old!=null) { chips_on_board--;emptyCells.QRPush(c);  }
      	if(ch!=null)
      		{ chips_on_board++;
      		  // QRRemove doesn't have to scan the stack
      		  emptyCells.QRRemove(c);  
      		}
+    	if(old!=null) { chips_on_board--;emptyCells.QRPush(c);  }
     	}
        	if(old!=null) { c.removeTop();}
        	if(ch!=null) { c.addChip(ch);  }
@@ -521,6 +521,10 @@ class PrototypeBoard
         	return(whiteChipPool);
         } 	
     }
+    protected PrototypeCell getCell(PrototypeId id)
+    {
+    	return getCell(id,'@',0);
+    }
     /**
      * this is called when copying boards, to get the cell on the new (ie current) board
      * that corresponds to a cell on the old board.
@@ -532,7 +536,7 @@ class PrototypeBoard
 	// pick something up.  Note that when the something is the board,
     // the board location really becomes empty, and we depend on unPickObject
     // to replace the original contents if the pick is cancelled.
-    private void pickObject(PrototypeCell c)
+    private PrototypeChip pickObject(PrototypeCell c)
     {	pickedSourceStack.push(c);
     	stateStack.push(board_state);
         switch (c.rackLocation())
@@ -553,6 +557,7 @@ class PrototypeBoard
         case White:
         	lastPicked = pickedObject = c.topChip();
         }
+        return pickedObject;
     }
     //	
     //true if cell is the place where something was picked up.  This is used
@@ -576,6 +581,7 @@ class PrototypeBoard
         default:
         	throw G.Error("Not expecting drop in state " + board_state);
         case Confirm:
+        case ConfirmSwap:
         	setNextStateAfterDone(replay);
          	break;
         case Play:
@@ -676,14 +682,15 @@ void doSwap(replayMode replay)
         case MOVE_DROPB:
         	{
 			PrototypeChip po = pickedObject;
-			PrototypeCell dest =  getCell(PrototypeId.BoardLocation,m.to_col,m.to_row);
+			PrototypeCell dest =  getCell(m.to);
 			
 			if(isSource(dest)) 
 				{ unPickObject(); 
 				}
 				else 
 				{
-				m.chip = pickedObject;
+				if(po==null) { po = pickObject(getPlayerCell(m.player)); }
+				m.chip = po;
 		           
 	            dropObject(dest);
 	            /**
@@ -705,7 +712,7 @@ void doSwap(replayMode replay)
  		case MOVE_PICKB:
         	// come here only where there's something to pick, which must
  			{
- 			PrototypeCell src = getCell(m.source,m.to_col,m.to_row);
+ 			PrototypeCell src = getCell(m.to);
  			if(isDest(src)) { unDropObject(); }
  			else
  			{
@@ -726,7 +733,7 @@ void doSwap(replayMode replay)
         case MOVE_DROP: // drop on chip pool;
         	if(pickedObject!=null)
         	{
-            PrototypeCell dest = getCell(m.source,m.to_col,m.to_row);
+            PrototypeCell dest = getCell(m.to);
             if(isSource(dest)) { unPickObject(); }
             else 
             	{
@@ -794,7 +801,6 @@ void doSwap(replayMode replay)
         	// but it's really optional
         	return(player==whoseTurn);
         case Confirm:
-		case ConfirmSwap:
 		case Resign:
 		case Gameover:
 			return(false);
@@ -810,7 +816,6 @@ void doSwap(replayMode replay)
 		case Play:
 		case PlayOrSwap:
 			return(targets.get(c)!=null || isDest(c) || isSource(c));
-		case ConfirmSwap:
 		case Gameover:
 		case Resign:
 			return(false);
@@ -865,7 +870,7 @@ void doSwap(replayMode replay)
         	doSwap(replayMode.Replay);
         	break;
         case MOVE_DROPB:
-        	SetBoard(getCell(m.to_col,m.to_row),null);
+        	SetBoard(getCell(m.to),null);
         	break;
         case MOVE_RESIGN:
             break;
@@ -886,10 +891,11 @@ void doSwap(replayMode replay)
  	// one-of moves added by the first thread
  	if(board_state==PrototypeState.PlayOrSwap)
  	{
- 		if(offset==1) { all.addElement(new Prototypemovespec(SWAP,whoseTurn)); }
+ 		if(offset==1) { all.addElement(new Prototypemovespec(MOVE_SWAP,whoseTurn)); }
  	}
  	switch(board_state)
  	{
+ 	case ConfirmSwap:
  	case PlayOrSwap:
  	case Play:
  	case Puzzle:
@@ -903,7 +909,7 @@ void doSwap(replayMode replay)
  		 for(int step = offset-1,last=cells.length; step<last; step+=skip)
  		 {	PrototypeCell c = (PrototypeCell)cells[step];
  			if(c.topChip()==null)
- 				{all.push(new Prototypemovespec(op,c.col,c.row,whoseTurn));
+ 				{all.push(new Prototypemovespec(op,c,whoseTurn));
  			 	}
  		 }}
  		break;
@@ -964,7 +970,7 @@ void doSwap(replayMode replay)
  		{
  		case MOVE_PICKB:
  		case MOVE_DROPB:
- 			targets.put(getCell(m.to_col,m.to_row),m);
+ 			targets.put(m.to,m);
  			break;
  		case MOVE_SWAP:
  		case MOVE_DONE:

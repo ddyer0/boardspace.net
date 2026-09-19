@@ -2,6 +2,10 @@
 
 @implementation bridge_InstallerPackageImpl
 
+-(NSString*)setDrawers:(BOOL)param{
+    return nil;
+}
+
 -(NSString*)eval:(NSString*)param{
     return nil;
 }

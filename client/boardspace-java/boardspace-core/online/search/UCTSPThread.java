@@ -501,7 +501,7 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 						{
 						//Log.addLog("Terminal Child "+child);
 						UCTNode childNode = child.uctNode();
-						if(childNode!=null)
+						if(childNode!=null && !childNode.isKilled())
 						{
 						if(currentMove!=null)
 						{

@@ -715,7 +715,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
  */
     public commonMove ParseNewMove(String st, int player)
     {
-        return (new LyngkMovespec(st, player));
+        return (new LyngkMovespec(bb,st, player));
     }
 
     

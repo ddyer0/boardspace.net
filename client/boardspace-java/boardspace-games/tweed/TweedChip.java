@@ -78,7 +78,7 @@ public class TweedChip extends chip<TweedChip> implements CommonConfig
 	static public TweedChip NoCaptures = new TweedChip("nocaptures-nomask",new double[]{0.5,0.45,1});
 	
     // indexes into the balls array, usually called the rack
-    static final TweedChip getChip(int n) { return(TweedId.values()[n].chip); }
+    static final TweedChip getChip(int n) { return(TweedId.allValues[n].chip); }
     
     /**
      * this is the basic hook to substitute an alternate chip for display.  The canvas getAltChipSet

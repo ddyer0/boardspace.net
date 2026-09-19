@@ -17,6 +17,7 @@
 package checkerboard;
 
 import lib.CellId;
+import lib.InternationalStrings;
 import lib.OStack;
 
 import online.game.BaseBoard.BoardState;
@@ -126,8 +127,7 @@ public enum CheckerId implements CellId
 
 static void putStrings()
 {
-/*
- * 	// there should be a line in masterstrings.java which causes
+	// there should be a line in masterstrings.java which causes
 	// these to be included in the upload/download process for 
 	// translation.  Also a line in the viewer init process to
 	// add them for debugging purposes.
@@ -148,11 +148,13 @@ static void putStrings()
 			{"antidraughts","Anti Draughts"},
 			{"antidraughts_variation","Anti Draughts"},
 			{"Checkers_variation","Standard Checkers"},
+			{"Dameo_family","Dameo"},
 			{"Checkers-frisian","Frisian Checkers"},
 			{"Checkers-frisian_variation","Frisian Checkers"},
 			{"Checkers-russian_variation","Russian Checkers"},
 			{"Checkers-bashni_variation","Bashni"},
 			{"Checkers-stacks_variation","Stacks Checkers"},
+			{"Checkers-dameo_variation","Dameo"},
 			{"Checkers-international","International Checkers"},
 			{"Checkers-international_variation","International Checkers"},
 			{"Checkers-turkish","Turkish Checkers"},
@@ -175,6 +177,6 @@ static void putStrings()
 		};
 		InternationalStrings.put(CheckerStrings);
 		InternationalStrings.put(CheckerStringPairs);
-*/
+
 }
 }

@@ -849,6 +849,10 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
        		return(rack[Black_Chip_Index]);
         }
     }
+    protected CheckerCell getCell(CheckerId source)
+    {
+    	return getCell(source,'@',-1);
+    }
     /**
      * this is called when copying boards, to get the cell on the new (ie current) board
      * that corresponds to a cell on the old board.
@@ -985,6 +989,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     		animationStack.push(dest);
     	}
     }
+    @SuppressWarnings("unused")
  	private void checkOccupied()
     {	int ss[] = new int[2];
     	int kc[] = new int[2];
@@ -1272,9 +1277,9 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         		case Capture:
         		case CaptureMore:
         			G.Assert(pickedStack.isEmpty(),"something is moving");
-        			CheckerCell src = getCell(CheckerId.BoardLocation, m.from_col, m.from_row);
-        			CheckerCell dest = getCell(CheckerId.BoardLocation,m.to_col,m.to_row);
-        			CheckerCell mid = getCell(CheckerId.BoardLocation,m.target_col,m.target_row);
+        			CheckerCell src = getCell(m.from);
+        			CheckerCell dest = getCell(m.to);
+        			CheckerCell mid = getCell(m.target);
            			pickObject(src);
         			dropObject(dest); 
         			switch(variation)
@@ -1308,8 +1313,8 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         		case Endgame:
         		case Play:
         			G.Assert(pickedStack.isEmpty(),"something is moving");
-        			CheckerCell src = getCell(CheckerId.BoardLocation, m.from_col, m.from_row);
-        			CheckerCell dest = getCell(CheckerId.BoardLocation,m.to_col,m.to_row);
+        			CheckerCell src = getCell(m.from);
+        			CheckerCell dest = getCell(m.to);
         			pickObject(src);
         			dropObject(dest); 
         			captureHeight.push(0);
@@ -1327,7 +1332,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 			{
 	        G.Assert(!pickedStack.isEmpty(),"something is moving");
 			lastDropped = pickedStack.topChip();
-			CheckerCell c = getCell(CheckerId.BoardLocation, m.to_col, m.to_row);
+			CheckerCell c = getCell(m.to);
 			if(isSecondSource(c))
 			{
 				unPickObject();
@@ -1356,11 +1361,11 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         case MOVE_PICKB:
         	// come here only where there's something to pick, which must
         	// be a temporary p
-        	if((board_state!=CheckerState.CaptureMore) && isDest(getCell(m.from_col,m.from_row)))
+        	if((board_state!=CheckerState.CaptureMore) && isDest(getCell(m.from)))
         		{ unDropObject(); 
         		}
         	else 
-        		{ pickObject(getCell(CheckerId.BoardLocation, m.from_col, m.from_row));
+        		{ pickObject(getCell(m.from));
         		  switch(board_state)
         		  {	case Gameover:
         			  	// needed by some damaged games
@@ -1380,7 +1385,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 
         case MOVE_DROP: // drop on chip pool;
         	{
-        	CheckerCell c = getCell(m.source, m.to_col, m.to_row);
+        	CheckerCell c = getCell(m.to);
             dropObject(c);
             setNextStateAfterDrop(m,replay);
             if(replay==replayMode.Single)
@@ -1392,8 +1397,8 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 
         case MOVE_DROPC: // drop and capture something
         	{
-        	CheckerCell c = getCell(m.source, m.to_col, m.to_row);
-        	CheckerCell cap = getCell(m.target_col,m.target_row); 
+        	CheckerCell c = getCell(m.to);
+        	CheckerCell cap = getCell(m.target); 
             dropObject(c);
             switch(variation)
             {
@@ -1422,7 +1427,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 
         case MOVE_PICK:
         	{
-        	CheckerCell c = getCell(m.source, m.from_col, m.from_row);
+        	CheckerCell c = getCell(m.from);
             pickObject(c);
             setNextStateAfterPick();
         	}
@@ -1657,8 +1662,8 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
          		case Play:
          			{
         			G.Assert(pickedStack.isEmpty(),"something is moving");
-        			pickObject(getCell(CheckerId.BoardLocation, m.to_col, m.to_row));
-        			CheckerCell from = getCell(CheckerId.BoardLocation, m.from_col,m.from_row);
+        			pickObject(getCell(m.to));
+        			CheckerCell from = getCell(m.from);
        			    dropObject(from); 
        			    if(unKing)
        			    	{ CheckerChip ch = from.removeTop(); 
@@ -1682,9 +1687,9 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         		case Capture:
         			{
         			G.Assert(pickedStack.isEmpty(),"something is moving");
-        			CheckerCell to = getCell(CheckerId.BoardLocation, m.to_col, m.to_row);
+        			CheckerCell to = getCell(m.to);
         			pickObject(to);
-        			CheckerCell from = getCell(CheckerId.BoardLocation, m.from_col,m.from_row);
+        			CheckerCell from = getCell(m.from);
        			    dropObject(from);
        			    if(unKing) 
        			    	{ CheckerChip ch = from.removeTop(); 
@@ -1694,7 +1699,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
        			    	  }
        			    	  kingCount[whoseTurn]--; 
        			    	}
-       			    CheckerCell mid = getCell(CheckerId.BoardLocation, m.target_col, m.target_row);
+       			    CheckerCell mid = getCell(m.target);
        			    switch(variation)
        			    {
        			    case Checkers_Stacks:
@@ -1739,8 +1744,8 @@ private void loadHash(CommonMoveStack all,Hashtable<CheckerCell,CheckerMovespec>
 		default: break;
 		case MOVE_JUMP:
 		case MOVE_BOARD_BOARD:
-			if(from) { hash.put(getCell(m.from_col,m.from_row),m); }
-			else { hash.put(getCell(m.to_col,m.to_row),m); }
+			if(from) { hash.put(getCell(m.from),m); }
+			else { hash.put(getCell(m.to),m); }
 		}
 		}
 }
@@ -1852,7 +1857,7 @@ public boolean hasSimpleMoves()
  		{	CheckerCell target = cell;
  			boolean more = true;
  			while(more 
- 					&& ((target=target.exitTo(direction))!=null)
+ 					&& ((target=target.fastExitTo(direction))!=null)
  					&& !isRecapture(target))
  			{
  				CheckerChip top = ((empty!=null) && empty.contains(target)) ? null : target.topChip();
@@ -1862,7 +1867,7 @@ public boolean hasSimpleMoves()
  					// something to jump
  					CheckerCell landing = target;
  					while(more 
- 							&& ((landing=landing.exitTo(direction))!=null) 
+ 							&& ((landing=landing.fastExitTo(direction))!=null) 
  							&& (landing.topChip()==null)
  							&& !isRecapture(landing)
  							)
@@ -1974,9 +1979,9 @@ public boolean hasSimpleMoves()
 	 if(addCaptureMoves(all,from,isKing,who,empty)) 	// add the simple captures from here.
 	 {		for(int lim=all.size()-1; lim>=0; lim--)
 		 	{ CheckerMovespec m = (CheckerMovespec)all.elementAt(lim);
-		 	  empty.push(getCell(m.target_col,m.target_row));	  // add the new captured cell to the stack of empties
+		 	  empty.push(getCell(m.target));	  // add the new captured cell to the stack of empties
 		 	  
-		 	  int depth = 1+maximalCaptureDepth(getCell(m.to_col,m.to_row),isKing,who,empty);
+		 	  int depth = 1+maximalCaptureDepth(getCell(m.to),isKing,who,empty);
 		 	  maxDepth = Math.max(maxDepth,depth);
 		 	  
 		 	  empty.pop();		// remove the new captured cell
@@ -1996,10 +2001,10 @@ public boolean hasSimpleMoves()
 	 if(addCaptureMoves(all,from,isKing,who,empty)) 	// add the simple captures from here.
 	 {		for(int lim=all.size()-1; lim>=0; lim--)
 		 	{ CheckerMovespec m = (CheckerMovespec)all.elementAt(lim);
-		 	  CheckerCell captured = getCell(m.target_col,m.target_row);
+		 	  CheckerCell captured = getCell(m.target);
 		 	  empty.push(captured);	  // add the new captured cell to the stack of empties
 		 	  boolean king = isKing(captured);
-		 	  int depth = (king ? 199 : 100) +maximalCaptureValue(getCell(m.to_col,m.to_row),isKing,who,empty);
+		 	  int depth = (king ? 199 : 100) +maximalCaptureValue(getCell(m.to),isKing,who,empty);
 		 	  maxDepth = Math.max(maxDepth,depth); 
 		 	  empty.pop();		// remove the new captured cell
 		 	}
@@ -2023,11 +2028,11 @@ public boolean hasSimpleMoves()
 	 	{
 		 CheckerMovespec m = (CheckerMovespec)candidates.elementAt(lim);
 		 CellStack empty  = new CellStack();
-		 CheckerCell target = getCell(m.target_col,m.target_row); 
+		 CheckerCell target = getCell(m.target); 
 		 empty.push(target);
 		 double depth = 0;
-		 CheckerCell from = getCell(m.from_col,m.from_row);
-		 CheckerCell to = getCell(m.to_col,m.to_row);
+		 CheckerCell from = getCell(m.from);
+		 CheckerCell to = getCell(m.to);
 		 boolean isKing = unpicked?isKing(from)
 	 				:isKing(pickedStack);
 		 switch(variation)
@@ -2129,8 +2134,8 @@ public boolean hasSimpleMoves()
 	 }
  	return(some);
  }
- CommonMoveStack  GetListOfMoves(boolean offerdraw)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all,boolean offerdraw)
+ {	
  	addMoves(all,offerdraw,whoseTurn);
  	return(all);
  }

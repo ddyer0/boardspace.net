@@ -283,8 +283,8 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
     	STONESIZE = (int)(cs*1.1);
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(nrows*CELLSIZE);
+    	int boardW = (ncols*CELLSIZE);
+    	int boardH = (nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;
@@ -689,7 +689,7 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
  */
     public commonMove ParseNewMove(String st,int pl)
     {
-        return (new MeridiansMovespec(st, pl));
+        return (new MeridiansMovespec(bb,st, pl));
     }
 /**
  * prepare to add nmove to the history list, but also edit the history

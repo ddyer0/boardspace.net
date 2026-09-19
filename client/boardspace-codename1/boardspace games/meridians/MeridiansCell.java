@@ -49,17 +49,7 @@ public class MeridiansCell
 	};
 	/** upcast racklocation to our local type */
 	public MeridiansId rackLocation() { return((MeridiansId)rackLocation); }
-	/** sameCell is called at various times as a consistency check
-	 * 
-	 * @param other
-	 * @return true if this cell is in the same location as other (but presumably on a different board)
-	 */
-	public boolean sameCell(MeridiansCell other)
-	{	return(super.sameCell(other)
-				// check the values of any variables that define "sameness"
-				// && (moveClaimed==other.moveClaimed)
-			); 
-	}
+
 	/** copyFrom is called when cloning boards
 	 * 
 	 */
@@ -84,12 +74,6 @@ public class MeridiansCell
 		addChip(cont);
 		onBoard=false;
 	}
-	/**
-	 * wrap this method if the cell holds any additional state important to the game.
-	 * This method is called, with a random sequence, to digest the cell in unusual
-	 * roles, or when the digest of contents is complex.
-	 */
-	public long Digest(Random r) { return(super.Digest(r)); }
 	
 	public MeridiansChip[] newComponentArray(int size) {
 		return(new MeridiansChip[size]);
@@ -102,10 +86,11 @@ public class MeridiansCell
 		for(int dir=0;dir<geometry.n; dir++)
 		{
 			MeridiansCell d = this;
-			while( ((d=d.exitTo(dir))!=null) && (d.topChip()==null)) { };
+			MeridiansChip top = null;
+			while( ((d=d.fastExitTo(dir))!=null) && ((top=d.topChip())==null)) { };
 			
 			if(d!=null) 
-			{	MeridiansChip top = d.topChip();
+			{
 				if((top==group.color) && (d.group!=group)) { return true; }
 			}
 		}

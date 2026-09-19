@@ -112,7 +112,7 @@ public class ComboBox extends com.codename1.ui.ComboBox<JMenuItem>
 		Object f = super.getSelectedItem();
 		return f instanceof JMenuItem ? (JMenuItem) f : null;
 	}
-	
+
 	public Command showPopupDialog(Dialog popupDialog, @SuppressWarnings("rawtypes") List l) {
 		if(centerMenu) { return super.showPopupDialog(popupDialog,l); }
 		else {

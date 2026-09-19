@@ -46,14 +46,10 @@ public class CheckerMovespec
        			"Move",MOVE_BOARD_BOARD,
        			"Jump",MOVE_JUMP);
    }
-
-    CheckerId source; // where from/to
-	char from_col; //for from-to moves, the source column
-	int from_row; // for from-to moves, the source row
-    char to_col; // for from-to moves, the destination column
-    int to_row; // for from-to moves, the destination row
-    char target_col;	// for captures, the cell that is captured
-    int target_row;	// for captures, the cell that is captured
+    CheckerCell from;
+    CheckerCell to;
+    CheckerCell target;
+    
     public CheckerMovespec() // default constructor
     {
     }
@@ -63,33 +59,28 @@ public class CheckerMovespec
     	op = opc;
     }
     /* constructor */
-    public CheckerMovespec(String str, int p)
+    public CheckerMovespec(CheckerBoard b,String str, int p)
     {
-        parse(new Tokenizer(str), p);
+        parse(b,new Tokenizer(str), p);
     }
 
 
     /* constructor for robot moves */
-    public CheckerMovespec(int opc,CheckerCell from,CheckerCell to,int who)
+    public CheckerMovespec(int opc,CheckerCell fr,CheckerCell toc,int who)
     {
     	player = who;
     	op = opc;
-    	from_col = from.col;
-    	from_row = from.row;
-    	to_col = to.col;
-    	to_row = to.row;
+    	from = fr;
+    	to = toc;
     }
     /* constructor for robot moves */
-    public CheckerMovespec(int opc,CheckerCell from,CheckerCell target,CheckerCell to,int who)
+    public CheckerMovespec(int opc,CheckerCell fr,CheckerCell tar,CheckerCell toc,int who)
     {
     	player = who;
     	op = opc;
-    	from_col = from.col;
-    	from_row = from.row;
-    	target_col = target.col;
-    	target_row = target.row;
-    	to_col = to.col;
-    	to_row = to.row;
+    	from = fr;
+    	to = toc;
+    	target = tar;
     }  
     /**
      * This is used to check for equivalent moves "as specified" not "as executed", so
@@ -100,25 +91,18 @@ public class CheckerMovespec
     	CheckerMovespec other = (CheckerMovespec) oth;
 
         return ((op == other.op) 
-				&& (source == other.source)
-				&& (to_row == other.to_row) 
-				&& (to_col == other.to_col)
-				&& (from_row == other.from_row)
-				&& (from_col == other.from_col)
+				&& cell.sameCellLocation(from,other.from)
+				&& cell.sameCellLocation(to,other.to)
 				&& (player == other.player));
     }
 
-    public void Copy_Slots(CheckerMovespec to)
-    {	super.Copy_Slots(to);
-        to.player = player;
-        to.to_col = to_col;
-        to.to_row = to_row;
-        to.from_col = from_col;
-        to.from_row = from_row;
-        to.source = source;
-        to.target_col = target_col;
-        to.target_row = target_row;
-    }
+    public void Copy_Slots(CheckerMovespec toc)
+    {	super.Copy_Slots(toc);
+    	toc.from = from;
+    	toc.to = to;
+    	toc.target = target;
+        toc.player = player;
+   }
 
     public commonMove Copy(commonMove to)
     {
@@ -134,7 +118,7 @@ public class CheckerMovespec
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(Tokenizer msg, int p)
+    private void parse(CheckerBoard b,Tokenizer msg, int p)
     {
         String cmd = firstAfterIndex(msg);
         player = p;
@@ -145,43 +129,30 @@ public class CheckerMovespec
         case MOVE_UNKNOWN:
         	throw G.Error("Can't parse %s", cmd);
         case MOVE_JUMP:
-           	source = CheckerId.BoardLocation;		
-            from_col = msg.charToken();	//from col,row
-            from_row = msg.intToken();
-            target_col = msg.charToken();	//from col,row
-            target_row = msg.intToken();
- 	        to_col = msg.charToken();		//to col row
-	        to_row = msg.intToken();
+           	from = b.getCell(msg.charToken(),msg.intToken());
+           	target = b.getCell(msg.charToken(),msg.intToken());
+ 	        to = b.getCell(msg.charToken(),msg.intToken());
 	        break;
 
         case MOVE_BOARD_BOARD:			// robot move from board to board
-        	source = CheckerId.BoardLocation;		
-            from_col = msg.charToken();	//from col,row
-            from_row = msg.intToken();
- 	        to_col = msg.charToken();		//to col row
-	        to_row = msg.intToken();
+           	from = b.getCell(msg.charToken(),msg.intToken());
+  	        to = b.getCell(msg.charToken(),msg.intToken());
 	        break;
 	        
         case MOVE_DROPC:
-            target_col = msg.charToken();
-            target_row = msg.intToken();
+           	target = b.getCell(msg.charToken(),msg.intToken());
 			//$FALL-THROUGH$
 		case MOVE_DROPB:
 		case MOVE_PICKB:
-            source = CheckerId.BoardLocation;
-            to_col = from_col = msg.charToken();
-            to_row = from_row = msg.intToken();
-
+	        from = to = b.getCell(msg.charToken(),msg.intToken());
             break;
 
         case MOVE_PICK:
-            source = CheckerId.find(msg.nextToken());
-            from_col = '@';
-            from_row = msg.intToken();
+           	to = from = b.getCell(CheckerId.find(msg.nextToken()));
             break;
             
         case MOVE_DROP:
-           source =CheckerId.find(msg.nextToken());
+        	to = from = b.getCell(CheckerId.find(msg.nextToken()));
             break;
 
         case MOVE_START:
@@ -201,19 +172,19 @@ public class CheckerMovespec
         switch (op)
         {
         case MOVE_PICKB:
-            return G.concat("",from_col , from_row);
+            return G.concat("",from.col , from.row);
         case MOVE_DROPC:
-        	return G.concat(" x ",to_col , to_row);
+        	return G.concat(" x ",to.col , to.row);
 		case MOVE_DROPB:
-            return G.concat(" - ",to_col , to_row);
+            return G.concat(" - ",to.col , to.row);
 
         case MOVE_DROP:
         case MOVE_PICK:
-            return (source.shortName);
+            return (from.rackLocation().shortName);
         case MOVE_BOARD_BOARD:
-        	return G.concat("",from_col , from_row,"-",to_col , to_row);
+        	return G.concat("",from.col , from.row,"-",to.col , to.row);
         case MOVE_JUMP:
-        	return G.concat("",from_col , from_row," x ",to_col , to_row);
+        	return G.concat("",from.col , from.row," x ",to.col , to.row);
         case MOVE_DONE:
             return ("");
 
@@ -234,27 +205,27 @@ public class CheckerMovespec
         switch (op)
         {
         case MOVE_PICKB:
-	        return (G.concat(opname,  from_col , " " , from_row));
+	        return (G.concat(opname,  from.col , " " , from.row));
 
 		case MOVE_DROPB:
-	        return (G.concat(opname , to_col , " " , to_row));
+	        return (G.concat(opname , to.col , " " , to.row));
 
 		case MOVE_JUMP:
-			return G.concat(opname,  from_col , " " , from_row
-					, " " , target_col," ",target_row
-					, " " , to_col , " " , to_row);
+			return G.concat(opname,  from.col , " " , from.row
+					, " " , target.col," ",target.row
+					, " " , to.col , " " , to.row);
 		case MOVE_DROPC:
 			return G.concat(opname
-					, target_col," ",target_row
-					, " " , to_col , " " , to_row);
+					, target.col," ",target.row
+					, " " , to.col , " " , to.row);
 		case MOVE_BOARD_BOARD:
-			return G.concat(opname ,from_col , " " , from_row
-					, " " , to_col , " " , to_row);
+			return G.concat(opname ,from.col , " " , from.row
+					, " " , to.col , " " , to.row);
         case MOVE_PICK:
-            return G.concat(opname , source.shortName, " ",from_row);
+            return G.concat(opname , from.rackLocation().shortName, " ",from.row);
 
         case MOVE_DROP:
-             return G.concat(opname, source.shortName, " ",to_row);
+             return G.concat(opname, from.rackLocation().shortName, " ",to.col-'A');
 
         case MOVE_START:
             return G.concat(indx,"Start P" , player);

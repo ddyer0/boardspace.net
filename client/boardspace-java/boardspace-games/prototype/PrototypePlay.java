@@ -203,10 +203,11 @@ public class PrototypePlay
          * 2) do the actual move generation with offset+step, so each thread only does the n'th possibility in
          *    move generation.  Most move generators iterate over some set of possibilities, so this is usually easy.
          */
-        CommonMoveStack movelist = new ParallelCommonMoveStack();
+    	public static int MaxMoves = 140;
+        CommonMoveStack movelist = new ParallelCommonMoveStack(MaxMoves);
         
         public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
-        {	getMoveList(movelist,threads);
+        {	CommonMoveStack all = getMoveList(movelist,threads);
         	/*
             if(G.debug())
             {
@@ -215,9 +216,18 @@ public class PrototypePlay
             	G.Assert(all.size()==movelist.size(),"all moves generated");
             }
             */
-            return movelist;
+	    	if(G.DEBUG)
+	    	{
+		    	int nmoves= all.size();
+		    	if(nmoves>MaxMoves)
+		    	{
+		    	G.print("move stack size increased to ",nmoves);
+		    	MaxMoves = nmoves;
+		    	}
+	    	}
+	            return all;
         }
-
+	
         /**
          * this works very ineffeciently by generating all moves and picking one.
          * for many games, this can be replaced with a slightly less random but
@@ -239,7 +249,7 @@ public class PrototypePlay
     private double ScoreForPlayer(PrototypeBoard evboard,int player,boolean print)
     {	
 		double val = 0.0;
-		G.Error("Score for player not implemented");
+		//G.Error("Score for player not implemented");
      	return(val);
     }
 
@@ -311,6 +321,8 @@ public class PrototypePlay
                // the best solution is to use dif=0.0;  For games with fools mates,
                // set dif so the really bad choices will be avoided
                Search_Driver search_state = Setup_For_Search(depth, false);
+               search_state.recheck_evaluations = 0;	// recheck every n'th evaluation (max 1 per node)
+               search_state.recheck_slop = 0.01;
                search_state.save_all_variations = SAVE_TREE;
                search_state.good_enough_to_quit = GOOD_ENOUGH_VALUE;
                search_state.allow_good_enough = true;

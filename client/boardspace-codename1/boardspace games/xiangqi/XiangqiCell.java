@@ -72,6 +72,5 @@ public class XiangqiCell extends stackCell<XiangqiCell,XiangqiChip> implements X
 	 * particular representation of the board.
 	 */
 	public int stackBaseLevel() { return(1); }
-	public static boolean sameCell(XiangqiCell c,XiangqiCell d) { return((c==null)?(d==null):c.sameCell(d)); }
 
 }

@@ -101,15 +101,6 @@ public class YspahanCell extends stackCell<YspahanCell,YspahanChip>
 	{	for(int lim = c.length-1; lim>=0; lim--) { copyFrom(c[lim],d[lim]); }
 	}
 	
-	static boolean sameCell(YspahanCell c,YspahanCell d) { return((c==null)?(d==null):c.sameCell(d)); }
-	static boolean sameCell(YspahanCell c[],YspahanCell d[])
-	{	if(c.length!=d.length) { return(false); }
-		for(int lim = c.length-1; lim>=0; lim--) 
-			{ if(!sameCell(c[lim],d[lim]))
-				{ return(false); }	
-			}
-		return(true);
-	}
 	static void reInit(YspahanCell ar[]) { for(YspahanCell a : ar) { a.reInit(); }}
 
 }

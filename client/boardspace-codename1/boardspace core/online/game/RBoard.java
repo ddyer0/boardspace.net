@@ -16,11 +16,9 @@
  */
 package online.game;
 
-
-import java.util.Set;
-
 import com.codename1.ui.geom.Rectangle;
 
+import java.util.Set;
 import lib.Random;
 import lib.Digestable;
 import lib.G;
@@ -214,7 +212,7 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
     public CELLTYPE getCell(OStack<CELLTYPE>to,OStack<CELLTYPE> from)
     {	
     	int fromSize = from.size();
-    	to.setSize(fromSize); 	// increase size or clear excess
+    	to.setSize(fromSize,from.getAllocatedSize()); 	// increase size or clear excess
     	for(int i=0;i<fromSize;i++) { to.setElementAt(getCell(from.elementAt(i)),i); }
     	return null;
     }

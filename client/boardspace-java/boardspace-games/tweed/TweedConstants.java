@@ -39,7 +39,7 @@ public interface TweedConstants
 		BoardLocation,
 		EmptyBoard, ToggleEye, Numbers, Captures, ;
 		TweedChip chip;
-	
+	public static TweedId[] allValues = values();
 	}
 
 class StateStack extends OStack<TweedState>
@@ -93,10 +93,11 @@ public enum TweedState implements BoardState,TweedConstants
     	  firstInCol = fin;
     	  ZinCol = zin;
     	}
+    	static TweedVariation allValues[] = values();
     	// match the variation from an input string
     	static TweedVariation findVariation(String n)
     	{
-    		for(TweedVariation s : values()) { if(s.name.equalsIgnoreCase(n)) { return(s); }}
+    		for(TweedVariation s : allValues) { if(s.name.equalsIgnoreCase(n)) { return(s); }}
     		return(null);
     	}
      	

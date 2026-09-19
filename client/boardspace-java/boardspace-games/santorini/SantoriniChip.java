@@ -197,10 +197,7 @@ public class SantoriniChip extends chip<SantoriniChip> implements SantoriniConst
 	   for(SantoriniChip ch : Gods) { if(ch.id==id) { return(ch); }}
 	   throw G.Error("Not a known god %s",id);
    }
-   public static String findGodName(int idx)
-   {	return(findGod(idx).id.shortName);
-   }
-   
+
 	// call from the viewer's preloadImages
 	public static void preloadImages(ImageLoader forcan,String ImageDir)
 	{	if(!imagesLoaded)

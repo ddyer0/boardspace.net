@@ -1039,7 +1039,7 @@ synchronized(allGames) {
 			"barca.BarcaViewer","/barca/english/rules.html","about_barca.html",
 			null,false, WhiteOverBlack));
 	}
-	
+
 	{
 	put(new GameInfo(55,ES.game,69,"CL",RacingGames,"Colorito","Colorito-10",
 			OneBotPlus,
@@ -1336,6 +1336,15 @@ synchronized(allGames) {
 
 	}
 	
+	{
+	put(new GameInfo(221,ES.test,133,"AZ",TerritoryGames,"Amazons","Amazons",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			"amazons.AmazonsViewer","/amazons/english/rules.html","about_amazons.html",
+			null,false, WhiteOverBlack));
+	}
+	
+
 	{
 	String tviewer = "twixt.TwixtViewer";
 	String trules = "/twixt/english/rules.html";

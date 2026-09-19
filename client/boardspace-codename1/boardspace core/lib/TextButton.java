@@ -17,7 +17,6 @@
 package lib;
 
 import com.codename1.ui.geom.Rectangle;
-
 import bridge.Color;
 
 /**
@@ -27,11 +26,12 @@ import bridge.Color;
  * @author ddyer
  *
  */
+@SuppressWarnings("serial")
 public class TextButton extends ToggleButton 
 {	double rotation=0;
 	Color highlightColor = Color.gray;
 	public Color backgroundColor = Color.white;
-	Color inactiveColor = Color.white;
+	public Color inactiveColor = Color.white;
 	public Color textColor = Color.black;
 	public Color idleTextColor = Color.black;
 	public Color frameColor = Color.black;

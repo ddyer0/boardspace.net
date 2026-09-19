@@ -72,10 +72,6 @@ public class ArimaaCell extends stackCell<ArimaaCell,ArimaaChip> implements Plac
 	 */
 	public int stackBaseLevel() { return(onBoard?1:0); }
 	
-	public static boolean sameCell(ArimaaCell c1,ArimaaCell c2)
-	{
-		return((c1==c2) || ((c1!=null) && c1.sameCell(c2)));
-	}
 	public void reInit()
 	{
 		super.reInit();

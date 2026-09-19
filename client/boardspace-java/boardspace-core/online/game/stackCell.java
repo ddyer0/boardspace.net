@@ -44,7 +44,7 @@ public abstract class stackCell
 	 COMPONENTTYPE extends chip<?>> extends cell<FINALTYPE> implements Drawable
 {
 	// constructor
-	public static final int STARTING_CHIP_HEIGHT = 5;		// stacks
+	public int startingHeight() { return 5; }
 	public COMPONENTTYPE chipStack[]=null;
 	public int chipIndex=-1;
 	public abstract COMPONENTTYPE[] newComponentArray(int size);
@@ -53,7 +53,7 @@ public abstract class stackCell
 	 */
 	public stackCell()
 	{	super();
-		chipStack = newComponentArray(STARTING_CHIP_HEIGHT);
+		chipStack = newComponentArray(startingHeight());
 	}
 	/** constructor for a singleton stack cell 
 	 * @param r 	random.nextnt() is the identity of this cell
@@ -61,7 +61,7 @@ public abstract class stackCell
 	 */
 	public stackCell(Random r)
 	{	super(r);
-		chipStack = newComponentArray(STARTING_CHIP_HEIGHT);
+		chipStack = newComponentArray(startingHeight());
 	}
 	/**
 	 * constructor for a cell on the board with a particular geometry and board location.
@@ -71,7 +71,7 @@ public abstract class stackCell
 	 */
 	public stackCell(Geometry geo,char mcol,int mrow)
 	{	super(geo,mcol,mrow);
-		chipStack = newComponentArray(STARTING_CHIP_HEIGHT);
+		chipStack = newComponentArray(startingHeight());
 	}
 	public void copyCurrentCenter(FINALTYPE from)
 	{	super.copyCurrentCenter(from);
@@ -86,7 +86,7 @@ public abstract class stackCell
 	
 	public stackCell(Random r,Geometry geo,char mcol,int mrow)
 	{	super(r,geo,mcol,mrow);
-		chipStack = newComponentArray(STARTING_CHIP_HEIGHT);
+		chipStack = newComponentArray(startingHeight());
 	}
 	/**
 	 * constructor for a cell on the board with a particular geometry, id and board location.
@@ -98,7 +98,7 @@ public abstract class stackCell
 	public stackCell(Geometry geo,CellId rack,char mcol,int mrow)
 	{
 		super(geo,rack);
-		chipStack = newComponentArray(STARTING_CHIP_HEIGHT);
+		chipStack = newComponentArray(startingHeight());
 		col = mcol;
 		row = mrow;
 		onBoard = true;
@@ -111,7 +111,7 @@ public abstract class stackCell
 	public stackCell(Geometry geo,CellId rack)
 	{
 		super(geo,rack);
-		chipStack = newComponentArray(STARTING_CHIP_HEIGHT);
+		chipStack = newComponentArray(startingHeight());
 	}
 	/**
 	 * constructor for a cell unconnected to the board but with significant geometry
@@ -122,7 +122,7 @@ public abstract class stackCell
 	public stackCell(Random r,Geometry geo,CellId rack)
 	{
 		super(r,geo,rack);
-		chipStack = newComponentArray(STARTING_CHIP_HEIGHT);
+		chipStack = newComponentArray(startingHeight());
 	}
 	/** constructor for a cell with a location code
 	 *
@@ -130,7 +130,7 @@ public abstract class stackCell
 	 */
 	public stackCell(CellId loc)
 	{	super(loc);
-		chipStack = newComponentArray(STARTING_CHIP_HEIGHT);
+		chipStack = newComponentArray(startingHeight());
 	}
 	/** constructor for a cell with a location code
 	 *
@@ -139,7 +139,7 @@ public abstract class stackCell
 	 */
 	public stackCell(Random r,CellId loc)
 	{	super(r,loc);
-		chipStack = newComponentArray(STARTING_CHIP_HEIGHT);
+		chipStack = newComponentArray(startingHeight());
 	}
 	
 	/** constructor for a cell with a location code
@@ -149,7 +149,7 @@ public abstract class stackCell
 	 */
 	public stackCell(Random r,Geometry geo)
 	{	super(r,geo);
-		chipStack = newComponentArray(STARTING_CHIP_HEIGHT);
+		chipStack = newComponentArray(startingHeight());
 	}
 	/**
 	 * @param other
@@ -196,7 +196,7 @@ public abstract class stackCell
 		int newindex = chipIndex+1;
 		if(newindex>=oldChip.length) 
 			{ 
-			COMPONENTTYPE newchip[] = newComponentArray(oldChip.length+STARTING_CHIP_HEIGHT);
+			COMPONENTTYPE newchip[] = newComponentArray(oldChip.length+startingHeight());
 			for(int i=0;i<newindex;i++) { newchip[i]=oldChip[i]; }
 			chipStack = oldChip = newchip;
 			}

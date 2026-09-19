@@ -47,25 +47,21 @@ public class SantoriniMovespec extends commonMove implements SantoriniConstants
    			"dropswap", MOVE_DROP_SWAP,
    			"droppush", MOVE_DROP_PUSH);
    }
-
-    SantorId source; // where from/to
+    /** this class is the first example of one using cells instead of from-to variables.
+     * the intent is to shrink the movespec, and minimize interpretation of char,int coordinates.
+     */
 	SantoriniChip chip;	// object being picked/dropped
-	char from_col; //for from-to moves, the source column
-	int from_row; // for from-to moves, the source row
-    char to_col; // for from-to moves, the destination column
-    int to_row; // for from-to moves, the destination row
+	SantoriniCell from;
+	SantoriniCell to;
     
     public SantoriniMovespec()
     {
     } // default constructor
-    public SantoriniMovespec(int pl,int opc,char co,int ro)
+    public SantoriniMovespec(int pl,int opc,SantoriniCell cell)
     {	player = pl;
-    	source = SantorId.BoardLocation;
     	op = opc;
-    	to_col = co;
-    	to_row = ro;	
-    	from_col = co;
-    	from_row = ro;
+    	from = cell;
+    	to = cell;
     }
     // done and simple moves
     public SantoriniMovespec(int pl,int opc)
@@ -73,27 +69,17 @@ public class SantoriniMovespec extends commonMove implements SantoriniConstants
     	op = opc;
     	player = pl;
     }    
-    // select gods
-    public SantoriniMovespec(int pl,int opc,int ro)
-    {
-    	op = opc;
-    	player = pl;
-    	from_row = ro;
-    	source = SantorId.GodsId;
-    }
-    public SantoriniMovespec(int pl,int opc,char fc,int fr,char co,int ro)
+
+    public SantoriniMovespec(int pl,int opc,SantoriniCell fr,SantoriniCell tc)
     {	player = pl;
-    	source = SantorId.BoardLocation;
     	op = opc;
-    	from_row = fr;
-    	from_col = fc;
-    	to_col = co;
-    	to_row = ro;	
-    }
+    	from = fr;
+    	to = tc;
+     }
     /* constructor */
-    public SantoriniMovespec(String str, int p)
+    public SantoriniMovespec(SantoriniBoard b,String str, int p)
     {
-        parse(new Tokenizer(str), p);
+        parse(b,new Tokenizer(str), p);
     }
 
     public boolean Same_Move_P(commonMove oth)
@@ -101,23 +87,17 @@ public class SantoriniMovespec extends commonMove implements SantoriniConstants
     	SantoriniMovespec other = (SantoriniMovespec) oth;
 
         return ((op == other.op) 
-				&& (source == other.source)
-				&& (to_row == other.to_row) 
-				&& (to_col == other.to_col)
-				&& (from_row == other.from_row)
-				&& (from_col == other.from_col)
+				&& cell.sameCellLocation(to,other.to)
+				&& cell.sameCellLocation(from,other.from)
 				&& (player == other.player));
     }
 
-    public void Copy_Slots(SantoriniMovespec to)
-    {	super.Copy_Slots(to);
-        to.player = player;
-        to.to_col = to_col;
-        to.to_row = to_row;
-        to.from_col = from_col;
-        to.from_row = from_row;
-        to.chip = chip;
-        to.source = source;
+    public void Copy_Slots(SantoriniMovespec toc)
+    {	super.Copy_Slots(toc);
+        toc.player = player;
+        toc.to = to;
+        toc.from = from;
+        toc.chip = chip;
     }
 
     public commonMove Copy(commonMove to)
@@ -134,7 +114,7 @@ public class SantoriniMovespec extends commonMove implements SantoriniConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(Tokenizer msg, int p)
+    private void parse(SantoriniBoard b,Tokenizer msg, int p)
     {
         String cmd = firstAfterIndex(msg);
         player = p;
@@ -145,48 +125,55 @@ public class SantoriniMovespec extends commonMove implements SantoriniConstants
         	throw G.Error("Can't parse %s", cmd);
         
         case MOVE_SELECT:
-        	source = SantorId.GodsId;
-        	from_row = SantoriniChip.findGodIndex(msg.nextToken());
+        	from = SantoriniBoard.godCell[SantoriniChip.findGodIndex(msg.nextToken())];
         	break;
         case MOVE_SWAPWITH:
         case MOVE_PUSH:
         case MOVE_BOARD_BOARD:			// robot move from board to board
-            source = SantorId.BoardLocation;		
-            from_col = msg.charToken();	//from col,row
-            from_row = msg.intToken();
+        	{
+            char from_col = msg.charToken();	//from col,row
+            int from_row = msg.intToken();
+            from = b.getCell(from_col,from_row);
             // legacy, keep this
             msg.intToken();       //cupsize
- 	        to_col = msg.charToken();		//to col row
-	        to_row = msg.intToken();
+ 	        char to_col = msg.charToken();		//to col row
+	        int to_row = msg.intToken();
+	        to = b.getCell(to_col,to_row);
 	        break;
+        	}
         case MOVE_DOME:        	
         case MOVE_DROPB:
         case MOVE_DROP_SWAP:
         case MOVE_DROP_PUSH:
-	       source = SantorId.BoardLocation;
-	       to_col = msg.charToken();
-	       to_row = msg.intToken();
+        	{
+	       char to_col = msg.charToken();
+	       int to_row = msg.intToken();
+	       to = b.getCell(to_col,to_row);
+        	}
 	       break;
 
 		case MOVE_PICKB:
-            source = SantorId.BoardLocation;
-            from_col = msg.charToken();
-            from_row = msg.intToken();
+			{
+            char from_col = msg.charToken();
+            int from_row = msg.intToken();
+            from = b.getCell(from_col,from_row);
             // legacy, keep this
             msg.intToken();
-
+			}
             break;
 
         case MOVE_PICK:
-            source = SantorId.get(msg.nextToken());
-            from_col = '@';
-            from_row = msg.intToken();
+        	{
+            SantorId source = SantorId.get(msg.nextToken());
+            int from_row = msg.intToken();
+            from = b.getCell(source,'@',from_row);
+        	}
             break;
             
         case MOVE_DROP:
-            source = SantorId.get(msg.nextToken());
-            to_col = '@';
-            to_row = msg.intToken();
+            SantorId source = SantorId.get(msg.nextToken());
+            int to_row = msg.intToken();
+            to = b.getCell(source,'@',to_row);
             break;
 
         case MOVE_START:
@@ -218,26 +205,27 @@ public class SantoriniMovespec extends commonMove implements SantoriniConstants
         switch (op)
         {
         case MOVE_SELECT:
-        	return(TextChunk.create("select "+SantoriniChip.findGodName(from_row)));
+        	return(TextChunk.create("select "+from.topChip().id.shortName));
         	
         case MOVE_PICKB:
-            return (TextChunk.create(""+from_col + from_row+"-"));
+            return (TextChunk.create(""+from.col + from.row+"-"));
         case MOVE_DOME:
 		case MOVE_DROPB:
-            return (icon(v,to_col,to_row));
+            return (icon(v,to.col,to.row));
 		case MOVE_DROP_PUSH:
-			return TextChunk.create("push "+source.shortName);			
+			return TextChunk.create("push "+to.rackLocation().shortName);			
 		case MOVE_DROP_SWAP:
-			return TextChunk.create("swap "+source.shortName);
+			return TextChunk.create("swap "+to.rackLocation().shortName);
         case MOVE_DROP:
+        	return TextChunk.create(to.rackLocation().shortName);
         case MOVE_PICK:
-            return TextChunk.create(source.shortName);
+            return TextChunk.create(from.rackLocation().shortName);
         case MOVE_PUSH:
-        	return TextChunk.create("swap "+from_col + from_row+"-"+to_col + to_row);
+        	return TextChunk.create("swap "+from.col + from.row+"-"+to.col + to.row);
         case MOVE_SWAPWITH:
-        	return TextChunk.create("swap "+from_col + from_row+"-"+to_col + to_row);
+        	return TextChunk.create("swap "+from.col + from.row+"-"+to.col + to.row);
         case MOVE_BOARD_BOARD:
-        	return TextChunk.create(""+from_col + from_row+"-"+to_col + to_row);
+        	return TextChunk.create(""+from.col + from.row+"-"+to.col + to.row);
         case MOVE_DONE:
             return TextChunk.create("");
 
@@ -260,25 +248,25 @@ public class SantoriniMovespec extends commonMove implements SantoriniConstants
         {
         	
         case MOVE_SELECT:
-        	return(opname+ SantoriniChip.findGodName(from_row));
+        	return(opname+ from.topChip().id.shortName);
 
         case MOVE_PICKB:
-	        return (opname+ from_col + " " + from_row+" 1");
+	        return (opname+ from.col + " " + from.row+" 1");
         case MOVE_DOME:
 		case MOVE_DROPB:
 		case MOVE_DROP_SWAP:
 		case MOVE_DROP_PUSH:
-	        return (opname + to_col + " " + to_row+" 1");
+	        return (opname + to.col + " " + to.row+" 1");
 
 		case MOVE_SWAPWITH:
 		case MOVE_PUSH:
 		case MOVE_BOARD_BOARD:
-			return(opname+ from_col + " " + from_row+" 1 " + to_col + " " + to_row);
+			return(opname+ from.col + " " + from.row+" 1 " + to.col + " " + to.row);
         case MOVE_PICK:
-            return (opname+source.shortName+ " "+from_row);
+            return (opname+from.rackLocation().shortName+ " "+from.row);
 
         case MOVE_DROP:
-             return (opname+source.shortName+ " "+to_row);
+             return (opname+to.rackLocation().shortName+ " "+to.row);
 
         case MOVE_START:
             return (indx+"Start P" + player);

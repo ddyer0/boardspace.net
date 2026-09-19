@@ -302,8 +302,8 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
     	CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(nrows*CELLSIZE);
+    	int boardW = (ncols*CELLSIZE);
+    	int boardH = (nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;
@@ -1193,8 +1193,8 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
-     * summary: 5/23/2023
-		162 files visited 0 problems
+     * summary: 9/17/2026
+		1197 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

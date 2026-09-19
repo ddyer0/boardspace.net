@@ -257,17 +257,6 @@ public class ContainerCell extends stackCell<ContainerCell,ContainerChip>
 	}
 	public String toString() { return("<cell "+cellType()+" "+col+row+ " "+contentsString()+">"); }
 
-	public static boolean sameCell(ContainerCell c1,ContainerCell c2)
-	{	return((c1==c2) || ((c1!=null)&&(c1.sameCell(c2))));
-	}
-	public static boolean sameCell(ContainerCell[] c1,ContainerCell[] c2)
-	{	if(c1==c2) { return(true); }
-		if(c1.length!=c2.length) { return(false); }
-		for(int i=0;i<c1.length;i++) 
-		{	if(!sameCell(c1[i],c2[i])) { return(false); }
-		}
-		return(true);
-	}
 	// Drawable interface
 	public void draw(Graphics gc,DrawingObject c,int size, int posx,int posy,String msg)
 	{	ContainerViewer can = (ContainerViewer)c;

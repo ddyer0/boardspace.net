@@ -40,6 +40,7 @@ public abstract class OStack<T> implements StackIterator<T>,Iterable<T>
 		
 		protected T data[]=null;
 		private T[] getRawData() { return data; }
+		public int getAllocatedSize() { return data==null ? 0 : data.length; }
 		
 		//@SuppressWarnings("unchecked")
 		//private T[]newComponentArray(int sz)
@@ -134,7 +135,11 @@ public abstract class OStack<T> implements StackIterator<T>,Iterable<T>
 					}
 				}
 		}
-		
+		public void setSize(int n,int alloc)
+		{
+			if(data==null || alloc>data.length) { increaseSize(alloc); }
+			setSize(n);
+		}
 		/** clear the stack.  Actually clears them so the gc won't be encumbered with old items.
 		 * 
 		 */
@@ -365,7 +370,7 @@ public abstract class OStack<T> implements StackIterator<T>,Iterable<T>
 		 */
 		public void copyFrom(OStack<T> other)
 		{	int fromSize = other.size();
-			setSize(fromSize);
+			setSize(fromSize,other.getAllocatedSize());
 			T dest[] = data;
 			T src[] = other.getRawData();
 			

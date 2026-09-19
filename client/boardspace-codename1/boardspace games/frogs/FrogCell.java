@@ -163,10 +163,5 @@ public class FrogCell extends stackCell<FrogCell,FrogPiece> implements Placement
 	{	super(rv,loc);
 	}
 	public FrogId rackLocation() { return((FrogId)rackLocation); }
-	public static boolean sameCell(FrogCell a,FrogCell b)
-	{
-		return((a==null)
-				?(b==null)
-				:a.sameCell(b));
-	}
+
 }

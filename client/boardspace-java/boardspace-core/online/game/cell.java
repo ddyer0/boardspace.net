@@ -592,13 +592,19 @@ public abstract class cell<FINALTYPE
  * @param other
  * @return true if this cell has the same location as the other cell.  
  */
-	public final boolean sameCellLocation(FINALTYPE other)
+	public final boolean sameCellLocation(cell<?> other)
 	{	return((other!=null)
 				&& (other.rackLocation==rackLocation)
 				&& (other.row==row)
 				&& (other.col==col));
 	}
-	
+
+	public static final boolean sameCellLocation(cell<?> thisCell,cell<?> other)
+	{
+		if(thisCell==other) { return true; }	// both null or identical
+		if(thisCell==null) { return false; }
+		return thisCell.sameCellLocation(other);
+	}
 	/**
 	 * return true is this cell has the same contents as other.
 	 * 
@@ -617,10 +623,23 @@ public abstract class cell<FINALTYPE
 	 * @param other
 	 * @return true of this cell is congruent with other
 	 */
-	public boolean sameCell(FINALTYPE other)
-	{	return(sameCellLocation(other) && sameContents(other));
+	@SuppressWarnings("unchecked")
+	public boolean sameCell(cell<?> other)
+	{	return(sameCellLocation(other) && sameContents((FINALTYPE)other));
 	}
 
+	public static boolean sameCell(cell<?> c1,cell<?> c2)
+	{	return((c1==c2) || ((c1!=null)&&(c1.sameCell(c2))));
+	}
+
+	public static boolean sameCell(cell<?>[] c1,cell<?>[] c2)
+	{	if(c1==c2) { return(true); }
+		if(c1.length!=c2.length) { return(false); }
+		for(int i=0;i<c1.length;i++) 
+		{	if(!sameCell(c1[i],c2[i])) { return(false); }
+		}
+		return(true);
+	}
 	/**
 	 * this method is typically overridded by the actual class to give
 	 * a short summary of the cell contents.

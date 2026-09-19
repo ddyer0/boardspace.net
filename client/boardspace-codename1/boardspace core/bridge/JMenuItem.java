@@ -125,8 +125,10 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 	{	this(m);
 		setFont(f==null ? FontManager.menuFont() : f);
 	}
-	public JMenuItem(String m) { super(); text = m; setFont(FontManager.menuFont()); }
+	public JMenuItem(String m) 
+	{ super(); text = m; setFont(FontManager.menuFont()); }
 	
+
 	public void setText(String t) { text = t; cachedImage = null; }
 
 	public void addItemListener(ItemListener listener) 

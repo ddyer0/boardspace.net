@@ -40,7 +40,7 @@ public class LyngkCell extends stackCell<LyngkCell,LyngkChip> implements LyngkCo
 	int sweep_counter;		// the sweep counter for which blob is accurate
 	int lastPlaced = -1;
 	int lastPicked = -1;
-
+	int colorMask = 0;
 	public LyngkCell(Random r,LyngkId rack) { super(r,rack); }		// construct a cell not on the board
 	public LyngkCell(LyngkId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Hex,c,r);
@@ -72,21 +72,37 @@ public class LyngkCell extends stackCell<LyngkCell,LyngkChip> implements LyngkCo
 		super.reInit();
 		lastPlaced = -1;
 		lastPicked = -1;
+		colorMask = 0;
 	}
 	public void copyFrom(LyngkCell c)
 	{
 		super.copyFrom(c);
 		lastPlaced = c.lastPlaced;
 		lastPicked = c.lastPicked;
+		colorMask = c.colorMask;
+	}
+	public void addChip(LyngkChip chip)
+	{
+		super.addChip(chip);
+		colorMask |= chip.maskColor;	
+	}
+	public LyngkChip removeTop()
+	{
+		LyngkChip chip = super.removeTop();
+		if(!containsChip(chip)) { colorMask &= ~chip.maskColor; }
+		return chip;
 	}
 	public int colorMask()
-	{	int mask = 0;
+	{	/* check the bookkeeping
+		int mask = 0;
 		for(int i=height()-1; i>=0; i--)
 		{
 			// white chips don't count, duplicates are allowed
 			mask |= chipAtIndex(i).maskColor;	
 		}
-		return(mask);
+		G.Assert(mask==colorMask,"color mask");
+		*/
+		return(colorMask);
 	}
 	
 	public LyngkChip[] newComponentArray(int size) {

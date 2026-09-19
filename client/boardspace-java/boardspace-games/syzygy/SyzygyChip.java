@@ -74,10 +74,7 @@ public class SyzygyChip extends chip<SyzygyChip>
 
     static final String names[]={"yellow","green","blue","red","asteroid"};
     
-    static long Digest(Random r,SyzygyChip c)
-    {
-    	return(c==null ? r.nextLong() : c.Digest(r));
-    }
+ 
     public String chipName() { return(name); }
 	// call from the viewer's preloadImages
     static SyzygyChip CANONICAL_PIECE[] = null;

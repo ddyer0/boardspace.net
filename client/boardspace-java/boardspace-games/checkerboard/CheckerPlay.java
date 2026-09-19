@@ -87,13 +87,15 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
         board.RobotExecute(mm);
     }
 
+    ParallelCommonMoveStack movelist = new ParallelCommonMoveStack();
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {   return(board.GetListOfMoves(board.robotDepth==0));
+    {   movelist.clear();
+    	return(board.GetListOfMoves(movelist,board.robotDepth==0));
     }
     
     
@@ -148,7 +150,7 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
      * */
     public void StaticEval()
     {
-    	CheckerBoard evboard = (CheckerBoard)GameBoard.cloneBoard();
+    	CheckerBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
@@ -164,7 +166,7 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (CheckerBoard) gboard;
-        board = (CheckerBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         terminalNodeOptimize = true;
         switch(strategy)
         {
@@ -232,7 +234,7 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
 
             if (board.DoneState())
             { // avoid problems with gameover by just supplying a done
-                move = new CheckerMovespec("Done", board.whoseTurn);
+                move = new CheckerMovespec(MOVE_DONE, board.whoseTurn);
             }
 
             // it's important that the robot randomize the first few moves a little bit.
@@ -250,7 +252,7 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
             // the best solution is to use dif=0.0;  For games with fools mates,
             // set dif so the really bad choices will be avoided
             board.robotDepth = 0;
-            Search_Driver search_state = Setup_For_Search(depth+2, false);
+            Search_Driver search_state = Setup_For_Search(depth, false);
             search_state.save_all_variations = SAVE_TREE;
             search_state.allow_killer = KILLER;
             search_state.max_threads = DEPLOY_THREADS;

@@ -72,8 +72,7 @@ public class PalagoCell extends chipCell<PalagoCell,PalagoChip> implements Palag
 	public boolean sameCell(PalagoCell other)
 	{	return(super.sameCell(other)
 			&& (cellName.equals(other.cellName))
-			&& ((nextPlaced==other.nextPlaced)
-					|| ((nextPlaced!=null) && nextPlaced.sameCellLocation(other.nextPlaced))));
+			&& sameCellLocation(nextPlaced,other.nextPlaced));
 	}
 	
 	// return the approxumate distance squared btween this and other

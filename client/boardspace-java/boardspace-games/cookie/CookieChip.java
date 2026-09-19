@@ -89,10 +89,6 @@ public class CookieChip extends chip<CookieChip> implements CookieConstants
     		ChocolateCookieDescription,
     		"","","",""
     };
-    static long Digest(Random r,CookieChip c)
-    {
-    	return(c==null ? r.nextLong() : c.Digest(r));
-    }
     public String chipName() { return(name); }
 	// call from the viewer's preloadImages
     static CookieChip CANONICAL_PIECE[] = null;

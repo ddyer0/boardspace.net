@@ -42,6 +42,7 @@ import lib.Toggle;
 import lib.Tokenizer;
 import lib.LFrameProtocol;
 import online.game.*;
+import online.game.Opcodes.GameId;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
@@ -113,6 +114,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     private Color chatBackgroundColor = new Color(255,230,230);
     private Color rackBackGroundColor = new Color(225,192,182);
     private Color rackIdleColor = new Color(205,172,162);
+    private Color rackIdleTextColor = new Color(100,100,100);
     private Color boardBackgroundColor = new Color(220,165,155);
     
 
@@ -150,7 +152,8 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
  	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
 			HighlightColor, rackBackGroundColor,rackIdleColor);
 	private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,
-			HighlightColor, rackBackGroundColor,rackIdleColor);
+			HighlightColor, rackBackGroundColor,rackIdleColor,Color.black,rackIdleTextColor);
+	
 	// private menu items
     private JCheckBoxMenuItem rotationOption = null;		// rotate the board view
     private boolean doRotation=true;					// current state
@@ -977,7 +980,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
  */
     public commonMove ParseNewMove(String st,int pl)
     {
-        return (new Prototypemovespec(st, pl));
+        return (new Prototypemovespec(bb,st, pl));
     }
 /**
  * prepare to add nmove to the history list, but also edit the history

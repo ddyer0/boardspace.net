@@ -43,7 +43,6 @@ public class TumbleCell extends stackCell<TumbleCell,TumbleChip> implements Tumb
 	public TumbleId rackLocation() { return((TumbleId)rackLocation); }
 
 	public int stackBaseLevel() { return(1); }
-	public static boolean sameCell(TumbleCell c,TumbleCell d) { return((c==null)?(d==null):c.sameCell(d)); }
 	
 	
 

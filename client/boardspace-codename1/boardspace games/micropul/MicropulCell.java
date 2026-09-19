@@ -40,7 +40,7 @@ public class MicropulCell extends stackCell<MicropulCell,MicropulChip> implement
 
 	public MicropulChip[] newComponentArray(int n) { return(new MicropulChip[n]); }
 	int sweep_counter;		// the sweep counter for which blob is accurate
-	int rotation[] = new int[STARTING_CHIP_HEIGHT];
+	int rotation[] = new int[startingHeight()];
 	int jewelStatus[] = new int[4];
 	public int player = -1;
 	public int lastPicked = -1;
@@ -270,7 +270,7 @@ public class MicropulCell extends stackCell<MicropulCell,MicropulChip> implement
 	public void addChip(MicropulChip item)
 	{	super.addChip(item);		// expand stack if needed
 		if(chipIndex>=rotation.length) 
-		{	int newrot[] = new int[rotation.length+STARTING_CHIP_HEIGHT];
+		{	int newrot[] = new int[rotation.length+startingHeight()];
 			for(int i=0;i<rotation.length;i++) { newrot[i]=rotation[i]; }
 			rotation = newrot;
 		}

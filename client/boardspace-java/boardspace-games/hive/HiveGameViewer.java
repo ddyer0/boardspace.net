@@ -38,6 +38,7 @@ import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.TextButton;
 import lib.Toggle;
 import lib.Tokenizer;
 
@@ -65,10 +66,18 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
     private Color logrectHighlightColor = new Color(0.9f,0.9f,0.3f);
     private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
-    private Color rackBackGroundColor = new Color(215,197,157);
-    private Color rackActiveColor = new Color(225,207,127);		// done button when active
+    private Color rackBackGroundColor =  new Color(215,197,157);
+    private Color rackActiveColor = new Color(225,207,167);//new Color(225,207,127);		// done button when active
     private Color BlackArrowColor = new Color(230,200,255);
-     
+    private Color rackIdleColor = new Color(205,195,152);
+    private Color rackIdleTextColor = new Color(100,100,100);
+    private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,
+			HighlightColor, 	// mouse over
+			rackActiveColor,	// clickable
+			rackIdleColor,		// not clickable
+			Color.black,		// active text
+			rackIdleTextColor	// inactive text
+			);
     private Color chatBackgroundColor = new Color(240,230,210);
     private Font gameLogBoldFont=null;
     private Font gameLogFont = null;
@@ -291,7 +300,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*2);
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneButton,editRect,repRect);
     	//layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 
 
@@ -782,8 +791,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 		if (state != HiveState.PUZZLE_STATE)
         {	HitPoint ds = (gb.DoneState() ? buttonSelect : null);
         	if(!autoDoneActive() && !plannedSeating())
-        		{ handleDoneButton(gc,messageRotation,doneRect,ds,HighlightColor, 
-        				ds==null ? rackBackGroundColor : rackActiveColor); //215,197,157
+        		{ //handleDoneButton(gc,messageRotation,doneButton,ds,HighlightColor, 
+        		//	ds==null ? rackBackGroundColor : rackActiveColor); //215,197,157
+        		doneButton.show(gc,messageRotation,ds);
         		}
             // passing an explicit rotation is correct because we only seat face to face
             handleEditButton(gc,messageRotation,editRect,buttonSelect,selectPos,HighlightColor,rackBackGroundColor);

@@ -93,5 +93,4 @@ public class ShogiCell extends stackCell<ShogiCell,ShogiChip> implements ShogiCo
 	 * particular representation of the board.
 	 */
 	public int stackBaseLevel() { return(1); }
-	public static boolean sameCell(ShogiCell c,ShogiCell d) { return((c==null)?(d==null):c.sameCell(d)); }
 }

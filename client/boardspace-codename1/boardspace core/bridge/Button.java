@@ -29,10 +29,16 @@ import com.codename1.ui.geom.Point;
 public class Button extends com.codename1.ui.Button implements SizeProvider
 {	private final MouseAdapter mouse = new MouseAdapter(this);
 	public void addActionListener(@SuppressWarnings("rawtypes") ActionListener m) 
-		{ mouse.addActionListener(m); }
+		{ mouse.addActionListener(m); 
+		}
+	public void removeActionListener(@SuppressWarnings("rawtypes") ActionListener m) 
+	{ mouse.removeActionListener(m); 
+	}
 	Image theImage = null;
 	public Button(Image image) { super(image.getSystemImage()); theImage = image; }
 	public Image getImage() { return theImage; }
+	public void setImage(Image im) { super.setIcon(im.getSystemImage()); theImage = im; }
+	
 	public Button(String label)
 	{ super(label);
 	}

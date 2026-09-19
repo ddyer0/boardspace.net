@@ -57,5 +57,4 @@ public class QuinamidCell extends chipCell<QuinamidCell,QuinamidChip> implements
 		return(dis>=5);
 	}
 
-	public static boolean sameCell(QuinamidCell c,QuinamidCell d) { return((c==null)?(d==null):c.sameCell(d)); }
 }

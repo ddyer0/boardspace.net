@@ -16,6 +16,7 @@
  */
 package online.game;
 
+import lib.G;
 import lib.OStack;
 
 /**
@@ -28,5 +29,7 @@ import lib.OStack;
 public class CommonMoveStack extends OStack<commonMove>
 {	public commonMove[] newComponentArray(int sz) { return(new commonMove[sz]); }
 	public boolean eq(commonMove me,commonMove other) { return me.Same_Move_P(other); }
-
+	public CommonMoveStack(int sz) { super(sz); }
+	public CommonMoveStack() { super(); }
+	public boolean debug = G.DEBUG;
 }

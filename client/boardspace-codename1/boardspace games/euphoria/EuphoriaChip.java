@@ -254,8 +254,5 @@ public class EuphoriaChip extends chip<EuphoriaChip>
 		imagesLoaded = true;
  		}
 	}   
-	static long Digest(Random r,EuphoriaChip ch)
-	{	return(ch==null ? r.nextLong() : ch.Digest(r));
-	}
 	
 }

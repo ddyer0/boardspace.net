@@ -666,9 +666,7 @@ public class Session implements LobbyConstants
 	    boolean canAddRobot =  (playersInSession < maxPlayers)
 	    						&& (mode != Mode.Tournament_Mode)
 	    						&& (submode != JoinMode.Tournament_Mode)
-	    						&& (mode != Mode.Master_Mode)
-	    						// temporary kludge where Codename1 has broken bots
-	    						&& (!G.isIOS() || G.DEBUG);
+	    						&& (mode != Mode.Master_Mode);
 	    return(canAddRobot);
     }
     /**

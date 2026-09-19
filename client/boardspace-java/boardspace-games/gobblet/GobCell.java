@@ -92,9 +92,7 @@ public class GobCell extends stackCell<GobCell,GobCup> implements PlacementProvi
 		}
 		return((v>=2) ? v : 0);
 	}
-	
-	public static boolean sameCell(GobCell c,GobCell d) { return((c==null)?(d==null):c.sameCell(d)); }
-	
+		
 	public void reInit()
 	{
 		super.reInit();

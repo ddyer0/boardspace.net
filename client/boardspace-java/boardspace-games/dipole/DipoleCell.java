@@ -52,7 +52,4 @@ public class DipoleCell extends stackCell<DipoleCell,DipoleChip> implements Dipo
 	public DipoleCell(Random r,DipoleId rack,int ro) { super(r,rack); col='@'; row=ro; }
 	public int stackBaseLevel() { return(1); }
 
-
-	static boolean sameCell(DipoleCell c,DipoleCell d) { return((c==null)?(d==null):c.sameCell(d)); }
-
 }

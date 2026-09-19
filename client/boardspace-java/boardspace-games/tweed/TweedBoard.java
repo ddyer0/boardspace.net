@@ -161,17 +161,22 @@ class TweedBoard
     }
     
     public String gameType() { return(G.concat(gametype," ",players_in_game," ",randomKey," ",revision)); }
-    
 
     public void doInit(String gtype,long key)
-    {
+    {	if(TweedVariation.findVariation(gtype)!=null)
+    		{
+    		doInit(gtype,key,players_in_game,revision);
+    		}
+    	else {
     	Tokenizer tok = new Tokenizer(gtype);
     	String typ = tok.nextToken();
     	int np = tok.hasMoreTokens() ? tok.intToken() : players_in_game;
     	long ran = tok.hasMoreTokens() ? tok.longToken() : key;
     	int rev = tok.hasMoreTokens() ? tok.intToken() : revision;
     	doInit(typ,ran,np,rev);
+    	}
     }
+
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key,int players,int rev)
     {	randomKey = key;
@@ -995,10 +1000,10 @@ private void addPlaceLineMoves(CommonMoveStack all,CellStack fromAll,int who)
 	{
 		TweedCell from = fromAll.elementAt(lim);
 		//G.Assert(from.topChip()==chip,"should be same color");
-		for(int direction = from.geometry.n-1; direction>=0; direction--)
+		for(int direction = CELL_FULL_TURN-1; direction>=0; direction--)
 		{
 			TweedCell to = from;
-			while( (to=to.exitTo(direction))!=null)
+			while( (to=to.fastExitTo(direction))!=null)
 			{	Integer countn = toAll.get(to);
 				int count = countn==null ? 0 : countn;
 				int toheight = to.height();
@@ -1138,10 +1143,10 @@ private boolean addPlaceControlLineMovesA(CommonMoveStack all,CellStack fromAll,
 	{
 		TweedCell from = fromAll.elementAt(lim);
 		//G.Assert(from.topChip()==chip,"should be same color");
-		for(int direction = from.geometry.n-1; direction>=0; direction--)
+		for(int direction = CELL_FULL_TURN-1; direction>=0; direction--)
 		{
 			TweedCell to = from;
-			while( (to=to.exitTo(direction))!=null)
+			while( (to=to.fastExitTo(direction))!=null)
 			{	int mysee = to.getSeen(who);
 				int youSee = to.getSeen(nextP);
 				int height = to.height();
@@ -1192,8 +1197,8 @@ private boolean addPlaceControlLineMovesA(CommonMoveStack all,CellStack fromAll,
  	}
 	 return false;
  }
- CommonMoveStack  GetListOfMoves(boolean greedy)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all,boolean greedy)
+ {	
  	if(board_state==TweedState.PlayOrSwap)
  	{
  		all.addElement(new TweedMovespec(MOVE_SWAP,whoseTurn));
@@ -1301,7 +1306,7 @@ private boolean addPlaceControlLineMovesA(CommonMoveStack all,CellStack fromAll,
  public Hashtable<TweedCell, TweedMovespec> getTargets() 
  {
  	Hashtable<TweedCell,TweedMovespec> targets = new Hashtable<TweedCell,TweedMovespec>();
- 	CommonMoveStack all = GetListOfMoves(false);
+ 	CommonMoveStack all = GetListOfMoves(new CommonMoveStack(),false);
  	for(int lim=all.size()-1; lim>=0; lim--)
  	{	TweedMovespec m = (TweedMovespec)all.elementAt(lim);
  		switch(m.op)
@@ -1361,10 +1366,10 @@ private boolean addPlaceControlLineMovesA(CommonMoveStack all,CellStack fromAll,
 	 for(int lim=origin.size()-1; lim>=0; lim--)
 	 {
 		 TweedCell c = origin.elementAt(lim);
-		 for(int direction = c.geometry.n-1; direction>=0; direction--)
+		 for(int direction = CELL_FULL_TURN-1; direction>=0; direction--)
 		 {
 			 TweedCell from = c;
-			 while ((from=from.exitTo(direction))!=null)
+			 while ((from=from.fastExitTo(direction))!=null)
 			 {
 				 from.incrementSeen(index);
 				 if(from.height()>0) { break; }

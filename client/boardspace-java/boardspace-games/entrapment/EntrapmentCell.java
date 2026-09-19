@@ -93,10 +93,6 @@ public class EntrapmentCell extends stackCell<EntrapmentCell,EntrapmentChip> imp
 	public long Digest(Random r)
 	{	return(super.Digest(r)+((deadChip!=null) ? deadChip.Digest() : 0));
 	}
-	public static boolean sameCellLocation(EntrapmentCell c,EntrapmentCell d)
-	{	if(c!=null) { return(c.sameCellLocation(d)); }
-		return(c==d);
-	}
 
 
 }

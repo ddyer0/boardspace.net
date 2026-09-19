@@ -158,14 +158,16 @@ public class MeridiansPlay extends commonRobot<MeridiansBoard> implements Runnab
         boardSearchLevel++;
     }
     
+    CommonMoveStack movelist = new CommonMoveStack();
+
     /** return a Vector of moves to consider at this point.  It doesn't have to be
      * the complete list, but that is the usual procedure. Moves in this list will
      * be evaluated and sorted, then used as fodder for the depth limited search
      * pruned with alpha-beta.
      */
         public CommonMoveStack  List_Of_Legal_Moves()
-        {
-            return(board.GetListOfMoves());
+        {	movelist.clear();
+            return(board.GetListOfMoves(movelist));
         }
 
         /**

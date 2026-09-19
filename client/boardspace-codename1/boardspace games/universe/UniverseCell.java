@@ -128,10 +128,6 @@ public class UniverseCell extends chipCell<UniverseCell,UniverseChip> implements
 	 */
 	public long Digest(Random r) { return(universeRegionNumber + sudokuValue*100 + super.Digest(r)+UniverseChip.Digest(given)); }
 	
-	static long Digest(UniverseCell c,Random r)
-	{	return(c==null?r.nextLong():c.Digest(r));
-	}
-	
 	public void addChip(UniverseChip ch,int step)
 	{	if(chip!=null) { throw G.Error("Already filled"); }
 		chip = ch;

@@ -33,6 +33,19 @@ public abstract class CommonDriver implements TreeProviderProtocol {
 	*
     */
 	public boolean save_top_digest=false;			// handled by the commonRobot class
+	
+
+	/**
+	 * if nonzero, re-check static evaluations when parallel evaluations are in effect.
+	 * every n'th result is flagged and re-evaluated at the end of the evaluate_and_sort process.
+	 */
+	public int recheck_evaluations = 0;
+	/*
+	 * the value of recheck_slop is a bound on how close the evaluations must be, given that
+	 * sometimes floating point arithmetic is slightly unstable. */
+	public double recheck_slop = 0.01;
+
+	
     /**
  	* this is a check the the move/unmove provided by the individual game is 
 	* working correctly, but relatively expensive to do after every move.  It's a 
