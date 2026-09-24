@@ -36,6 +36,7 @@ public interface KingsColorConstants
 	static String PlayState = "Move a piece";
 
 	enum GridColor { Green, Light, Gray;
+		public static final GridColor[] allValues = values();
 		public KingsColorChip chip = null;
 	};
 	enum PieceType { King, Rook, Bishop, Queen };

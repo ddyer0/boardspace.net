@@ -93,7 +93,6 @@ public class GobCell extends stackCell<GobCell,GobCup> implements PlacementProvi
 		return((v>=2) ? v : 0);
 	}
 	
-	
 	public void reInit()
 	{
 		super.reInit();

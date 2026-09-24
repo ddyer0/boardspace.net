@@ -78,7 +78,7 @@ public class EpaminondasChip extends chip<EpaminondasChip> implements CommonConf
 	public static EpaminondasChip Black = new EpaminondasChip("black-chip-np",new double[]{0.53,0.482,1.38},EpaminondasId.Black); 
 
     // indexes into the balls array, usually called the rack
-    static final EpaminondasChip getChip(int n) { return(EpaminondasId.values()[n].chip); }
+    static final EpaminondasChip getChip(int n) { return(EpaminondasId.allValues[n].chip); }
     static final EpaminondasChip getTile(int n) { return(tiles[n]); }
     /**
      * this is the basic hook to substitute an alternate chip for display.  The canvas getAltChipSet

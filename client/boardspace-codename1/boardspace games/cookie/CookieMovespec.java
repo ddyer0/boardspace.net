@@ -190,7 +190,7 @@ public class CookieMovespec extends commonMove implements CookieConstants
             break;
         }
     }
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {	Text base = TextChunk.create(shortMoveString());
     	if(target!=null)
     	{

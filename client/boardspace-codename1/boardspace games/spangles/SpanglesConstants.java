@@ -94,8 +94,14 @@ public interface SpanglesConstants
     public String GoalMessage = "Form a larger triangle with your color at the tips";
     public String PlayMessage = "Place a triangle on any empty cell";
     public String SpanglesStrings[] = {
+    	"Spangles",
     	GoalMessage,
     	PlayMessage,
+    };
+    public static String SpanglesStringPairs[][] = {
+    		{"Spangles_family","Spangles"},
+    		{"Spangles_variation","standard Spangles"}, 
+ 
     };
     static final int BACKGROUND_TILE_INDEX = 0;
     static final int BACKGROUND_REVIEW_INDEX = 1;

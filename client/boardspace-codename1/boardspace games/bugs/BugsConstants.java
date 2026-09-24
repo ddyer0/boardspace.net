@@ -17,10 +17,8 @@
 package bugs;
 
 import bridge.Color;
-import bugs.BugsChip.Terrain;
 import lib.CellId;
 import lib.Digestable;
-import lib.InternationalStrings;
 import lib.OStack;
 import lib.Random;
 import online.game.BaseBoard.BoardState;
@@ -83,7 +81,7 @@ public interface BugsConstants
 		HitChip,HitCell, Terrain, SeeBugDeck, SeeGoalDeck, 
 		;
 		BugsChip chip;
-	
+		public static final BugsId[] allValues = values();
 	}
 	
 enum UIState implements Digestable {
@@ -194,57 +192,7 @@ static int[] ZnInCol2 = { 3, 4, 5, 4, 3  }; // depth of columns, ie A has 4, B 5
 	static final String FlyingMessage = "Flying";
 	static final String TotalMessage = "Total";
 	
-	static void putStrings()
-	{
-		String GameStrings[] = 
-		{  
-			PlayState,
-			ExplainSeeBugDeck,
-			GoalContents,
-			ExplainSeeGoalDeck,
-			PreyMessage,
-			FlyingMessage,
-			TotalMessage,
-			DeckContents,
-			ScoreMessage,
-			PurchaseExplanation,
-			ConfirmDescription,
-		CostMessage,
-		BonusCardMessage,
-		BugCardMessage,
-		EndPurchaseMessage,
-		SequentialPlayState,
-		EndPlacingMessage,
-		EndBonusMessage,
-		FinalMessage,
-		RoundMessage,
-		ReadyButton,
-		ExplainReady,
-	    ScavengerMessage,
-	    CanFlyMessage,
-	    PredatorMessage,
-	    VegetarianMessage,
-	    NoEatMessage,
-	    ParasiteMessage,
-	    VictoryCondition
-			
-		};
-		String GameStringPairs[][] = 
-		{   {"BugSpiel_family","BugSpiel"},
-			{"BugSpiel-parallel_variation","BugSpiel Parallel, small board"},
-			{"BugSpiel-parallel-large_variation","BugSpiel Parallel, large board)"},
-			{"BugSpiel-sequential_variation","BugSpiel (small board)"},
-			{"BugSpiel-sequential-large_variation","BugSpiel (large board)"},
-			{"BugSpiel-sequential","BugSpiel (small board)"},
-			{"BugSpiel-sequential-large","BugSpiel (large board)"},
-
-		};
-		InternationalStrings.put(GameStrings);
-		InternationalStrings.put(GameStringPairs);
-		DietGoal.putStrings();
-		InternationalStrings.put(Terrain.values());
 		
-	}
 
 
 }

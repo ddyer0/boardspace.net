@@ -125,7 +125,9 @@ public MColor PlayerColors[] = { MColor.Red, MColor.Green, MColor.Blue, MColor.Y
  * laborer, engineer, or scientist
  */
 public enum WorkerType { L,S,E,N};
-public enum Options { Nations, Personalities, Hbombs, Rockets }
+public enum Options { Nations, Personalities, Hbombs, Rockets ;
+	public static final Options[] allValues = values();
+}
 public enum Cost implements Digestable
 { None, 
 			// mainboard cost

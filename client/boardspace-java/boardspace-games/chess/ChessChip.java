@@ -90,8 +90,8 @@ public class ChessChip extends chip<ChessChip> implements ChessConstants,Config
 		color = uid;
 		piece = p;
 	}
-	static ChessChip pieces[][] = new ChessChip[2][ChessPiece.values().length];
-	static ChessChip promotedPieces[][] = new ChessChip[2][ChessPiece.values().length];
+	static ChessChip pieces[][] = new ChessChip[2][ChessPiece.allValues.length];
+	static ChessChip promotedPieces[][] = new ChessChip[2][ChessPiece.allValues.length];
 	
 	static public ChessChip getChip(ChessPiece type,ChessId color,boolean promoted)
 	{

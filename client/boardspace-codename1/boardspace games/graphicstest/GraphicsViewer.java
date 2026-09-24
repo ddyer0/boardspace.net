@@ -271,6 +271,7 @@ public class GraphicsViewer extends CCanvas<GraphicsCell,GraphicsBoard> implemen
     Test[] tests = {  	
     		//new Test("issue 4914","glitchy animation",new Test_4914()),   		// seems cured 6/1/2026
     		new Test("issue 3302","scaling and translation",new Test_3302()),
+        	new Test("combobox","clipping regression 2",new test_combobox()),
         	new Test("issue 5270","clipping regression 2",new test_5270()),
         	//new Test("issue 5263","clipping regression",new test_5263()),
     		new Test("boardspace graphics","complex clipping and rotation",new test_boardspace_graphics()),

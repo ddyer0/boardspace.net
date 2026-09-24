@@ -792,7 +792,7 @@ private void playSounds(TruMovespec m)
     {
     	return b.placementIndex;
     }
-    // override for the standard numberMenu drawNxumber
+    // override for the standard numberMenu drawNumber
     public void drawNumber(Graphics gc,PlacementProvider source,PlacementProvider dest,int cellSize,int x,int y,Font font,Color color, String str)
     {	
     	TruCell cell = (TruCell)dest;

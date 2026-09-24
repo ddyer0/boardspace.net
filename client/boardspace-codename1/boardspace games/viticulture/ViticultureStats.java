@@ -53,7 +53,7 @@ public class ViticultureStats implements ViticultureConstants
 	boolean papa2 = false;
 	int playerPoints = 0;
 	boolean winner = false;
-	int categories[] = new int[ScoreType.values().length];
+	int categories[] = new int[ScoreType.allValues.length];
 	ViticultureStats(String ga,ViticultureBoard b,PlayerBoard p,boolean win,String na)
 	{	gameName = ga;
 		if((ga!=null) && ga.endsWith(".sgf")) { ga=ga.substring(0,ga.length()-4); }
@@ -85,7 +85,7 @@ public class ViticultureStats implements ViticultureConstants
 		printC(out,"Special Worker 1");
 		printC(out,"Special Worker 2");
 		
-		for(ScoreType s : ScoreType.values())
+		for(ScoreType s : ScoreType.allValues)
 		{
 			printC(out,s.name());
 		}

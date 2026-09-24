@@ -202,8 +202,8 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/(ncols),(double)mainH/nrows);
     	CELLSIZE = (int)cs;
-     	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(nrows*CELLSIZE);
+     	int boardW = (ncols*CELLSIZE);
+    	int boardH = (nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;
@@ -372,7 +372,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     	GC.Text(gc,true,optionX,optionY-step*2,xstep*4,step*2, Color.black,null,s.get(SelectGoalMessage));
     	GC.frameRect(gc,Color.black,scrim);
 
-    	EndgameCondition options[] = EndgameCondition.values();
+    	EndgameCondition options[] = EndgameCondition.allValues;
     	
     	for(EndgameCondition option : options)
     	{	boolean selected = option==current;
@@ -397,7 +397,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
 			optionX += xstep;
 			stepn++;
 			if(stepn%4==0) { optionX = optionX0; optionY+=step;}
-    		b.textColor = selected ? Color.yellow : Color.lightGray;
+    		b.idleTextColor = b.textColor = selected ? Color.yellow : Color.lightGray;
     		if(b.draw(gc,highlight))
     		{
     			highlight.hitObject = option;
@@ -412,7 +412,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     							BloomsId.Approve,
     							s.get(ApproveMessage),
     							HighlightColor,boardBackgroundColor,boardBackgroundColor);
-    		b.textColor = Color.black;
+    		b.idleTextColor = b.textColor = Color.black;
     		G.SetRect(b,approveX,approveY,xstep*3/2,step);
     		if(b.draw(gc,i==ap.boardIndex||allowed_to_edit||bb.simultaneousTurnsAllowed() ? highlight : null))
     		{	

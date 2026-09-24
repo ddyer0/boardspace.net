@@ -103,7 +103,7 @@ public class ImagineChip extends chip<ImagineChip> implements CommonConfig
 	
 
     // indexes into the balls array, usually called the rack
-    static final ImagineChip getChip(int n) { return(ImagineId.values()[n].chip); }
+    static final ImagineChip getChip(int n) { return(ImagineId.allValues[n].chip); }
     
     static Hashtable<String,ImagineChip> cardNames = new Hashtable<String,ImagineChip>();
     
@@ -133,7 +133,7 @@ public class ImagineChip extends chip<ImagineChip> implements CommonConfig
   
  
 	private static void autoloadPosts(String Dir)
-	{	Colors color[] = Colors.values();
+	{	Colors color[] = Colors.allValues;
 		ScorePosts = new ImagineChip[color.length];
 		String post = "scorepost-mask.jpg";
 		String check = "checkmark-mask.jpg";

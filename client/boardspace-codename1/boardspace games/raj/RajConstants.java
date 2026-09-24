@@ -131,6 +131,7 @@ public interface RajConstants
     	Brown(180,124,94),
     	Purple(169,98,170);
     	Color color;
+    	public static final RajColor[] allValues = values();
     	RajColor(int r,int g,int b)
     	{
     		color = new Color(r,g,b);

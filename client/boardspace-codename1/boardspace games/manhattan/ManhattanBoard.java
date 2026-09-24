@@ -323,7 +323,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     public String gameType() 
     { StringBuilder b = new StringBuilder();
       G.append(b,gametype," ",players_in_game," ",randomKey," ",revision);
-      for(Options op : Options.values())
+      for(Options op : Options.allValues)
       {
     	  G.append(b," ",op," ",testOption(op) ? "true" : "false");
       }

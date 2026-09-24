@@ -224,7 +224,7 @@ public class Slithermovespec
 
         case MOVE_DROP:
         case MOVE_PICK:
-            return icon(v,SlitherId.values()[to_row]);
+            return icon(v,SlitherId.allValues[to_row]);
         case MOVE_SLIDE_THEN_FIX:
         case MOVE_FROM_TO:
         	return icon(v,from_col,from_row,"-",to_col,to_row);
@@ -255,7 +255,7 @@ public class Slithermovespec
 
         case MOVE_DROP:
         case MOVE_PICK:
-            return G.concat(opname , SlitherId.values()[to_row]);
+            return G.concat(opname , SlitherId.allValues[to_row]);
 
         case MOVE_SLIDE_THEN_FIX:
         case MOVE_FROM_TO:

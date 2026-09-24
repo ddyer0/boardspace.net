@@ -27,14 +27,12 @@ import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.geom.Rectangle;
 import com.codename1.ui.layouts.Layout;
 
-public class Frame extends Window 
+public class Frame extends Container 
 		implements NullLayoutProtocol,MouseMotionListener,MouseListener
 {	boolean resizable = false;
 	public void setResizable(boolean n) { resizable = n; }
 	Container glassPane = new FullscreenPanel();
 	public String getTitle() { return(getName()); }
-
-	public void setJMenuBar(JMenuBar m){}
 	
 	// tabname appears in the master frame, as the selectable name of the frame.
 	public String tabName() { return(getName()); }

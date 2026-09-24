@@ -87,7 +87,7 @@ public class CircleChip extends chip<CircleChip> implements CommonConfig
 	}
 
     // indexes into the balls array, usually called the rack
-    static final CircleChip getChip(int n) { return(CircleId.values()[n].chip); }
+    static final CircleChip getChip(int n) { return(CircleId.allValues[n].chip); }
     
     /**
      * this is the basic hook to substitute an alternate chip for display.  The canvas getAltChipSet

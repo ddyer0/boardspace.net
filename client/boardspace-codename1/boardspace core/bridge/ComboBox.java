@@ -19,8 +19,6 @@ package bridge;
 import lib.FontManager;
 import lib.G;
 import lib.SizeProvider;
-import lib.Image;
-
 import com.codename1.ui.Command;
 import com.codename1.ui.Dialog;
 import com.codename1.ui.Font;
@@ -38,7 +36,6 @@ class ComboBoxDialog extends Dialog  implements SizeProvider
 {
 	ComboBoxDialog(String uu,String lm)
 	{ super();
-	  setTitleComponent(new Label(Image.createImage(1,1)));
 	}
 
 	public Command show(int top,int bot,int left,int right,boolean title,boolean modal)
@@ -51,18 +48,6 @@ class ComboBoxDialog extends Dialog  implements SizeProvider
 		super.paint(g0);
 		if(rotated) { MasterForm.unrotateNativeCanvas(this, g0); }
 	}
-	public void pointerPressed(int x,int y)
-	{	
-		super.pointerPressed(MasterForm.translateX(this,x), MasterForm.translateY(this,y));;
-	}
-	public void pointerReleased(int x,int y)
-	{	
-		super.pointerReleased(MasterForm.translateX(this,x), MasterForm.translateY(this,y));;
-	}
-	public void pointerDragged(int x,int y)
-	{	
-		super.pointerDragged(MasterForm.translateX(this,x), MasterForm.translateY(this,y));
-	}
 }
 
 public class ComboBox extends com.codename1.ui.ComboBox<JMenuItem> 
@@ -70,19 +55,16 @@ public class ComboBox extends com.codename1.ui.ComboBox<JMenuItem>
 	public ComboBox() 
 		{ super(); 
 		}
-	public ComboBox(String title)
-	{
-		super(title);
-	}
+
 	public Font getFont()
 	{ return(FontManager.getFont(getStyle())); 
 	}
 	public Color getBackground() { return(new Color(getStyle().getBgColor())); }
 	public Color getForeground() { return(new Color(getStyle().getFgColor())); }
 
-	// workaround to keep the pop-ups from appearing too close to the top
+	// workaround to keep the pop-ups from appearing too close to the top.
     protected Dialog createPopupDialog(List<JMenuItem> l) 
-    {
+    {	
     	Dialog popupDialog = new ComboBoxDialog(getUIID() + "Popup", getUIID() + "PopupTitle");
             popupDialog.setScrollable(false);
             popupDialog.getContentPane().setAlwaysTensile(false);
@@ -95,7 +77,14 @@ public class ComboBox extends com.codename1.ui.ComboBox<JMenuItem>
             popupDialog.addComponent(BorderLayout.CENTER, l);
             return popupDialog;
      }
-
+    
+    // this is to remove the ghost border on the extra title for popup
+    // combo boxes in conjunction with BSLookAndFeel this removes the
+    // extra title box completely
+    public void paintBorder(com.codename1.ui.Graphics g)
+    {
+    	
+    }
 	public void paint(com.codename1.ui.Graphics g0)
 	{	
 		boolean rotated = MasterForm.rotateNativeCanvas(this, g0);
@@ -113,9 +102,11 @@ public class ComboBox extends com.codename1.ui.ComboBox<JMenuItem>
 		return f instanceof JMenuItem ? (JMenuItem) f : null;
 	}
 
-	public Command showPopupDialog(Dialog popupDialog, @SuppressWarnings("rawtypes") List l) {
+	public Command showPopupDialog(Dialog popupDialog,@SuppressWarnings("rawtypes") List l) {
+
 		if(centerMenu) { return super.showPopupDialog(popupDialog,l); }
-		else {
+		else 
+		{
 	            int top, bottom, left, right;
 	            Form parentForm = getComponentForm();
 

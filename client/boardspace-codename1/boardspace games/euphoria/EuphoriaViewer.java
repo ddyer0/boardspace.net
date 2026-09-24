@@ -739,7 +739,7 @@ private Color playerBackground[] = {
      {
          // draw the allegiance markers
          int CELLSIZE = gb.CELLSIZE;
-     	for(Allegiance allegiance : Allegiance.values())
+     	for(Allegiance allegiance : Allegiance.allValues)
      	{
      	int ord = allegiance.ordinal();
      	int val = gb.getAllegianceValue(allegiance);
@@ -3185,7 +3185,7 @@ private Color playerBackground[] = {
 				    EuphoriaCell hitObject = hitCell(hp);
 					EPlayer p = bb.getPlayer(hitObject.color);
 					HiddenGameWindow hidden = findHiddenWindow(hp);
-					EPlayer.PlayerView pend = EPlayer.PlayerView.values()[hp.hit_index];
+					EPlayer.PlayerView pend = EPlayer.PlayerView.allValues[hp.hit_index];
 					if((hidden!=null)||(remoteViewer>=0)) { p.hiddenView = pend; }
 					else { p.view = pend; }
 					autoCardMode = false;

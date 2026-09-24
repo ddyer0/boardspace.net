@@ -128,6 +128,7 @@ public interface CrosswordsConstants
 	 Connected(ConnectedMessage,false),
 	 NoDuplicate(NoDuplicateMessage,false),
 	 OpenRacks(OpenRackMessage,true);
+	 public static Option[] allValues = values();
 	 String message;
 	 boolean allowedForRobot = true;
 	 CrosswordsChip onIcon;

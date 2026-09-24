@@ -84,7 +84,7 @@ public class hexChip extends chip<hexChip> implements CommonConfig
 	public static hexChip HexIconR = new hexChip("hex-icon-r-nomask",normalScale,HexId.ChangeRotation,otherChips);
 
     // indexes into the balls array, usually called the rack
-    static final hexChip getChip(int n) { return(HexId.values()[n].chip); }
+    static final hexChip getChip(int n) { return(HexId.allValues[n].chip); }
     
     
 

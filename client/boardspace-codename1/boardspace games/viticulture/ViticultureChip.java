@@ -198,7 +198,7 @@ public class ViticultureChip extends chip<ViticultureChip>
 	}
 
     static private ViticultureChip[] colorArray(String basename,ViticultureId idtype,ChipType type,double []scale)
-    {	ViticultureColor co[] = ViticultureColor.values();
+    {	ViticultureColor co[] = ViticultureColor.allValues;
      	ViticultureChip val[] = new ViticultureChip[co.length -1];
     	for(ViticultureColor c : co)
     	{	if(c!=ViticultureColor.Gray)

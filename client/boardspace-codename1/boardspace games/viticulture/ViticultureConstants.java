@@ -48,7 +48,7 @@ public interface ViticultureConstants
 			DraftStructures(170,"draft structure cards"),
 			ExtraSpecial(170,"select from 4 special workers"),
 			;				
-		 
+		 public static final Option[] allValues = values();
 		 String message;
 		 int revision = 0;
 		 ViticultureChip onIcon;
@@ -74,6 +74,7 @@ public interface ViticultureConstants
    		ScoreBlue(Color.blue),
  		Star(Color.pink),
    		;
+   		public static final ScoreType[] allValues = values();
    		Color color = null;
    		ScoreType(Color c)
    		{
@@ -547,6 +548,7 @@ public interface ViticultureConstants
 		
 		Star,Yoke,Rooster,TastingRoom,Windmill,Trellis,WaterTower,
 		MediumCellar,LargeCellar,Cottage;
+		public static final ChipType[] allValues = values();
 		public int sortOrder()
 		{
 			return(this==GrandeWorker ? 999 : ordinal());
@@ -641,7 +643,9 @@ public interface ViticultureConstants
 			}
 		}
 	}
-	enum ViticultureColor { Blue, Green, Orange, Purple, White, Yellow , Gray };
+	enum ViticultureColor { Blue, Green, Orange, Purple, White, Yellow , Gray;
+		public static final ViticultureColor[] allValues = values(); 
+		};
 	
 	enum ViticultureBenefit { Coins_1, Coins_2, Coins_3, Coins_4, Coins_5, Coins_6 };
 	enum ViticultureCost { Coins_1, Coins_2, Coins_3, Coins_4, Coins_5, Coins_6, VP_1, };
@@ -1216,6 +1220,7 @@ public interface ViticultureConstants
 		ShowBuildings("Show all Buildings"), SetOption(null),SetReady(null), 
 		ShowOptions("Show the current Options"),
     	;
+		public static final ViticultureId[] allValues = values();
     	String shortName = name();
     	public String shortName() { return(shortName); }
     	

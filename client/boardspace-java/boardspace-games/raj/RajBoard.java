@@ -659,7 +659,7 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
 	   Random r = new Random(7346);	// always the same
 	   prizes.shuffle(rr);
 	   int map[]=getColorMap();
-	   RajColor colors[] = RajColor.values();
+	   RajColor colors[] = RajColor.allValues;
 	   playerBoards= new PlayerBoard[players_in_game];
 	   for(int i=0;i<players_in_game;i++)
 	   		{	RajColor color = colors[map[i]];
@@ -905,7 +905,7 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
         }
     }
     int playerOwning(RajColor c)
-    {	RajColor[] colors = RajColor.values();
+    {	RajColor[] colors = RajColor.allValues;
     	int map[] = getColorMap();
     	for(int i=0;i<colors.length;i++) { if(colors[map[i]]==c) { return(i); }}
     	throw G.Error("Not player owns "+c);

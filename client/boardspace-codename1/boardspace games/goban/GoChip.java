@@ -131,7 +131,7 @@ public class GoChip extends chip<GoChip> implements CommonConfig
             
 	public static GoChip getChip(int color)
 	{
-		return(GoId.values()[color].chip);
+		return(GoId.allValues[color].chip);
 	}
 
 	public static GoChip backgroundTile = new GoChip( "background-tile-nomask",null);

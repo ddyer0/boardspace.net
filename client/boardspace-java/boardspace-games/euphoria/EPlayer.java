@@ -37,6 +37,7 @@ class EPlayer implements EuphoriaConstants
 	enum PlayerView 
 	{
 	Normal, Artifacts, AutoArtifacts,Dilemma, ActiveRecruits, HiddenRecruits;
+		public static final PlayerView[] allValues = values();
 	}
 	
 EuphoriaBoard b = null;			// my board 
@@ -213,7 +214,7 @@ public void addActiveRecruit(EuphoriaChip ch,replayMode replay)
 	activeRecruits.addChip(ch);
 	if(ch==RecruitChip.SteveTheDoubleAgent)
 	{	
-		for(Allegiance faction : Allegiance.values())
+		for(Allegiance faction : Allegiance.allValues)
 		{
 		if(b.getAllegianceValue(faction)>=(AllegianceSteps-1)) 
 			{ 

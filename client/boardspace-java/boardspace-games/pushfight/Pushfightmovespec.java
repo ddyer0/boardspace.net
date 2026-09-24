@@ -222,10 +222,10 @@ public class Pushfightmovespec extends commonMove implements PushfightConstants
     }
     /**
      * shortMoveText lets you return colorized text or mixed text and graphics.
+     * @param v
      * @see lib.Text
      * @see lib.TextGlyph 
      * @see lib.TextChunk
-     * @param v
      * @return a Text object
      */
     public Text shortMoveText(commonCanvas v,Font f)

@@ -88,8 +88,8 @@ public class LyngkMovespec extends commonMove
         LyngkMovespec other = (LyngkMovespec) oth;
 
         return ((op == other.op) 
-				&& (from == other.from)
-				&& (to == other.to)
+				&& cell.sameCellLocation(from,other.from)
+				&& cell.sameCellLocation(to,other.to)
 				&& (player == other.player));
     }
 

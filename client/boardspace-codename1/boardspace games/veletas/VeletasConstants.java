@@ -90,6 +90,7 @@ public interface VeletasConstants
         ReverseViewButton(null),
         ToggleEye(null),
   	;
+		public static final VeletasId[] allValues = values();
     	String shortName = name();
     	VeletasChip chip;
     	public String shortName() { return(shortName); }

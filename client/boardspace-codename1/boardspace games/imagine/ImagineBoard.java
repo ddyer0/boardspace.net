@@ -370,7 +370,7 @@ class ImagineBoard
 		{
 		default: throw G.Error("Not expecting variation %s",variation);
 		case Imagine:
-			Colors color[] = Colors.values();
+			Colors color[] = Colors.allValues;
 			if(pbs.length!=players_in_game)
 			{
 				PlayerBoard newpbs[] = new PlayerBoard[players_in_game];

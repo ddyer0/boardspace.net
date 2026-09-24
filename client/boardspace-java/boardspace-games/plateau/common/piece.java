@@ -201,7 +201,7 @@ public class piece extends ImageUpdateProxy implements PlateauConstants
 
     void resetColor(String col)
     {
-        for (Face f : Face.values())
+        for (Face f : Face.allValues)
         {
             if (f.shortName.equals(col))
             {

@@ -46,6 +46,7 @@ public interface BloomsConstants
 	 Capture25(25),
 	 Capture30(30);
 	 int ncaptured = 0;
+	 public static final EndgameCondition[]allValues = values();
 	 EndgameCondition(int n)
 	 { ncaptured = n;
 	 }

@@ -71,6 +71,7 @@ public interface MorelliConstants
 		Blocks(MorelliId.BlocksSetup),
 		Free(MorelliId.FreeSetup),
 		RandomOpposite(MorelliId.RandomOpposite);
+		public static final Setup[] allValues = values();
 		MorelliId id;
 		Setup(MorelliId sid) { id = sid; }
 		static public Setup getSetup(MorelliId sid)

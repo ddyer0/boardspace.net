@@ -510,7 +510,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     	isPass = false;
 		noduplicates = false;
 		openRacks = false;
-	    for(Option o : Option.values()) { setOptionValue(o,false); }
+	    for(Option o : Option.allValues) { setOptionValue(o,false); }
 		lastLetters.clear();
 	    occupiedCells.clear();
 	    initRackMap(rackMap);
@@ -635,7 +635,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
         lastPicked = null;
         isPass = from_b.isPass;
         nPasses = from_b.nPasses;
-        for(Option o : Option.values()) { setOptionValue(o,from_b.getOptionValue(o)); }
+        for(Option o : Option.allValues) { setOptionValue(o,from_b.getOptionValue(o)); }
         seedLocation = getCell(from_b.seedLocation);
         getCell(occupiedCells,from_b.occupiedCells);
         words.copyFrom(from_b.words);
@@ -670,7 +670,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
         G.Assert(AR.sameArrayContents(score,from_b.score),"score mismatch");
         G.Assert(nPasses==from_b.nPasses,"nPasses mismatch");
         G.Assert(isPass==from_b.isPass,"isPass mismatch");
-        for(Option o : Option.values()) { G.Assert(getOptionValue(o)==from_b.getOptionValue(o),"Option %s mismatch",o); }
+        for(Option o : Option.allValues) { G.Assert(getOptionValue(o)==from_b.getOptionValue(o),"Option %s mismatch",o); }
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -726,7 +726,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 		v ^= Digest(r,isPass);
 		v ^= Digest(r,nPasses);
 		v ^= Digest(r,robotVocabulary);
-		for(Option o : Option.values()) { v ^= Digest(r,getOptionValue(o)); }
+		for(Option o : Option.allValues) { v ^= Digest(r,getOptionValue(o)); }
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
         return (v);
     }

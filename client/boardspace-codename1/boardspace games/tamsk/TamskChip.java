@@ -104,7 +104,7 @@ public class TamskChip extends chip<TamskChip> implements CommonConfig
 	}
 	// indexes into the balls array, usually called the rack
     static final TamskChip getChip(int n) 
-    	{ return(TamskId.values()[n].chip); 
+    	{ return(TamskId.allValues[n].chip); 
     	}
     
     /**

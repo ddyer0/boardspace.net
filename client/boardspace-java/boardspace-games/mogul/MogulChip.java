@@ -119,9 +119,9 @@ public class MogulChip extends chip<MogulChip>
 		 "blue-border",
 		 "pink-border"};
 	
-	enum colors  {brown,green,yellow,blue,pink};
+	enum colors  {brown,green,yellow,blue,pink; public static final colors[] allValues = values(); };
 	static int startingCards[] = {0,2,4,5,6,7};	// starting cards are brown, one with yellow,green, two with blue and pink
-	static int nColors = colors.values().length;
+	static int nColors = colors.allValues.length;
 	static MogulChip crashCard = null;
 	static MogulChip pokerChip = null;
 	static int playerChipOffset = 0;

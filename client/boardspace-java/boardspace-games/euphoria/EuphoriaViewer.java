@@ -614,7 +614,7 @@ private Color playerBackground[] = {
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
     	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/ncols,(double)(mainH/(nrows+1)));
+    	double cs = Math.min(mainW/ncols,(mainH/(nrows+1)));
     	bb.CELLSIZE = STANDARD_CELLSIZE = CELLSIZE = (int)cs;
     	// G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
@@ -738,7 +738,7 @@ private Color playerBackground[] = {
      {
          // draw the allegiance markers
          int CELLSIZE = gb.CELLSIZE;
-     	for(Allegiance allegiance : Allegiance.values())
+     	for(Allegiance allegiance : Allegiance.allValues)
      	{
      	int ord = allegiance.ordinal();
      	int val = gb.getAllegianceValue(allegiance);
@@ -1191,7 +1191,7 @@ private Color playerBackground[] = {
     	drawStackOnPlayer(gc,pl,gb,
     			gb.legalToHitPlayer(p.authority,sources,dests)?highlight:null,
     			pr,p.authority,
-    			xp-unitSize/3,G.Top(r)+(int)(unitSize*4),tip,fromHiddenWindow);
+    			xp-unitSize/3,G.Top(r)+(unitSize*4),tip,fromHiddenWindow);
     	boolean hit =false;
 		boolean hide = allPlayersLocal() && !fromHiddenWindow && (view==PlayerView.AutoArtifacts);
     	switch(view)
@@ -3184,7 +3184,7 @@ private Color playerBackground[] = {
 				    EuphoriaCell hitObject = hitCell(hp);
 					EPlayer p = bb.getPlayer(hitObject.color);
 					HiddenGameWindow hidden = findHiddenWindow(hp);
-					EPlayer.PlayerView pend = EPlayer.PlayerView.values()[hp.hit_index];
+					EPlayer.PlayerView pend = EPlayer.PlayerView.allValues[hp.hit_index];
 					if((hidden!=null)||(remoteViewer>=0)) { p.hiddenView = pend; }
 					else { p.view = pend; }
 					autoCardMode = false;

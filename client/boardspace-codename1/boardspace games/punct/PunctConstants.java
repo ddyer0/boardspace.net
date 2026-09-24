@@ -17,6 +17,7 @@
 package punct;
 
 import lib.G;
+import lib.InternationalStrings;
 import lib.OStack;
 import lib.CellId;
 
@@ -54,7 +55,7 @@ public interface PunctConstants
 		return(v);
 	}
 	}
-	public enum PunctColor { White,Black};
+	public enum PunctColor { White,Black; public static final PunctColor[] allValues = values(); };
 	
     public static PunctId[] chipPoolIndex = { PunctId.White_Chip_Pool, PunctId.Black_Chip_Pool };
 	
@@ -317,15 +318,22 @@ public interface PunctConstants
     static final String GoalMessage = "connect opposite sides of the board, or play your last piece while controlling more of the center";
     static final String LeftMessage = "#1 left";
     static final String CenterMessage = "#1 center";
-    static final String PunctStrings[] = {
+    
+    public static void putStrings()
+    {
+    	String PunctStrings[] = {
     		PlacePieceMessage,
     		GoalMessage,
     		LeftMessage,
     		CenterMessage,
     };
-    static final String PunctStringPairs[][] = {
-    		{"Punct","P\\u00FCnct"},
-    		{"Punct_variation","standard P\\u00FCnct"},
-    		{"Punct_family","P\\u00FCnct"},
+    	String PunctStringPairs[][] = {
+    		{"Punct","P\u00FCnct"},
+    		{"Punct_variation","standard P\u00FCnct"},
+    		{"Punct_family","P\u00FCnct"},
     };
+    		InternationalStrings.put(PunctStrings);
+    		InternationalStrings.put(PunctStringPairs);
+    }
+    
 }

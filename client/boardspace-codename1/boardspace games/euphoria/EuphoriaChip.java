@@ -254,5 +254,6 @@ public class EuphoriaChip extends chip<EuphoriaChip>
 		imagesLoaded = true;
  		}
 	}   
+
 	
 }

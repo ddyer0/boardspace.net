@@ -147,7 +147,7 @@ public class ChePlay extends commonRobot<CheBoard> implements Runnable,   RobotP
      * */
     public void StaticEval()
     {
-    	CheBoard evboard = (CheBoard)GameBoard.cloneBoard();
+    	CheBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));

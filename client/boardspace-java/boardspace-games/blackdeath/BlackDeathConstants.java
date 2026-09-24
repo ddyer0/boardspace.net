@@ -73,6 +73,7 @@ public interface BlackDeathConstants
 	
 	enum DiseaseMod {
 		None,Wet,Cold,Warm,Crowd;
+		static final DiseaseMod[]allValues = values();
 	}
 	enum CardEffect {
 		SlowTravel,
@@ -106,6 +107,7 @@ public interface BlackDeathConstants
 		d6_5w(5,"white-d6-5",	0.6,0.47,1.46),
 		d6_6w(6,"white-d6-6",	0.6,0.47,1.28);
 		int faceValue=0;
+		static final Dice[] allValues = values();
 		// constructor
 		Dice(int v,String str,double x,double y, double s) 
 		{ faceValue = v; imageName = str; scale[0]=x; scale[1]=y; scale[2]=s;}
@@ -113,9 +115,10 @@ public interface BlackDeathConstants
 		double scale[] = new double[3];
 		String imageName;
 		public String getName() { return(imageName); } 
-		public static String[] getNames()
+		static String[]allNames = getNames();
+		private static String[] getNames()
 				{
-				Dice d[] = values();
+				Dice d[] = allValues;
 				String names[] = new String[d.length];
 				for(int i=0;i<d.length;i++) { names[i] = d[i].imageName; }
 				return(names);
@@ -241,6 +244,7 @@ static public BlackDeathId find(String s)
 
 enum BlackDeathColor implements Digestable
 { Red, Orange, Brown, Yellow, Green, Blue, Purple;
+  static final BlackDeathColor[]allValues = values();
   BlackDeathChip chip = null;
   public long Digest(Random r) {
 	return ((ordinal()+1)*r.nextLong());

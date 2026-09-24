@@ -111,7 +111,7 @@ public class BugsChip extends chip<BugsChip> implements CommonConfig,CompareTo<B
     			? GoalCard.getGoalCard(n)
     			: n>=BUGOFFSET 
     				? BugCard.getBugCard(n) 
-    				: BugsId.values()[n].chip); 
+    				: BugsId.allValues[n].chip); 
     }
     /**
      * this is the basic hook to substitute an alternate chip for display.  The canvas getAltChipSet
@@ -273,6 +273,7 @@ public class BugsChip extends chip<BugsChip> implements CommonConfig,CompareTo<B
 		Forest(BugsChip.ForestTile);
 		Terrain(BugsChip c) { tile = c; }
 		BugsChip tile;
+		static final Terrain[] allValues = values();
 		public String menuItem() {
 			return name();
 		}

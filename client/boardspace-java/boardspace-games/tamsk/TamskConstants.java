@@ -45,6 +45,7 @@ public interface TamskConstants
 		Timer_F, ToggleEye,StartFast,
 		StopTime,RestartTime, ToggleSand,
 		;
+		public static final TamskId[] allValues = values();
 		TamskChip chip;
 	
 	}

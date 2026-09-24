@@ -23,7 +23,7 @@ import bridge.Config;
 import bridge.Container;
 import bridge.Frame;
 import bridge.JMenu;
-import bridge.JMenuBar;
+//import bridge.JMenuBar;
 import bridge.JPopupMenu;
 import bridge.MasterForm;
 import bridge.MasterPanel;
@@ -48,13 +48,13 @@ public class TabFrame extends Frame
 	public CanvasRotater getCanvasRotater() { return rotater; }
 	public void setEnableRotater(boolean v) { enableRotater = v;}
 	public DeferredEventManager canSavePanZoom = null;
-	private boolean useMenuBar = false;		// if true, use the local menu bar
-	public JMenuBar jMenuBar = null;
+	//private boolean useMenuBar = false;
+	//private JMenuBar jMenuBar = null;
 
 	JPopupMenu popupMenuBar = null;
 
 
-	public void setJMenuBar(JMenuBar m) { jMenuBar = m;  }
+	//private void setJMenuBar(JMenuBar m) { jMenuBar = m;  }
 
 	public void setVisible(boolean vis)
 	{	
@@ -84,7 +84,7 @@ public class TabFrame extends Frame
 	MasterForm.getMasterPanel().adjustTabStyles();
 	}
 	public void addToMenuBar(JMenu m,DeferredEventManager l)
-	{	
+	{	/*
 		if(useMenuBar)
 		{	if(jMenuBar==null) {  setJMenuBar(new JMenuBar()); }
 			m.setVisible(true);
@@ -93,7 +93,9 @@ public class TabFrame extends Frame
 			jMenuBar.add(m);
 		}
 		}
-		else {
+		else
+		*/
+		{
 			boolean isNew = popupMenuBar==null;
 			if(isNew) 
 				{ popupMenuBar=new JPopupMenu();
@@ -111,12 +113,14 @@ public class TabFrame extends Frame
 
 	
 	public void removeFromMenuBar(JMenu m)
-	{	
+	{	/*
 		if(useMenuBar)
 		{
 			if(jMenuBar!=null) { jMenuBar.remove(m); }
 		}
-		else {
+		else 
+		*/
+		{
 			if(popupMenuBar!=null) { popupMenuBar.remove(m); }
 		}
 	}

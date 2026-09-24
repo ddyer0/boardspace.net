@@ -506,6 +506,7 @@ public interface GoConstants
         HitClassifyAllButton(null,-1),
         HitShowScoring(null,-1),
   	;
+		public static final GoId[] allValues = values();
     	String shortName = name();
     	GoChip chip;
     	public String shortName() { return(shortName); }

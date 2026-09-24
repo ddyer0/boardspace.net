@@ -86,7 +86,7 @@ public class MeridiansChip extends chip<MeridiansChip> implements CommonConfig
 	}
 
     // indexes into the balls array, usually called the rack
-    static final MeridiansChip getChip(int n) { return(MeridiansId.values()[n].chip); }
+    static final MeridiansChip getChip(int n) { return(MeridiansId.allValues[n].chip); }
     
     /**
      * this is the basic hook to substitute an alternate chip for display.  The canvas getAltChipSet

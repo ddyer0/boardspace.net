@@ -302,7 +302,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
         int bishop = ShogiChip.PieceType.Bishop.ordinal();
         
         GC.frameRect(gc,Color.black,r);
-        for(ShogiChip.PieceType type : ShogiChip.PieceType.values())
+        for(ShogiChip.PieceType type : ShogiChip.PieceType.allValues)
         {
         	if(type.demoted==type)
         	{	int ord = type.ordinal();

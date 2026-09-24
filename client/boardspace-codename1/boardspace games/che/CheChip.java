@@ -34,14 +34,14 @@ public class CheChip extends chip<CheChip>
 	public int index = 0;			// index into the chips array
 	public String name = "";
 	public int colorInfo[] = null;
-	enum ChipColor { light, dark }
+	enum ChipColor { light, dark ; public static final ChipColor[] allValues = values(); }
 	public ChipColor dotColor;
 	// constructor
 	private CheChip(int i,int []color,Image im,String na,double[]sc,long ran,String nam)
 	{	index = i;
 		scale=sc;
 		image=im;
-		dotColor = ChipColor.values()[index/2];
+		dotColor = ChipColor.allValues[index/2];
 		colorInfo = color;
 		file = na;
 		randomv = ran;

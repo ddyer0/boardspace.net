@@ -115,6 +115,7 @@ public interface PlateauConstants
     	Blue("B","Blue"),
     	Red("R","Red"),
     	Orange("O","Orange");
+    	public static final Face[] allValues = values();
     	int bitValue = 0;
     	Face(String ch,String na)
     	{	shortName = ch;
@@ -152,6 +153,7 @@ public interface PlateauConstants
     	RedMask(4,	10, "RM",	Face.Red,  Face.Blank),
     	Twister(5,	15, "TW",	Face.Orange, Face.Blank),
     	Ace(6,		21, "A",	Face.Red,Face.Blue);
+    	public static final PieceType[] allValues = values();
     	int index;
     	int value;
     	String idstr;
@@ -166,7 +168,7 @@ public interface PlateauConstants
     		bottomColor = bot;
     	}
     }
-    static final int NPIECETYPES = PieceType.values().length; // number of types of pieces
+    static final int NPIECETYPES = PieceType.allValues.length; // number of types of pieces
 
 
     // codes for hit objects > 0 are draggable objects

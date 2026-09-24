@@ -55,7 +55,7 @@ public interface PunctConstants
 		return(v);
 	}
 	}
-	public enum PunctColor { White,Black};
+	public enum PunctColor { White,Black; public static final PunctColor[] allValues = values(); };
 	
     public static PunctId[] chipPoolIndex = { PunctId.White_Chip_Pool, PunctId.Black_Chip_Pool };
 

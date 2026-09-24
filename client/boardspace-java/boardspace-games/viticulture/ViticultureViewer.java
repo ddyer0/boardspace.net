@@ -1433,7 +1433,7 @@ private void drawPlayerBoard(Graphics gc,
         		// special tweak for selecting new rooster positions, 
         		// slide the old off the the right a little so the 
         		// bonuses can be seen. 
-        		double fry = ((double)col+(select && (col==3) && (row<6) ? 0.5: 0))/ncols;
+        		double fry = (col+(select && (col==3) && (row<6) ? 0.5: 0))/ncols;
     			int xp = G.interpolate(fry, llx,rrx);
     			int yp = G.interpolate(fry, lly, rry);
     			boolean canSelectThis = canSelect;
@@ -1911,7 +1911,7 @@ private void drawPlayerBoard(Graphics gc,
     	{	
     		Viticulturemovespec m = e.nextElement();
     		while(m!=null) 
-    		{ 	ViticultureChip chip = ViticultureChip.getChip(ChipType.values()[m.from_index],pb.color);
+    		{ 	ViticultureChip chip = ViticultureChip.getChip(ChipType.allValues[m.from_index],pb.color);
     			if(chip.draw(gc,this,mstep,xleft,ytop,highlight,ViticultureId.WineSelection,null))
     			{
     				highlight.hitObject = m;
@@ -3012,7 +3012,7 @@ private void drawPlayerBoard(Graphics gc,
     	int x0 = left+xscale*2;
     	GC.setFont(gc,standardPlainFont());
     	int tleft = left+yscale;
-    	for(ScoreType e : ScoreType.values()) 
+    	for(ScoreType e : ScoreType.allValues) 
     	{
     		Color c = e.color;
     		if(c!=null)
@@ -3030,7 +3030,7 @@ private void drawPlayerBoard(Graphics gc,
 			int highx = x;
     		int y0 = y;
     	    pb.getRooster().draw(gc,this,yscale*3/2,left+xscale,y+yscale/2,null);
-   		for(ScoreType e : ScoreType.values()) 
+   		for(ScoreType e : ScoreType.allValues) 
     		{
     			Color c = e.color;
     			int plusy = y;
@@ -3630,10 +3630,10 @@ private void drawPlayerBoard(Graphics gc,
 		
 		int centerX = G.centerX(br);
 		int centerY = G.centerY(br);
-		int xp = (int)(centerX-totalW/2);
+		int xp = (centerX-totalW/2);
 		int cardH = Math.min(h,step*3+(extraHeight ? step*3/4 : 0));
 		step = Math.min(step,(int)(cardH*0.27));
-		int yp = (int)(centerY-cardH/2);
+		int yp = (centerY-cardH/2);
 		Rectangle fieldRect = new Rectangle(xp,yp,totalW,cardH);
     ViticultureChip.Scrim.image.stretchImage(gc, fieldRect);  
     	
@@ -3714,7 +3714,7 @@ private void drawPlayerBoard(Graphics gc,
 						? s.get(OtherCardsMessage,apname)
 						: s.get(apCards ?  YourCardsMessage : AvailableCardsMessage);
 		GC.Text(gc, true, xp+totalW/20, yp, cardW,step/2,Color.black,null,cardMessage);
-		int cardStep = Math.min(cardH/((cardDisplay1==null)?3:4),(int)( cardW/Math.max(3, (nCards+1))));
+		int cardStep = Math.min(cardH/((cardDisplay1==null)?3:4),( cardW/Math.max(3, (nCards+1))));
 		int secondCardStep = cardStep;
 		int cardY = yp+step*3/2;
 		if(unusedCards.height()>0) 
@@ -3919,8 +3919,8 @@ private void drawPlayerBoard(Graphics gc,
 
 		if(apCards && (hi>=0))
 		{	int sz = cardH/4;
-			if(StockArt.NoEye.draw(gc, this, sz*2/3, (int)(xp+sz/2),
-		        		(int)(yp+sz/2),
+			if(StockArt.NoEye.draw(gc, this, sz*2/3, (xp+sz/2),
+		        		(yp+sz/2),
 		        		highlightAll, 
 		        		ViticultureId.Eye,
 		        		null,1.1,1.3))
@@ -4047,8 +4047,8 @@ private void drawPlayerBoard(Graphics gc,
 		
 		int centerX = G.centerX(br);
 		int centerY = G.centerY(br);
-		int xp = (int)(centerX-totalW/2);
-		int yp = (int)(centerY-step*3/2-(extraHeight ? step/3 : 0));
+		int xp = (centerX-totalW/2);
+		int yp = (centerY-step*3/2-(extraHeight ? step/3 : 0));
 		int cardH = step*3+(extraHeight ? step*3/4 : 0);
 		int cost = pb.committedCost();
 		
@@ -4100,7 +4100,7 @@ private void drawPlayerBoard(Graphics gc,
  
 		String cardMessage = AvailableCardsMessage;
 		GC.Text(gc, true, xp+totalW/20, yp, cardW,step/2,Color.black,null,cardMessage);
-		int cardStep = Math.min(cardH/3,(int)( cardW/Math.max(3, (nCards+1))));
+		int cardStep = Math.min(cardH/3,( cardW/Math.max(3, (nCards+1))));
 		int cardY = yp+(int)(step*1.2);
 
 		
@@ -4141,7 +4141,7 @@ private void drawPlayerBoard(Graphics gc,
     		HitPoint highlight0,HitPoint highlightAll,Hashtable<ViticultureCell,Viticulturemovespec>targets)
     {	
     	HitPoint highlight = highlight0;
-        Option options[] = Option.values();
+        Option options[] = Option.allValues;
 		Rectangle fieldRect = br;
 		int w = G.Width(fieldRect);
 		int h = G.Height(fieldRect);
@@ -4175,7 +4175,7 @@ private void drawPlayerBoard(Graphics gc,
 			TextButton toggle = new TextButton(op.message,ViticultureId.SetOption,op.message,Color.lightGray,null,null); 
 			boolean on = gb.testOption(op);
 			toggle.setValue(on);
-			toggle.textColor = on ? Color.yellow : Color.black;
+			toggle.idleTextColor = toggle.textColor = on ? Color.yellow : Color.black;
 			toggle.setBounds(x,y,w*2/3,step);
 			int l = x-step/2;
 			int r = x+fullW+step/2;
@@ -4263,8 +4263,8 @@ private void drawPlayerBoard(Graphics gc,
 		
 		int centerX = G.centerX(br);
 		int centerY = G.centerY(br);
-		int xp = (int)(centerX-totalW/2);
-		int yp = (int)(centerY-step*3/2-(extraHeight ? step/3 : 0));
+		int xp = (centerX-totalW/2);
+		int yp = (centerY-step*3/2-(extraHeight ? step/3 : 0));
 		int cardH = step*3+(extraHeight ? step*3/4 : 0);
 		
 		Rectangle fieldRect = new Rectangle(xp,yp,totalW,cardH);
@@ -4478,7 +4478,7 @@ private void drawPlayerBoard(Graphics gc,
     			}}
     	}}
 
-    	int step = (int)(w/Math.max(6,(nBuilds+tourBuilds+2)));
+    	int step = (w/Math.max(6,(nBuilds+tourBuilds+2)));
     	 
     	int buildW = step*((nBuilds==1)?2:nBuilds);
     	int tourW = tourBuilds*step;
@@ -5029,8 +5029,8 @@ private void drawPlayerBoard(Graphics gc,
 		double neww = (G.Width(r)*zoomscale);
 		double newh = (G.Height(r)*zoomscale);
 		Rectangle newbr = new Rectangle(
-				(int)((G.Left(r)-zoomleft)),
-				(int)((G.Top(r)-zoomtop)),
+				((G.Left(r)-zoomleft)),
+				((G.Top(r)-zoomtop)),
 				(int)neww,
 				(int)newh);
 		return newbr;
@@ -6399,7 +6399,7 @@ private void drawPlayerBoard(Graphics gc,
         		  PerformAndTransmit( "ECommence");
         		  break;
         	  case ChooseOptions:
-         		  PerformAndTransmit( "ECommence " +mainBoard.options.memberString(Option.values()));
+        	  PerformAndTransmit( "ECommence " +mainBoard.options.memberString(Option.allValues));
          		  break;
         	  default:
         		  break;

@@ -171,7 +171,7 @@ public class CarnacMovespec extends commonMove implements CarnacConstants
     static double glyphScale[] = {1.8,1.0,0.0,0.1 };
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
-    public Text shortMoveText(commonCanvas canvas, Font font)
+    public Text shortMoveText(commonCanvas canvas,Font f)
     {
         switch (op)
         {

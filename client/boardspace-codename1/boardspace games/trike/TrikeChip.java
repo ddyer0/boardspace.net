@@ -97,7 +97,7 @@ public class TrikeChip extends chip<TrikeChip> implements CommonConfig
 	}
 
     // indexes into the balls array, usually called the rack
-    static final TrikeChip getChip(int n) { return(TrikeId.values()[n].chip); }
+    static final TrikeChip getChip(int n) { return(TrikeId.allValues[n].chip); }
     
     /**
      * this is the basic hook to substitute an alternate chip for display.  The canvas getAltChipSet

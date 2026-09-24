@@ -1097,7 +1097,6 @@ void doSwap(replayMode replay)
  		if(offset==1) { all.addElement(new Hexmovespec(SWAP,whoseTurn)); }
  	}
  	cell<hexCell> cells[] = getCellArray();
- 	
  	for(int step = offset-1,last=cells.length; step<last; step+=skip)
  	{ // for typical hex boards most of the cells are empty, so iterting by skip is better
  	  // than filtering on cellInthreadGroup

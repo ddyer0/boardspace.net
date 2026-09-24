@@ -69,6 +69,7 @@ public interface MajoritiesConstants
     	BoardLocation(null),
     	EmptyBoard(null), 
     	;
+		public static final MajoritiesId[] allValues = values();
     	String shortName = name();
     	MajoritiesChip chip;
     	public String shortName() { return(shortName); }

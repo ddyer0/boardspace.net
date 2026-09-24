@@ -93,7 +93,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     public boolean tournament_setup = false;
     public boolean tournament_setup_done = false;
     private GipfCell TamskCenter = null;
-    public GipfCell rack[][] = new GipfCell[2][Potential.values().length];
+    public GipfCell rack[][] = new GipfCell[2][Potential.allValues.length];
     public GipfCell captures[]=new GipfCell[2];
     public int initial_height = 0;
     public int currentGipfCount[] = new int[2];					// count of double pieces currently on the board
@@ -197,7 +197,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         Random r = new Random(63472);
         removalStack = new GipfCell(r,GipfId.NoHit,-11);
         for(int i=0;i<2;i++)
-        {	for(Potential p : Potential.values())
+        {	for(Potential p : Potential.allValues)
         		{
         		GipfCell c = new GipfCell(r,PlayerReserve[i],p.ordinal());
         		c.potential = p;
@@ -306,7 +306,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         {
         for(int i=0;i<2;i++)
         	{
-        	for(Potential p : Potential.values())
+        	for(Potential p : Potential.allValues)
         		{
         		int n = p==Potential.None ? 3 : (monoculture[i]==null ? 6 : 30);
         		int norm = p.ordinal();

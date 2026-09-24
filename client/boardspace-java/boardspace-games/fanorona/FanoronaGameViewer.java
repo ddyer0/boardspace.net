@@ -204,16 +204,16 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
         // calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)mainH/nrows);
     	SQUARESIZE = (int)cs;
-    	boardW = (int)(ncols*SQUARESIZE);
-    	boardH = (int)(nrows*SQUARESIZE);
+    	boardW = (ncols*SQUARESIZE);
+    	boardH = (nrows*SQUARESIZE);
     	contextRotation = 0;
     	}
     	else
     	{
     	double cs = Math.min((double)mainW/nrows,(double)mainH/ncols);
     	SQUARESIZE = (int)cs;
-    	boardW = (int)(nrows*SQUARESIZE);
-    	boardH = (int)(ncols*SQUARESIZE);
+    	boardW = (nrows*SQUARESIZE);
+    	boardH = (ncols*SQUARESIZE);
     	contextRotation = Math.PI/2;
     	}
     	int extraW = Math.max(0,(mainW-boardW)/2);
@@ -584,7 +584,7 @@ boolean startMotion(FanId hitObject,FanoronaCell cell,FanoronaChip chip)
    		FanId hitObject = (FanId)hp.hitCode;
         FanoronaState state = b.getState();
 		boolean movingObject = hasMovingObject(hp);
-		FanoronaCell cell = b.getCell((FanoronaCell)hitCell(hp));
+		FanoronaCell cell = b.getCell(hitCell(hp));
 		FanoronaChip cup = (cell==null) ? null : cell.topChip();
         if(!movingObject && (cup!=null))	// nothing moving and we hit something movable
         { if(isDesignation(cell)) { PerformAndTransmit("Remove "+cell.col+" "+cell.row+" "+b.playerIndex(cup)); }

@@ -29,12 +29,12 @@ class ChipStack extends OStack<TriadChip>
 	public TriadChip[] newComponentArray(int n) { return(new TriadChip[n]); }
 }
 public class TriadChip extends chip<TriadChip>
-{	enum ChipColor { red,green,blue};
+{	enum ChipColor { red,green,blue; public static final ChipColor[] allValues = values(); };
 	ChipColor color ;
 	public char colorName;
 	// constructor
 	private TriadChip(int i,Image im,String na,double[]sc,char con,long ran)
-	{	color = ChipColor.values()[i];
+	{	color = ChipColor.allValues[i];
 		scale=sc;
 		image=im;
 		file = na;

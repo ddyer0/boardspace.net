@@ -79,7 +79,7 @@ public class CarnacPlay extends commonRobot<CarnacBoard> implements Runnable,
     {
         InitRobot(v, info, strategy);
         GameBoard = (CarnacBoard) gboard;
-        board = (CarnacBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         MONTEBOT = true;
         terminalNodeOptimize = true;
     	switch(strategy)

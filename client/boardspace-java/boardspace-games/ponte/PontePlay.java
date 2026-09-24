@@ -107,7 +107,7 @@ public class PontePlay extends commonRobot<PonteBoard> implements Runnable, Pont
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (PonteBoard) gboard;
-        board = (PonteBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         MONTEBOT = true;
         terminalNodeOptimize = true;
         switch(strategy)

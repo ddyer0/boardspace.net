@@ -1116,7 +1116,7 @@ public static String screenSummary()
 
 /** get an actionevent with source.  This papers over platform differences with codename1 */
 public static ActionEvent actionEvent(Object mi)
-{	G.print("make actionevent ",mi);
+{	
 	return new bridge.ActionEvent(mi,0,"unknown");
 }
 }

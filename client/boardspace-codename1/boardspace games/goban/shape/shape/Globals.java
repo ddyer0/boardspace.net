@@ -8,9 +8,9 @@ public interface Globals
 	public static final int shape_database_generation = 7;		//shapes up to this size are in the db
 	public static final int max_board_size = 19;				//maximum go board size
 	
-	enum Move_Order { First(0),Second(1); int codeValue; Move_Order(int v){ codeValue=v; } };
-	enum X_Position { Left(0), Center(2), Right(4); int codeValue; X_Position(int v) { codeValue=v; } }
-	enum Y_Position { Top(0), Center(6), Bottom(12); int codeValue; Y_Position(int v) { codeValue=v; } }
+	enum Move_Order { First(0),Second(1); public static final Move_Order[] allValues = values(); int codeValue; Move_Order(int v){ codeValue=v; } };
+	enum X_Position { Left(0), Center(2), Right(4); public static final X_Position[] allValues = values(); int codeValue; X_Position(int v) { codeValue=v; } }
+	enum Y_Position { Top(0), Center(6), Bottom(12); public static final Y_Position[] allValues = values(); int codeValue; Y_Position(int v) { codeValue=v; } }
 	
 	
 	/* decodes of integer values for fate */

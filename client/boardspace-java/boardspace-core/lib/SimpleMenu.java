@@ -149,7 +149,7 @@ public class SimpleMenu {
 		{
 		if(hpX<0 && hpY<0) { hp = null; }
 		NativeMenuInterface nextMenu=null;
-		Rectangle r = (Rectangle)G.copy(null,menuRectangle);
+		Rectangle r = G.copy(null,menuRectangle);
 		G.SetLeft(r,G.Left(r)+sx);
 		G.SetTop(r,G.Top(r)+sy);
 		GC.fillRect(gc, Color.white,r);

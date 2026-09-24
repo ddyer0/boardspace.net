@@ -361,7 +361,7 @@ public class EuphoriaPlay extends commonMPRobot<EuphoriaBoard>
      * information about the static analysis of the current position.
      * */
     public void StaticEval()
-    {	EuphoriaBoard evboard = (EuphoriaBoard)GameBoard.cloneBoard();
+    {	EuphoriaBoard evboard = GameBoard.cloneBoard();
     	int nplay = evboard.nPlayers();
     	for(int i=0;i<nplay; i++)
     	{	double sc = ScoreForPlayer(evboard,i,true);
@@ -515,7 +515,7 @@ public commonMove DoMonteCarloFullMove()
         double speedMultiplier = board.nPlayers()<=2 ? 1 : 1.5;
         monte_search_state.timePerMove = randomize 
         									? choice?4:(speedMultiplier*evaluator.time)/2
-        									: strategy==TESTBOT_LEVEL_2 ? 600 : 1;	
+        									: strategy==TESTBOT_LEVEL_2 ? 60 : 1;	
         monte_search_state.alpha =choice ? 1.0 : evaluator.alpha;
         monte_search_state.sort_moves = evaluator.sortmoves;
            

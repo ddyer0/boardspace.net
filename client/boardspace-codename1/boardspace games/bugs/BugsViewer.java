@@ -23,6 +23,7 @@ import bridge.Color;
 import bridge.File;
 import bridge.FileOutputStream;
 import bridge.JMenuItem;
+import bugs.BugsChip.Terrain;
 import bugs.data.MasterSpecies;
 import bugs.data.Profile;
 import bugs.data.Taxonomy;
@@ -52,6 +53,7 @@ import lib.GC;
 import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.ImageStack;
+import lib.InternationalStrings;
 import lib.StockArt;
 import lib.Text;
 import lib.TextButton;
@@ -240,7 +242,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
         if(G.debug() && G.getBoolean("desktop",false))
         {	// initialize the translations when debugging, so there
         	// will be console chatter about strings not in the list yet.
-        	BugsConstants.putStrings();
+        	BugsViewer.putStrings();
         	makeDeck = myFrame.addAction(debugMenu,"make deck",deferredEvents);
         }
         {
@@ -563,7 +565,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
         commonPlayer pl = getPlayerOrTemp(0);
         double playersize = G.Width(pl.playerBox)*G.Height(pl.playerBox)*nPlayers;
-        return boardW*boardH+playersize;
+        return layout.fails>0 ? 0 : boardW*boardH+playersize;
     }
     boolean flatPlayer = false;
     /**
@@ -2541,6 +2543,60 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     {	
     	return TextChunk.colorize(str,G.getTranslations(),gameMoveText());
     }
+
+	public static void putStrings()
+	{
+		String GameStrings[] = 
+		{  
+			BugsConstants.PlayState,
+			BugsConstants.ExplainSeeBugDeck,
+			BugsConstants.GoalContents,
+			BugsConstants.ExplainSeeGoalDeck,
+			BugsConstants.PreyMessage,
+			BugsConstants.FlyingMessage,
+			BugsConstants.TotalMessage,
+			BugsConstants.DeckContents,
+			BugsConstants.ScoreMessage,
+			BugsConstants.PurchaseExplanation,
+			BugsConstants.ConfirmDescription,
+		BugsConstants.CostMessage,
+		BugsConstants.BonusCardMessage,
+		BugsConstants.BugCardMessage,
+		BugsConstants.EndPurchaseMessage,
+		BugsConstants.SequentialPlayState,
+		BugsConstants.EndPlacingMessage,
+		BugsConstants.EndBonusMessage,
+		BugsConstants.FinalMessage,
+		BugsConstants.RoundMessage,
+		BugsConstants.ReadyButton,
+		BugsConstants.ExplainReady,
+	    BugsConstants.ScavengerMessage,
+	    BugsConstants.CanFlyMessage,
+	    BugsConstants.PredatorMessage,
+	    BugsConstants.VegetarianMessage,
+	    BugsConstants.NoEatMessage,
+	    BugsConstants.ParasiteMessage,
+	    BugsConstants.VictoryCondition
+			
+		};
+		String GameStringPairs[][] = 
+		{   {"BugSpiel_family","BugSpiel"},
+			{"BugSpiel-parallel_variation","BugSpiel Parallel, small board"},
+			{"BugSpiel-parallel-large_variation","BugSpiel Parallel, large board)"},
+			{"BugSpiel-sequential_variation","BugSpiel (small board)"},
+			{"BugSpiel-sequential-large_variation","BugSpiel (large board)"},
+			{"BugSpiel-sequential","BugSpiel (small board)"},
+			{"BugSpiel-sequential-large","BugSpiel (large board)"},
+	
+		};
+		InternationalStrings.put(GameStrings);
+		InternationalStrings.put(GameStringPairs);
+		DietGoal.putStrings();
+		InternationalStrings.put(Terrain.values());
+		BugsChip.Terrain.putStrings();
+		
+		
+	}
     
 }
 

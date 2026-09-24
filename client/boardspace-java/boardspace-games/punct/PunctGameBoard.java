@@ -170,7 +170,7 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
     private void makePieces()
        {
     	int id=0;	
-       	PunctColor colors[] = PunctColor.values();
+       	PunctColor colors[] = PunctColor.allValues;
        	for(int player=FIRST_PLAYER_INDEX; player<=SECOND_PLAYER_INDEX; player++)
        	{	int idx=0;
        		PunctColor pcolor = colors[player];
@@ -324,7 +324,7 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
     public void doInit(String gtype,long key,int players,int rev)
     {
     	randomKey = key;
-    	PunctColor vs[] = PunctColor.values();
+    	PunctColor vs[] = PunctColor.allValues;
     	revision = rev;
     	picked_row = -1;
     	picked_col = (char)0;

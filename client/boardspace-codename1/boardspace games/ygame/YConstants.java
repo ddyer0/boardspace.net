@@ -82,6 +82,7 @@ public interface YConstants
     	White_Chip_Pool("W"),
     	BoardLocation(null),
     	EmptyBoard(null),;
+		public static final YId[] allValues = values();
     	String shortName = name();
     	YChip chip;
     	public String shortName() { return(shortName); }

@@ -697,9 +697,9 @@ class BugBoard
     	for(int lim=myGroup.size()-1; lim>=0; lim--)
     	{
     		BugCell c = myGroup.elementAt(lim);
-    		for(int dir = 0; dir<6; dir++)
+    		for(int dir = 0; dir<CELL_FULL_TURN; dir++)
     		{
-    			BugCell adj = c.exitTo(dir);
+    			BugCell adj = c.fastExitTo(dir);
     			if(adj!=null)
     			{
     				Bug adjCritter = adj.critter(this);
@@ -724,7 +724,6 @@ class BugBoard
     	return some;
     }
     
-    private boolean newway = true;
     int step = 0;
     private void doDoneNewWay(BugCell dest,BugMovespec m,replayMode replay)
     {	step++;
@@ -831,51 +830,12 @@ class BugBoard
     }
     
     
-	private void doDestOldWay(BugCell dest,BugMovespec m,replayMode replay)
-	{
-		boolean cap = doCaptures(dest.critter(this),m,replay,null); 
-	        if (board_state==BugState.Resign)
-	        {
-	            win[nextPlayer[whoseTurn]] = true;
-	    		setState(BugState.Gameover);
-	        }
-	        else
-	        {
-	        if (cap ) 
-	        { 
-	          if(addGrowMoves(null,whoseTurn))
-	          {
-	              setState(BugState.Grow);
-	          }
-	          else
-	          {
-	        	  cap = false;
-	          }
-	        }
-	        if(!cap)
-	        {	
-	        	setNextPlayer(replay);
-	        	setState(BugState.Play);
-	        }
-	        if(!hasMoves()) 
-	        	{ win[whoseTurn]=true; 
-	        	  setState(BugState.Gameover); 
-	        	}
-
-	        }
-	}
-	
     private void doDone(BugMovespec m,replayMode replay)
     {	BugCell dest = getDest();
         acceptPlacement();
         if(dest!=null)
         {
-	        if(newway)
-	        {	doDoneNewWay(dest,m,replay);
-	        }
-	        else
-	        {	doDestOldWay(dest,m,replay);   
-	        }
+        	doDoneNewWay(dest,m,replay);
         }
     }
 
@@ -1329,7 +1289,7 @@ public void findBugs(Bug from)
 		BugCell c = from.elementAt(lim);
 		for(int dir=0; dir<CELL_FULL_TURN;dir++)
 		{
-			BugCell adj = c.exitTo(dir);
+			BugCell adj = c.fastExitTo(dir);
 			if(adj!=null && adj.topChip()==null)
 			{
 				BugMovespec m = new BugMovespec(MOVE_DROPB,adj.col,adj.row,0);

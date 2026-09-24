@@ -213,15 +213,15 @@ public class BlackDeathChip extends chip<BlackDeathChip> implements OnlineConsta
 		PlayerChips = new BlackDeathChip[chips.length];
 		
 
-		BlackDeathColor colors[] = BlackDeathColor.values();
+		BlackDeathColor colors[] = BlackDeathColor.allValues;
 		for(int i=0;i<PlayerChips.length;i++) 
 		{ BlackDeathColor color = colors[i];
 		  color.chip = PlayerChips[i] = new BlackDeathChip(chips[i],color);
 		}
 
-		String names[] = Dice.getNames();
+		String names[] = Dice.allNames;
 		Image dice[] = forcan.load_masked_images(DICEPATH, names);
-		Dice dv[] = Dice.values();
+		Dice dv[] = Dice.allValues;
 		for(int i=0;i<dv.length; i++)
 			{
 			BDice[i] = dv[i].chip = new BlackDeathChip(dv[i],dice[i]);		

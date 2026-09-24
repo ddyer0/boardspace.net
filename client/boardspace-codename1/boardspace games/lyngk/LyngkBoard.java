@@ -1145,7 +1145,7 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
 	 		  else if(all==null) { return(true); }
 	 		  int newHeight = moving.height()+to.height();
 	 		  int limit = variation.heightLimit();
-	 		  G.Assert(!to.onBoard || (newHeight<=limit), "illegal stack plan");
+	 		  if(DEBUG) { G.Assert(!to.onBoard || (newHeight<=limit), "illegal stack plan"); }
 	 		  if(all!=null) 
 	 		  	{ 
 	 		  	  if(robotBoard && (newHeight==InstantWinHeight))

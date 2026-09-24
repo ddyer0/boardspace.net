@@ -199,7 +199,7 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
                 pm = splice;
             }
 
-            pm = (movespec) pm.best_move();
+            pm = pm.best_move();
         }
 
         return (m);
@@ -240,7 +240,7 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
             }
             else
             {
-                planned_sequence = (movespec) planned_sequence.best_move(); //remember the rest of the plan
+                planned_sequence = planned_sequence.best_move(); //remember the rest of the plan
                 start_of_sequence = sequence_board.lastMove; //remember the result, as cleaned up
             }
         }
@@ -260,7 +260,6 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
         sequence_board.copyFrom(GameBoard);
         searchForPlayer = playerindex;
         timeLimit = adjustTime(timeLimit,20-board.moveNumber());
-        board.initRobotValues(this);
     }
     public commonMove DoAlphaBetaFullMove()
     {

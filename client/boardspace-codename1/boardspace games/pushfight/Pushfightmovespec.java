@@ -228,7 +228,7 @@ public class Pushfightmovespec extends commonMove implements PushfightConstants
      * @see lib.TextChunk
      * @return a Text object
      */
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
         switch (op)
         {

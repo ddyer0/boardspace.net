@@ -277,7 +277,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
       gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
     private void drawAltBoards(Graphics gc,MorelliBoard gb,HitPoint highlight,Rectangle rect)
-    {	Setup setups[] = Setup.values();
+    {	Setup setups[] = Setup.allValues;
     	int sidx = 0;
     	int nBoards = setups.length - 2;	// exclude free and the main one
     	int szw = G.Width(rect)/nBoards;

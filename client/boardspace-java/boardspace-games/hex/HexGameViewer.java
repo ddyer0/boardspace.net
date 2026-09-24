@@ -340,8 +340,8 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     	CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(nrows*CELLSIZE);
+    	int boardW = (ncols*CELLSIZE);
+    	int boardH = (nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;
@@ -428,7 +428,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
             while (nc-- > 0)
             {	int rx = Random.nextInt(rand, spacex);
                 int ry = Random.nextInt(rand, spacey);
-                c.drawChip(gc,this,chip.getAltDisplayChip(rx+ry),(int)CELLSIZE,G.Left(r)+CELLSIZE/2+rx,G.Top(r)+CELLSIZE/2+ry,null);
+                c.drawChip(gc,this,chip.getAltDisplayChip(rx+ry),CELLSIZE,G.Left(r)+CELLSIZE/2+rx,G.Top(r)+CELLSIZE/2+ry,null);
              }
         }
     }

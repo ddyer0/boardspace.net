@@ -1391,7 +1391,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         {
         case MOVE_SELECT:
         	{	
-        	ChessChip chip = ChessChip.getChip(ChessPiece.values()[m.from_row],getPlayerColor(whoseTurn),true);
+        	ChessChip chip = ChessChip.getChip(ChessPiece.allValues[m.from_row],getPlayerColor(whoseTurn),true);
         	selectedForPromotion = chip;
         	m.chip = chip;
         	}

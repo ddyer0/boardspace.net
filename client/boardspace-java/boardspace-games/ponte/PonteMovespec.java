@@ -54,7 +54,7 @@ public class PonteMovespec extends commonMove
 		D.putInt("GameOver",MOVE_GAMEOVER);
 		D.putInt("Tile",MOVE_PLACE_TILE);
 		D.putInt("BridgeEnd",MOVE_BRIDGE_END);
-		for(PonteId val : PonteId.values())
+		for(PonteId val : PonteId.allValues)
 			{ String n = val.shortName; 
 			  if((n!=null)&&(D.get(n)==null)) { D.putInt(n, val.ordinal()+100); }
 			}

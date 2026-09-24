@@ -1916,7 +1916,7 @@ private void drawPlayerBoard(Graphics gc,
     	{	
     		Viticulturemovespec m = e.nextElement();
     		while(m!=null) 
-    		{ 	ViticultureChip chip = ViticultureChip.getChip(ChipType.values()[m.from_index],pb.color);
+    		{ 	ViticultureChip chip = ViticultureChip.getChip(ChipType.allValues[m.from_index],pb.color);
     			if(chip.draw(gc,this,mstep,xleft,ytop,highlight,ViticultureId.WineSelection,null))
     			{
     				highlight.hitObject = m;
@@ -3017,7 +3017,7 @@ private void drawPlayerBoard(Graphics gc,
     	int x0 = left+xscale*2;
     	GC.setFont(gc,standardPlainFont());
     	int tleft = left+yscale;
-    	for(ScoreType e : ScoreType.values()) 
+    	for(ScoreType e : ScoreType.allValues) 
     	{
     		Color c = e.color;
     		if(c!=null)
@@ -3035,7 +3035,7 @@ private void drawPlayerBoard(Graphics gc,
 			int highx = x;
     		int y0 = y;
     	    pb.getRooster().draw(gc,this,yscale*3/2,left+xscale,y+yscale/2,null);
-   		for(ScoreType e : ScoreType.values()) 
+   		for(ScoreType e : ScoreType.allValues) 
     		{
     			Color c = e.color;
     			int plusy = y;
@@ -4146,7 +4146,7 @@ private void drawPlayerBoard(Graphics gc,
     		HitPoint highlight0,HitPoint highlightAll,Hashtable<ViticultureCell,Viticulturemovespec>targets)
     {	
     	HitPoint highlight = highlight0;
-        Option options[] = Option.values();
+        Option options[] = Option.allValues;
  		Rectangle fieldRect = br;
 		int w = G.Width(fieldRect);
 		int h = G.Height(fieldRect);
@@ -4180,7 +4180,7 @@ private void drawPlayerBoard(Graphics gc,
 			TextButton toggle = new TextButton(op.message,ViticultureId.SetOption,op.message,Color.lightGray,null,null); 
 			boolean on = gb.testOption(op);
 			toggle.setValue(on);
-			toggle.textColor = on ? Color.yellow : Color.black;
+			toggle.idleTextColor = toggle.textColor = on ? Color.yellow : Color.black;
 			toggle.setBounds(x,y,w*2/3,step);
 			int l = x-step/2;
 			int r = x+fullW+step/2;
@@ -6404,7 +6404,7 @@ private void drawPlayerBoard(Graphics gc,
         		  PerformAndTransmit( "ECommence");
         		  break;
         	  case ChooseOptions:
-        	  PerformAndTransmit( "ECommence " +mainBoard.options.memberString(Option.values()));
+        	  PerformAndTransmit( "ECommence " +mainBoard.options.memberString(Option.allValues));
          		  break;
         	  default:
         		  break;

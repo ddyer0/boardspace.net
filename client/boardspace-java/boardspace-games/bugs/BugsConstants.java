@@ -82,7 +82,7 @@ public interface BugsConstants
 		HitChip,HitCell, Terrain, SeeBugDeck, SeeGoalDeck, 
 		;
 		BugsChip chip;
-	
+		public static final BugsId[] allValues = values();
 	}
 	
 enum UIState implements Digestable {
@@ -192,5 +192,8 @@ static int[] ZnInCol2 = { 3, 4, 5, 4, 3  }; // depth of columns, ie A has 4, B 5
 	static final String PreyMessage = "Prey";
 	static final String FlyingMessage = "Flying";
 	static final String TotalMessage = "Total";
+	
+
+
 
 }

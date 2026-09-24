@@ -323,8 +323,8 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(nrows*CELLSIZE);
+    	int boardW = (ncols*CELLSIZE);
+    	int boardH = (nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW+stateH;
@@ -554,7 +554,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	int cy = G.centerY(rack);
     	int nsteps = map.length;
     	int xstep = Math.min(w/(nsteps+1),h*3/4); 
-    	int tileSize = (int)(xstep*1);
+    	int tileSize = (xstep*1);
     	int cx = G.Left(rack)+(w-xstep*nsteps)/2+xstep/2;
        	GC.frameRect(gc, Color.black, rack);
 

@@ -39,7 +39,7 @@ public class VeletasChip extends chip<VeletasChip> implements VeletasConstants,C
 
 	public int chipNumber() { return(id==null?-1:id.ordinal()); }
 	public static VeletasChip getChipNumber(int id)
-	{	return(VeletasId.values()[id].chip);
+	{	return(VeletasId.allValues[id].chip);
 	}
 
 	public VeletasId id = null;		// chips/images that are expected to be visible to the user interface should have an ID
@@ -108,7 +108,7 @@ public class VeletasChip extends chip<VeletasChip> implements VeletasConstants,C
 	
 
 	public static VeletasChip getChip(int color)
-	{	return(VeletasId.values()[color].chip);
+	{	return(VeletasId.allValues[color].chip);
 	}
 	public static VeletasChip getTile(int n) { return(tiles[n]); }
 	

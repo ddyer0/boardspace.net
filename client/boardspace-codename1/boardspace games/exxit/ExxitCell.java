@@ -130,7 +130,6 @@ public class ExxitCell extends cell<ExxitCell> implements ExxitConstants,Placeme
 	{
 		return(samePieces(other));
 	}
-
 	// a cell can exchange if it doesn't have a tile on the bottom, 
 	// and if it is adjacent to two cells which do have tiles on the bottom
 	public boolean canExchange()

@@ -36,6 +36,7 @@ import lib.GC;
 import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
+import lib.NumberMenuHost;
 import lib.StockArt;
 import lib.Tokenizer;
 
@@ -48,7 +49,7 @@ import lib.Tokenizer;
 
  
 */
-public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruConstants
+public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruConstants,NumberMenuHost
 {
      /**
 	 * 
@@ -201,8 +202,8 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
     	SQUARESIZE = (int)cs;
      	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(nrows*SQUARESIZE);
-    	int boardH = (int)(nrows*SQUARESIZE);
+    	int boardW = (nrows*SQUARESIZE);
+    	int boardH = (nrows*SQUARESIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-stateH-boardH)/2);
     	int boardX = mainX+extraW;

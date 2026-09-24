@@ -85,7 +85,7 @@ public class VeletasPlay extends commonRobot<VeletasBoard> implements Runnable, 
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (VeletasBoard) gboard;
-        board = (VeletasBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         MONTEBOT = true;
         terminalNodeOptimize = true;
         switch(strategy)

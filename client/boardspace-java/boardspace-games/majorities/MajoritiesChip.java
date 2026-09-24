@@ -79,7 +79,7 @@ public class MajoritiesChip extends chip<MajoritiesChip> implements CommonConfig
 	}
 
     // indexes into the balls array, usually called the rack
-    static final MajoritiesChip getChip(int n) { return MajoritiesId.values()[n].chip; }
+    static final MajoritiesChip getChip(int n) { return MajoritiesId.allValues[n].chip; }
     
     
 

@@ -422,7 +422,7 @@ public void PrepareToMove(int playerIndex)
             int randomn = RANDOMIZE ? ((board.moveNumber <= 6) ? (14 - 2*board.moveNumber) : 0) : 0;
             boardSearchLevel = 0;
 
-            int depth = MAX_DEPTH ;	// search depth
+            int depth = MAX_DEPTH;	// search depth
             double dif = 0.0;		// stop randomizing if the value drops this much
             // if the "dif" and "randomn" arguments to Find_Static_Best_Move
             // are both > 0, then alpha-beta will be disabled to avoid randomly

@@ -73,6 +73,7 @@ public interface HexConstants
     	ChangeRotation(null),
     	EmptyBoard(null), 
     	;
+		public static final HexId[] allValues = values();
     	String shortName = name();
     	hexChip chip;
     	public String shortName() { return(shortName); }

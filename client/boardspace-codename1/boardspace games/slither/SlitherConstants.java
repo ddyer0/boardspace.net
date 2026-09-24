@@ -40,6 +40,7 @@ public interface SlitherConstants
 		ReverseView,
 		ToggleEye, 
 		;
+		public static final SlitherId[] allValues = values();
 		SlitherChip chip;
 	}
 

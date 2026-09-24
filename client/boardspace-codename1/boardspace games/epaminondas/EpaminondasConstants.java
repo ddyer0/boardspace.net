@@ -40,6 +40,7 @@ public interface EpaminondasConstants
 		ReverseView,
 		ToggleEye
 		;
+		public static EpaminondasId[]allValues = values();
 		EpaminondasChip chip;
 	
 	}

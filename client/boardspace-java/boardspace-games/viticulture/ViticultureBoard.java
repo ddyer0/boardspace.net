@@ -1242,7 +1242,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 
     	if(automa)
     	{	ViticultureColor pc = pbs[0].color;
-    		ViticultureColor colors[] = ViticultureColor.values();
+    		ViticultureColor colors[] = ViticultureColor.allValues;
     		automaColor = colors[(pc.ordinal()+5)%6];
     		automaScore = WINNING_SCORE;
     		automaWorkers = 0;
@@ -7389,7 +7389,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	case TrainWorkerAndUseFree:
     		{
     		Viticulturemovespec worker = (Viticulturemovespec)pendingMoves.pop();
-    		ViticultureChip chip = ViticultureChip.getChip(ChipType.values()[worker.from_index],pb.color);
+    		ViticultureChip chip = ViticultureChip.getChip(ChipType.allValues[worker.from_index],pb.color);
     		finishTraining(pb,chip,replay);
     		}
     		break;
@@ -11615,7 +11615,7 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 		break;
 		
 	case ChooseOptions:
-		for(Option op : Option.values())
+		for(Option op : Option.allValues)
 		{
 			all.push(new Viticulturemovespec(simultaneousTurnsAllowed()?EPHEMERAL_OPTION: MOVE_SETOPTION,op,testOption(op),whoseTurn));
 		}

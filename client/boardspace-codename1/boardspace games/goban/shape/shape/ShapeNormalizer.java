@@ -84,11 +84,11 @@ public class ShapeNormalizer extends SimpleShape implements ShapeProtocol
 	
 	public OneShape NormalizedCopy()
 	{	Hashtable<ResultCode,ResultCode> v=new Hashtable<ResultCode,ResultCode>();
-		for(Move_Order mv : Move_Order.values())
+		for(Move_Order mv : Move_Order.allValues)
 		{
-			for(X_Position mx : X_Position.values())
+			for(X_Position mx : X_Position.allValues)
 			{ 
-				for(Y_Position my : Y_Position.values())
+				for(Y_Position my : Y_Position.allValues)
 				{ 
 					ResultCode results = resultsarray(mv,mx,my);
 					if(results!=null) 

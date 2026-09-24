@@ -72,6 +72,7 @@ public interface ChessConstants
 		LongLeaper(4,"LongLeaper"),
 		CustodialPawn(2,"PinchingPawn"),
 		UltimaKing(0,"King");
+		public static final ChessPiece[] allValues = values();
 		double value;
 		String prettyName;
 		ChessPiece(double v,String p) { value = v; prettyName = p; }

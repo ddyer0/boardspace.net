@@ -71,7 +71,7 @@ public interface CookieConstants
     	CookieState(String des) { description = des; }
     	public String getDescription() { return(description); }
     	public boolean GameOver() { return(this==GAMEOVER_STATE); }
-    	public boolean Puzzle() { return(this==PUZZLE_STATE); } public boolean simultaneousTurnsAllowed() { return(false); }
+    	public boolean Puzzle() { return(this==PUZZLE_STATE); }
     }
     
 	static String startPatterns[] = {"C1233321", "C323132","T122333", "T322313", "T133232", "T333212"};

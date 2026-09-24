@@ -180,7 +180,7 @@ class KingsColorBoard
     {
     	if(super.reInitBoard(first, n, od))
     	{
-     	GridColor colors[] = GridColor.values();
+     	GridColor colors[] = GridColor.allValues;
      	reInit(occupiedCells);
 		for(KingsColorCell c = allCells; c!=null; c=c.next)
 		{	// this is somewhat ad-hoc to accomplish a tri color hexagonal board

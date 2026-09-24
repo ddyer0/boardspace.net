@@ -13,7 +13,6 @@ import lib.LStack;
 import lib.OStack;
 import lib.Random;
 import lib.SimpleLock;
-import lib.StackIterator;
 import lib.StringStack;
 import lib.Tokenizer;
 
@@ -2212,10 +2211,7 @@ addBug("8 7716485393248948135"); // 8#1448
 		top = t; 
 	}
 	
-	public StackIterator<BugCell> push(BugCell ch)
-	{	G.Assert(ch.myBoard==myBoard,"my bug");
-		return super.push(ch);
-	}
+
 	public BugCell[] newComponentArray(int sz) {
 		return new BugCell[sz];
 	}
@@ -2308,7 +2304,7 @@ addBug("8 7716485393248948135"); // 8#1448
 		}
 	}
 	public boolean isAdjacent(BugCell c)
-	{	//G.Assert(c.myBoard==myBoard,"my bug");
+	{	if(G.DEBUG) { G.Assert(c.myBoard==myBoard,"my bug"); }
 		for(int dir = 0; dir<BugBoard.CELL_FULL_TURN; dir++)
 		{	
 			BugCell adj = c.fastExitTo(dir);

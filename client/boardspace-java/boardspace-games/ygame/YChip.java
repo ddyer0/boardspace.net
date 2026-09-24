@@ -85,7 +85,7 @@ public class YChip extends chip<YChip> implements YConstants,CommonConfig
 	}
 	static public YChip board = new YChip("board",new double[] {0.5,0.5,1});
     // indexes into the balls array, usually called the rack
-    static final YChip getChip(int n) { return(YId.values()[n].chip); }
+    static final YChip getChip(int n) { return(YId.allValues[n].chip); }
     
     
 

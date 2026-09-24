@@ -37,6 +37,7 @@ public interface Warp6Constants
 	static final String Warp6StringPairs[][] = {
 			{"Warp6","Warp 6"},
 	        {"Warp6_variation","standard Warp 6"},
+	        {"Warp6_family","Warp 6"},
 	};
 	
 	enum WarpId implements CellId

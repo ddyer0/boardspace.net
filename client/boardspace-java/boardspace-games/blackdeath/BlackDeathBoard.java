@@ -798,8 +798,8 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
     	gameEvents.clear();
     	int map[] = getColorMap();
     	for(int i=0;i<players;i++)
-    		{ int modidx = r.nextInt(DiseaseMod.values().length);
-    		  pbs[i] = new PlayerBoard(i,BlackDeathColor.values()[map[i]],this,
+    		{ int modidx = r.nextInt(DiseaseMod.allValues.length);
+    		  pbs[i] = new PlayerBoard(i,BlackDeathColor.allValues[map[i]],this,
     				BlackDeathChip.PlayerChips[map[i]],
     				BlackDeathChip.ModChips[modidx]
     				); 

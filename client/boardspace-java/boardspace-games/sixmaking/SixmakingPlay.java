@@ -118,7 +118,7 @@ public class SixmakingPlay extends commonRobot<SixmakingBoard> implements Runnab
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (SixmakingBoard) gboard;
-        board = (SixmakingBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         MONTEBOT = true;
         terminalNodeOptimize = true;
         switch(strategy)

@@ -669,7 +669,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         	b.setMembers(from_row);
         	if(from_row!=0)
         	{
-        	return "Options: "+b.memberString(Option.values());
+        	return "Options: "+b.memberString(Option.allValues);
         	}
         	else
         	{
@@ -691,7 +691,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         case MOVE_SETOPTION:
         case EPHEMERAL_OPTION:
         	{
-        	return G.concat(Option.values()[from_row]," ",to_row==0 ? "false" : "true");
+        	return G.concat(Option.allValues[from_row]," ",to_row==0 ? "false" : "true");
         	}
         case MOVE_DROP:
         	switch(dest)
@@ -748,7 +748,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         case MOVE_TRAIN:
         	{
         	String color = currentWorker!=null ? currentWorker.color.name()+"-" : "";
-			return("train "+color+ChipType.values()[from_index]);
+			return("train "+color+ChipType.allValues[from_index]);
         	}
         case MOVE_SELLWINE:
         	return("sell "+source.name());
@@ -832,7 +832,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         	{
         	Bitset<Option> b = new Bitset<Option>(Option.class);
         	b.setMembers(from_row);
-        	String os = b.memberString(Option.values());
+        	String os = b.memberString(Option.allValues);
         	return G.concat(opname,os);
         	}
 
@@ -847,7 +847,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
 
         case MOVE_SETOPTION:
         case EPHEMERAL_OPTION:
-        	 return G.concat(opname,from_col," ",Option.values()[from_row]," ",to_row==0 ? "false" : "true");
+        	 return G.concat(opname,from_col," ",Option.allValues[from_row]," ",to_row==0 ? "false" : "true");
  
         case MOVE_PICKB:
         	String index = from_index==0 ? "" : " "+from_index;
@@ -886,7 +886,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
 			return(opname+from_col+" "+from_index+" "+dest.name()+" "+to_col+" "+to_row);
 
 		case MOVE_TRAIN:
-			return(opname+dest.name()+" "+to_col+" "+ChipType.values()[from_index]);
+			return(opname+dest.name()+" "+to_col+" "+ChipType.allValues[from_index]);
 			
         case MOVE_START:
             return (indx+"Start P" + player + extraChips());

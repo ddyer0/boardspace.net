@@ -27,14 +27,13 @@ import java.util.Enumeration;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.Tokenizer;
 import lib.CellId;
 import online.common.OnlineConstants;
 import online.game.BoardProtocol;
-import lib.GameLayoutManager;
-
 import online.game.commonCanvas;
 import online.game.commonMove;
 import online.game.commonPlayer;

@@ -21,15 +21,29 @@ import lib.G;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.plaf.DefaultLookAndFeel;
 import com.codename1.ui.plaf.UIManager;
+import com.codename1.ui.ComboBox;
+import com.codename1.ui.Graphics;
 import com.codename1.ui.List;
 public class BSLookAndFeel extends DefaultLookAndFeel 
 {	public BSLookAndFeel(UIManager m) { super(m); }
-	
+
 	public Dimension getListPreferredSize(@SuppressWarnings("rawtypes") List l)
 	{
 		Dimension dim = super.getListPreferredSize(l);
 		dim.setWidth(dim.getWidth()+(int)(20*G.getDisplayScale()));
 		return(dim);
 	}
+
+	/*
+	 * this gets rid of the contents of the "combox" label that is shown in popup combo boxes
+	 * it leaves the ghost box around it, which is gotten rid of by the combobox.paintBackground method
+	 */
+	@SuppressWarnings("rawtypes")
+	public void drawComboBox(Graphics g,List cb) {
+    	if(!(cb instanceof ComboBox && ((ComboBox)cb).isShowingPopupDialog()))
+    	{
+    	 super.drawComboBox(g,cb);
+    	}  
+    }
 
 }

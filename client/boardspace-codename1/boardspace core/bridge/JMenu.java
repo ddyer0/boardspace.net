@@ -24,7 +24,7 @@ import lib.NativeMenuItemInterface;
 public class JMenu extends Menu
 {
 	public JMenu() { }
-	public JMenu(String msg) { super(msg);  }
+	public JMenu(String msg) { super(msg); }
 	public JMenu(String msg,Font f) { this(msg); setFont(f==null ? FontManager.menuFont() : f); }
 	public void add(Menu jsubmenu) { super.add(jsubmenu); }
 	public boolean isVisible() { return(false); }

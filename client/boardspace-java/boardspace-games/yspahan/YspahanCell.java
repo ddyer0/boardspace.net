@@ -101,7 +101,6 @@ public class YspahanCell extends stackCell<YspahanCell,YspahanChip>
 	{	for(int lim = c.length-1; lim>=0; lim--) { copyFrom(c[lim],d[lim]); }
 	}
 	
-
 	static void reInit(YspahanCell ar[]) { for(YspahanCell a : ar) { a.reInit(); }}
 
 }

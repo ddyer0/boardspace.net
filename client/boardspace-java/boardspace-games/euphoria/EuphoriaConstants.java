@@ -244,6 +244,7 @@ public interface EuphoriaConstants
  	static String ForgetGaryMessage = "lose 2 Knowledge (Gary the Forgetter)";
  	static String GetResourceMessage = "get resource (Jeroen the Hoarder)";
 	enum Allegiance { Euphorian, Subterran, Wastelander, Icarite, Factionless;
+		public static final Allegiance[] allValues = values(); 
 		static void putStrings() { for(Allegiance a : values()) { InternationalStrings.put(a.name()); }}
 		};
 	
@@ -259,6 +260,7 @@ public interface EuphoriaConstants
 	}
 
 	enum Colors { Red, Green, Blue, Black, White, Purple;
+		static public final Colors[] allValues = values();
 		static public Colors find(int n) 
 		{ for(Colors c : values()) { if(c.ordinal()==n) { return(c); }}
 		  return(null);

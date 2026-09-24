@@ -83,7 +83,7 @@ public class ViticultureCell extends stackCell<ViticultureCell,ViticultureChip>
 	{
 		int v = row;
 		v = v*'Z'+col;
-		v = v*ViticultureId.values().length;
+		v = v*ViticultureId.allValues.length;
 		v = v+rack.ordinal();
 		return(v);
 	}

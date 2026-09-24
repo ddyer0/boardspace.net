@@ -284,12 +284,12 @@ public class PlayerBoard
 	private int playerSeason;
 	public int season() { return playerSeason; }
 	public void setSeason(int n) { playerSeason = n; }
-	public int statSummary[] = new int[ScoreType.values().length];
+	public int statSummary[] = new int[ScoreType.allValues.length];
 	StringBuilder scoreString = new StringBuilder();
 	public void buildStatString()
 	{	
 		AR.setValue(statSummary,0);	
-		int statCount[] = new int[ScoreType.values().length];
+		int statCount[] = new int[ScoreType.allValues.length];
 		for(int lim=scoreEvents.size()-1; lim>=0; lim--)
 		{	
 			ScoreEvent e = scoreEvents.elementAt(lim);
@@ -298,7 +298,7 @@ public class PlayerBoard
 			statCount[ord]++;
 		}
 		scoreString.append("\n");
-		for(ScoreType e : ScoreType.values()) {
+		for(ScoreType e : ScoreType.allValues) {
 			int ord  = e.ordinal();
 			if(statCount[ord]>0)
 			{
@@ -383,7 +383,7 @@ public class PlayerBoard
 	public void setColor(int cindex)
 	{
 		colorIndex = cindex;
-		color = ViticultureColor.values()[cindex];
+		color = ViticultureColor.allValues[cindex];
 	}
 	PlayerBoard(ViticultureBoard board,int idx,int colorIndex)
 	{	bb = board;

@@ -187,9 +187,9 @@ public class RajChip extends chip<RajChip> implements RajConstants,CompareTo<Raj
 		
 		{
 		// construct one set of cards for each color
-        CARDS = new RajChip[RajColor.values().length*NUMBER_OF_PRIZES];
+        CARDS = new RajChip[RajColor.allValues.length*NUMBER_OF_PRIZES];
         
-        for(RajColor color : RajColor.values())
+        for(RajColor color : RajColor.allValues)
         {	for(int i=0;i<NUMBER_OF_PRIZES;i++)
         	{	int ind = color.ordinal()*NUMBER_OF_PRIZES+i;
         		RajChip back = CARDS[ind] = new RajChip(color,CARDS_OFFSET+ind,i+1,rv.nextLong(),false);

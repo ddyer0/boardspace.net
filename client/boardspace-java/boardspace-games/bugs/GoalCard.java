@@ -94,7 +94,7 @@ public class GoalCard extends BugsChip implements BugsConstants
 
  		boolean hit = actualDrawChip(gc,  DrawingObject.getCanvas(drawOn).standardPlainFont(),  action,action==null?BugsId.HitChip: rackLocation, r,inaction,helptext==BugsChip.TOP);
 		GC.setFont(gc,f);
-		int yh = (int)(squareH/4);
+ 		int yh = (squareH/4);
  		if( (helptext==PICK || helptext==BIGCHIP)
  				&& G.pointInRect(highlight,e_x-squareWidth/2,e_y+yh,squareWidth,yh))
  			{

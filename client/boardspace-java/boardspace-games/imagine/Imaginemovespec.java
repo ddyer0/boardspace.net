@@ -246,7 +246,7 @@ public class Imaginemovespec
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v,Font f)
+    public Text shortMoveText(commonCanvas v, Font font)
     {	boolean censor = index()>=((ImagineViewer)v).startOfCensorship;
         switch (op)
         {

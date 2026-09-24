@@ -93,7 +93,7 @@ public interface HiveConstants
     	variation(String n,boolean i_m,boolean i_l,boolean i_p,boolean i_u)
     	{	name = n;
     		included.clear();
-    		for(PieceType p : PieceType.values())
+    		for(PieceType p : PieceType.allValues)
     		{	if(p.standard) { included.set(p); }
     		}
     		if(i_p) { included.set(PieceType.PILLBUG); }
@@ -178,9 +178,10 @@ public interface HiveConstants
     	ORIGINAL_PILLBUG(false,"OP"),
     	PILLBUG(false,"P"),
     	BLANK(false,"?");
+    	public static final PieceType[] allValues = values();
     	boolean standard;
     	String shortName;
-    	public static PieceType[]AllValues = values();
+    	public static final PieceType[]AllValues = values();
     	static PieceType find(int i) { for(PieceType v : AllValues) { if(v.ordinal()==i) { return(v); }} return(null); } 
     	PieceType(boolean st,String ss) { standard = st; shortName=ss; }
     };

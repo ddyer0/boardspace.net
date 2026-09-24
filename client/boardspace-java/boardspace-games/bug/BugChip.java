@@ -87,7 +87,7 @@ public class BugChip extends chip<BugChip> implements CommonConfig
 	}
 
     // indexes into the balls array, usually called the rack
-    static final BugChip getChip(int n) { return(BugId.values()[n].chip); }
+    static final BugChip getChip(int n) { return(BugId.allValues[n].chip); }
     
     /**
      * this is the basic hook to substitute an alternate chip for display.  The canvas getAltChipSet

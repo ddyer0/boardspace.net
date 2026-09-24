@@ -95,7 +95,7 @@ public class UniverseChip extends chip<UniverseChip> implements UniverseConstant
 			{
 			if(ch.flipped)
 				{
-				ChipColor altColor = ChipColor.values()[ch.color.ordinal()^1];
+				ChipColor altColor = ChipColor.allValues[ch.color.ordinal()^1];
 				UniverseChip altChip = getChip(altColor,ch.getPatternIndex(),false,ch.rotated);
 				ch.assignColors(altChip);
 				}
@@ -314,7 +314,8 @@ public class UniverseChip extends chip<UniverseChip> implements UniverseConstant
 	}
 
 	enum ChipColor 
-    {	Yellow, Red, Green, Blue,
+    {	Yellow, Red, Green, Blue,;
+		public static final ChipColor[] allValues = values();
     }
      
 	public void drawChipTween(Graphics gc,exCanvas canvas,int SQUARESIZE,double xscale,boolean vertical,int cx,int cy,String label)
@@ -550,10 +551,10 @@ public class UniverseChip extends chip<UniverseChip> implements UniverseConstant
    static final UniverseChip[] createGroup(sided two,OminoStep pa[][],Image IM[],
 		   StockArt BO_H[],StockArt BO_V[],StockArt BB_H[], StockArt BB_V[],
 		   int piece_offset)
-   {   ChipColor cc[] = ChipColor.values();
+   {   ChipColor cc[] = ChipColor.allValues;
        Random rv = new Random(526352+piece_offset);		// an arbitrary number, just change it
        UniverseChip result[] = new UniverseChip[cc.length*pa.length];
-       for(ChipColor c1 : ChipColor.values())
+       for(ChipColor c1 : ChipColor.allValues)
        {
     	int color = c1.ordinal();
        	int idx = 0;

@@ -88,6 +88,7 @@ public interface PonteConstants
 		 Bridge_180("X_180",true),
 		 BoardLocation(null,false),
 		 BridgeEnd(null,false);
+		 public static final PonteId[] allValues = values();
 		 String shortName = null;
 		 public String shortName() { return(shortName); }
 		 PonteChip chip=null;

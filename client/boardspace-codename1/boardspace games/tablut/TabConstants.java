@@ -75,6 +75,7 @@ public interface TabConstants
 		FourSideCaptures("fourside-capture","Flagship must be surrounded on all 4 sides","Flagship is captured normally"),
 		True("true",null,null),
 		False("false",null,null);
+		public static final TabId[] allValues = values();
    	;
    	String shortName = name();
 	public String shortName() { return(shortName); }

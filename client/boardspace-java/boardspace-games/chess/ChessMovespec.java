@@ -282,7 +282,7 @@ public class ChessMovespec extends commonMove implements ChessConstants
         switch (op)
         {
         case MOVE_SELECT:
-        	return opname+ChessPiece.values()[from_row];
+        	return opname+ChessPiece.allValues[from_row];
         case MOVE_PICKB:
 	        return (opname+ from_col + " " + from_row);
 	        

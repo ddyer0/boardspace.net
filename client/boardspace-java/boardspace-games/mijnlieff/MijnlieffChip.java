@@ -86,7 +86,7 @@ public class MijnlieffChip extends chip<MijnlieffChip> implements CommonConfig
 
 	
 	// indexes into the balls array, usually called the rack
-    static final MijnlieffChip getChip(int n) { return(MijnlieffId.values()[n].chip); }
+    static final MijnlieffChip getChip(int n) { return(MijnlieffId.allValues[n].chip); }
     
     
 

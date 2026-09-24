@@ -37,6 +37,7 @@ public interface MeridiansConstants
 		White,
 		BoardLocation,
 		ToggleEye,;
+		public static final MeridiansId[] allValues = values();
 		MeridiansChip chip;
 	
 	}

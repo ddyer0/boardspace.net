@@ -228,7 +228,7 @@ public class ViticulturePlay extends commonMPRobot<ViticultureBoard>
     private double ScoreForPlayer(ViticultureBoard evboard,int player,boolean print)
     {	
 		PlayerBoard pb = board.pbs[player];
-		return((double)pb.progressScore()/(MAX_SCORE-MIN_SCORE));
+		return(pb.progressScore()/(MAX_SCORE-MIN_SCORE));
     }
 
  

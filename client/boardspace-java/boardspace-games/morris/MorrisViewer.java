@@ -193,13 +193,13 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
      	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/ncols,(double)(mainH/(ncols+1)));
+    	double cs = Math.min((double)mainW/ncols,((double)mainH/(ncols+1)));
     	int CELLSIZE = (int)cs;
     	
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(ncols*CELLSIZE);
+    	int boardW = (ncols*CELLSIZE);
+    	int boardH = (ncols*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-stateH-boardH)/2);
     	int boardX = mainX+extraW;

@@ -396,6 +396,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
      	drawCountdown[i] = -1;
      	}    
      	variation = Variation.findVariation(gtype);
+     	G.Assert(variation!=null,"no variation named %s",gtype);
      	switch(variation)
      	{
      	default:  throw G.Error(WrongInitError,gtype);

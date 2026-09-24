@@ -18,6 +18,7 @@ package zertz.common;
 
 import lib.*;
 import online.game.*;
+import online.search.RobotProtocol;
 import zertz.common.GameConstants.ZertzState;
 
 class StateStack extends OStack<ZertzState>
@@ -604,7 +605,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         ringRemoved = rr;
         }
         placementIndex = from_b.placementIndex;
-        if(G.debug()) { sameboard(from_b); }
+        if(!robotBoard && G.debug()) { sameboard(from_b); }
    }
     public void setBoardType(Zvariation v)
     {
@@ -911,8 +912,8 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     // removing a ring, if no temporary ring already removed
     public void RemoveRing(char col, int row)
     {	zCell c = getCell(col,row);
-        char oldc = c.contents;;
-        G.Assert(oldc == Empty, "Ring was not present");
+        //char oldc = c.contents;;
+        //G.Assert(oldc == Empty, "Ring was not present");
 
         switch (board_state)
         {
@@ -940,8 +941,8 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     // add a ring, if a temporary removal was done, only that ring can be put back
     public void AddRing(char col, int row)
     {	zCell c = getCell(col,row);
-        char oldc = c.contents;
-        G.Assert(oldc == NoSpace, "Ring was already present");
+        //char oldc = c.contents;
+        //G.Assert(oldc == NoSpace, "Ring was already present");
 
         switch (board_state)
         {
@@ -983,15 +984,14 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         zCell oldboard = getCell(movingBoardCol, movingBoardRow);
         char oldball = oldboard.contents;
         m.movedAndCaptured = zChip.BallColorIndex(oldball);
-        int oldcolor = zChip.BallColorIndex(oldball);
         zCell newdest = getCell(destBoardCol, destBoardRow);
         if (oldboard==newdest)  {  return;  }
 
         pickedSource = oldboard;
         droppedDest = newdest;
  
-        G.Assert(newdest.contents == Empty, "Destination is not empty");
-        G.Assert(oldcolor >= 0, "BtoB Board has no ball");
+        //G.Assert(newdest.contents == Empty, "Destination is not empty");
+        //G.Assert(oldcolor >= 0, "BtoB Board has no ball");
 
         if(replay==replayMode.Single)
         {
@@ -1090,7 +1090,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
             }
 
             zCell from = rack[fromRackIndex][movingRackIndex];
-            G.Assert(from.height > 0, "Source bin is empty");
+            //G.Assert(from.height > 0, "Source bin is empty");
             decBalls(fromRackIndex,movingRackIndex);
             incBalls(toRackIndex,movingRackIndex);
             zCell to = rack[toRackIndex][movingRackIndex];
@@ -1124,7 +1124,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         }
         char oldboard = dest.contents;
         m.movedAndCaptured = zChip.BallColorIndex(oldboard);
-        G.Assert(oldboard == Empty, "Destination cell not empty!");
+        //G.Assert(oldboard == Empty, "Destination cell not empty!");
  
         switch (board_state)
         {
@@ -2040,7 +2040,10 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
  
         board_state = undoState.pop();
     }
-
+    public void initRobotValues(RobotProtocol r)
+    {
+    	robotBoard = true;
+    }
     public void test_eval()
     {
         zCell[] r = rack[RESERVE_INDEX];

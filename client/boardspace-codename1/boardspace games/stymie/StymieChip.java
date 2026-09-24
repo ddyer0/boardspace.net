@@ -86,7 +86,7 @@ public class StymieChip extends chip<StymieChip> implements StymieConstants,Comm
 	}
 
     // indexes into the balls array, usually called the rack
-    static final StymieChip getChip(int n) { return(StymieId.values()[n].chip); }
+    static final StymieChip getChip(int n) { return(StymieId.allValues[n].chip); }
     
     
 

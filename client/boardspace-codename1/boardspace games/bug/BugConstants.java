@@ -40,6 +40,7 @@ public interface BugConstants
 		ReverseView,
 		ToggleEye, 
 		;	
+		static final BugId[] allValues = values();
 		BugChip chip=null;
 	}
 	

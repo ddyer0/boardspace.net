@@ -112,7 +112,7 @@ public class MogulPlay extends commonMPRobot<MogulBoard> implements Runnable, Mo
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (MogulBoard) gboard;
-        board = (MogulBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         strategy = strat;
         MONTEBOT = true;
         terminalNodeOptimize = true;

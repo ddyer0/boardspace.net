@@ -39,6 +39,7 @@ public interface TrikeConstants
 		ToggleEye, Pawn, 
 		;
 		TrikeChip chip;	
+		public static final TrikeId[] allValues = values();
 	}
 
 class StateStack extends OStack<TrikeState>

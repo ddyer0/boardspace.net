@@ -140,6 +140,7 @@ public interface HoneyConstants
     			SwitchExplanation,
     	    	EndGameMessage,
     			HoneyPlayState,
+    			WordsForMessage,
     	        HoneyVictoryCondition,
     	        EndingGameDescription,
  

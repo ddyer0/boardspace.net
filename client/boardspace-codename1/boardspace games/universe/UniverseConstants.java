@@ -95,6 +95,7 @@ public interface UniverseConstants
 		Nudoku_5_Box("Nudoku-5-Box",OminoStep.SNAKES),
 		Nudoku_6_Box("Nudoku-6-Box",OminoStep.SNAKES);
 		String name;
+		public static final variation[] allValues = values();
 		OminoStep tileSet[][];
 		variation(String sn,OminoStep[][]set)
 		{ name = sn;

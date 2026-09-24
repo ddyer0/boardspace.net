@@ -569,7 +569,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
 		previousWord = null;
 		pendingWord = null;
 		
-	    for(Option o : Option.values()) { setOptionValue(o,false); }
+	    for(Option o : Option.allValues) { setOptionValue(o,false); }
  		switch(variation)
 		{
 		default: throw G.Error("Not expecting variation %s",variation);
@@ -704,7 +704,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
         lastPicked = null;
         isPass = from_b.isPass;
         nPasses = from_b.nPasses;
-        for(Option o : Option.values()) { setOptionValue(o,from_b.getOptionValue(o)); }
+        for(Option o : Option.allValues) { setOptionValue(o,from_b.getOptionValue(o)); }
         AR.copy(mapPick,from_b.mapPick);
         AR.copy(mapTarget,from_b.mapTarget);
         AR.copy(rackMap,from_b.rackMap);
@@ -748,7 +748,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
         G.Assert(nPasses==from_b.nPasses,"nPasses mismatch");
         G.Assert(isPass==from_b.isPass,"isPass mismatch");
         G.Assert(needShuffle==from_b.needShuffle,"needshuffle mismatch");
-        for(Option o : Option.values()) { G.Assert(getOptionValue(o)==from_b.getOptionValue(o),"Option %s mismatch",o); }
+        for(Option o : Option.allValues) { G.Assert(getOptionValue(o)==from_b.getOptionValue(o),"Option %s mismatch",o); }
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -813,7 +813,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
 		v ^= Digest(r,playerCell);
 		v ^= Digest(r,robotVocabulary);
 		v ^= Digest(r,needShuffle);
-		for(Option o : Option.values()) { v ^= Digest(r,getOptionValue(o)); }
+		for(Option o : Option.allValues) { v ^= Digest(r,getOptionValue(o)); }
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
         return (v);
     }

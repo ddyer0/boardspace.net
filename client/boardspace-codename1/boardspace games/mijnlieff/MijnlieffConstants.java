@@ -84,6 +84,7 @@ public interface MijnlieffConstants
 		Edge,		// first move, edges only
     	BoardLocation,
     	EmptyBoard,;
+		public static final MijnlieffId[] allValues = values();
     	MijnlieffChip chip;
     	static public MijnlieffId find(String s)
     	{	

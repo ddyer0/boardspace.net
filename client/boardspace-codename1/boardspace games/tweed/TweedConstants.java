@@ -39,7 +39,7 @@ public interface TweedConstants
 		BoardLocation,
 		EmptyBoard, ToggleEye, Numbers, Captures, ;
 		TweedChip chip;
-	public static TweedId[] allValues = values();
+	public static final TweedId[] allValues = values();
 	}
 
 class StateStack extends OStack<TweedState>

@@ -304,8 +304,8 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	// center the board in the remaining space
     	int largeW = CELLSIZE*ncols;
     	int largeH = CELLSIZE*nrows+stateH;
-    	int boardW = (int)(bcols*CELLSIZE);
-    	int boardH = (int)(brows*CELLSIZE);
+    	int boardW = (bcols*CELLSIZE);
+    	int boardH = (brows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-largeW)/2);
     	int extraH = Math.max(0, (mainH-largeH)/2);
     	int boardX = mainX+extraW;

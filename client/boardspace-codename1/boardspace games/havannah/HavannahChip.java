@@ -84,7 +84,7 @@ public class HavannahChip extends chip<HavannahChip> implements CommonConfig
 	public static HavannahChip HavannahIcon = new HavannahChip("havannah-icon-nomask",normalScale,null,otherChips);
 
     // indexes into the balls array, usually called the rack
-    static final HavannahChip getChip(int n) { return(HavannahId.values()[n].chip); }
+    static final HavannahChip getChip(int n) { return(HavannahId.allValues[n].chip); }
     
     
 

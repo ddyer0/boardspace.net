@@ -221,7 +221,7 @@ public class Bloomsmovespec extends commonMove implements BloomsConstants
     	case SYNCHRONOUS_SELECT:
     	case EPHEMERAL_SELECT:
     		{
-    		EndgameCondition option = EndgameCondition.values()[to_row];
+    		EndgameCondition option = EndgameCondition.allValues[to_row];
     		String msg = "Win "+(option.ncaptured==0 ? "Territory" : "Capture "+option.ncaptured);
     		return TextChunk.create(msg);
     		}
@@ -275,7 +275,7 @@ public class Bloomsmovespec extends commonMove implements BloomsConstants
         case EPHEMERAL_SELECT:
         case SYNCHRONOUS_SELECT:
         case SELECT:
-        	return(G.concat(opname,source.shortName," ",EndgameCondition.values()[to_row]));
+        	return(G.concat(opname,source.shortName," ",EndgameCondition.allValues[to_row]));
         	
         case EPHEMERAL_APPROVE:
         case SYNCHRONOUS_APPROVE:

@@ -229,8 +229,8 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
     	SQUARESIZE = CELLSIZE;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)((rotateBoard ? nrows : ncols)*CELLSIZE);
-    	int boardH = (int)((rotateBoard ? ncols : nrows)*CELLSIZE);
+    	int boardW = ((rotateBoard ? nrows : ncols)*CELLSIZE);
+    	int boardH = ((rotateBoard ? ncols : nrows)*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;

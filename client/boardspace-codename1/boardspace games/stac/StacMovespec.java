@@ -187,7 +187,7 @@ public class StacMovespec extends commonMove implements StacConstants
 	}
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
-    public Text shortMoveText(commonCanvas viewer, Font font)
+    public Text shortMoveText(commonCanvas viewer,Font f)
     {	double scl[] = new double[]{1.2,1.4,0.0,-0.4};
         switch (op)
         {

@@ -102,6 +102,7 @@ public interface ImagineConstants
 	static int MIN_VOTING_CARDS = 5;
 	
 	enum Colors { Blue, Green, Orange, Purple, Red, Yellow,Black, White ;
+		public static final Colors[] allValues = values();
 		ImagineChip chip = null;
 		ImagineChip checkMark = null;
 		static public Colors find(int n) 
@@ -127,7 +128,7 @@ public interface ImagineConstants
 			return(f);
 		};
 	}
-	static final int MAX_PLAYERS = Colors.values().length;
+	static final int MAX_PLAYERS = Colors.allValues.length;
 	
     //	these next must be unique integers in the Stymiemovespec dictionary
 	//  they represent places you can click to pick up or drop a stone
@@ -149,6 +150,7 @@ public interface ImagineConstants
     	Eye(null),
     	Presentation(null),	// the presentation of selected cards
     	;
+		public static final ImagineId[] allValues = values();
     	String shortName = name();
     	ImagineChip chip;
     	public String shortName() { return(shortName); }

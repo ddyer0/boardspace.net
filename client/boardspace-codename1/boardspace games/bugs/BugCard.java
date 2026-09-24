@@ -40,7 +40,7 @@ class TerrainSummary {
 	{	type = v;
 	}
 	public static TerrainSummary[]  makeSummary()
-	{	Terrain vs[] = Terrain.values();
+	{	Terrain vs[] = Terrain.allValues;
 		TerrainSummary v[] = new TerrainSummary[vs.length];
 		for(Terrain x : vs)
 		{
@@ -214,7 +214,7 @@ public class BugCard extends BugsChip implements BugsConstants , CompareTo<BugsC
 		int nh = (isWater ? 1 : 0) + (isGround ? 1 : 0) + (isGrass ? 1 : 0) + (isForest ? 1 : 0);
 
 		if(nh==0) 
-			{ String members = profile.habitat.memberString(Habitat.values());
+			{ String members = profile.habitat.memberString(Habitat.allValues);
 			  G.print("profile "+members+" has no habitat");
 			}
 		

@@ -1624,7 +1624,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
         players_in_game = np;
        	int map[]=getColorMap();
        	playerColor = new ChipColor[np];
-       	for(int i=0;i<np;i++) { playerColor[i]=ChipColor.values()[map[i]];}
+       	for(int i=0;i<np;i++) { playerColor[i]=ChipColor.allValues[map[i]];}
     	Random r = new Random(67246765);
         occupiedCells = new CellStack[np];
         diagonalPointsForPlayer = new CellStack[np];
@@ -2494,7 +2494,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     			&& ((rules==variation.Diagonal_Blocks_Duo)||(rules==variation.Blokus_Duo))
     			&& (topsForPlayer[whoseTurn]==0)
     			&& (topsForPlayer[getNextPlayer(whoseTurn)]>0)
-    			&& (playerColor[0]==ChipColor.values()[getColorMap()[0]])// not already swapped
+    			&& (playerColor[0]==ChipColor.allValues[getColorMap()[0]])// not already swapped
     			 );
     }
     private boolean allAllDone()

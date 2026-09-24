@@ -43,6 +43,7 @@ public interface CircleConstants
 		ReverseView,
 		ToggleEye, 
 		;	
+		public static CircleId[] allValues = values();
 		CircleChip chip=null;
 	}
 /**
@@ -159,6 +160,7 @@ public enum CR
 		FourStraight(new int[] {0,0,0});
 		CR Eats = null;
 		int directions[] = null;
+		public static final CR[] allValues = values();
 		CR(int dr[])
 		{
 			directions = dr;

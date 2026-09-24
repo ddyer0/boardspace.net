@@ -17,6 +17,7 @@
 package entrapment;
 
 import lib.G;
+import lib.InternationalStrings;
 import lib.OStack;
 import lib.CellId;
 
@@ -99,7 +100,7 @@ public interface EntrapmentConstants
     	EntrapmentState(String des) { description = des; }
     	public String getDescription() { return(description); }
     	public boolean GameOver() { return(this==GAMEOVER_STATE); }
-    	public boolean Puzzle() { return(this==PUZZLE_STATE); } public boolean simultaneousTurnsAllowed() { return(false); }
+    	public boolean Puzzle() { return(this==PUZZLE_STATE); }
     }
 	
     static final int MOVE_PICK = 204; // pick a chip from a pool
@@ -111,4 +112,35 @@ public interface EntrapmentConstants
 	static final int MOVE_REMOVE = 211;		// remove a barrier (for robot only)
 	static final int MOVE_ADD = 212;		// add a barrier (for robot only)
 
+	static void putStrings()
+	{
+			String EntrapmentStrings[] = {
+				GoalMessage,
+				MoveMessage,
+				MoveOrPlaceMessage,
+			    EscapeOrPlaceMessage,
+			    MoveOrMoveMessage,
+			    PlaceMessage,
+			    EscapeOrMoveMessage,
+			    EscapeMessage,
+			    SelectYourRoamerMessage ,
+			    SelectOpponentRoamerMessage,
+			    RemoveMessage,
+		};
+		
+			String EntrapmentStringPairs[][] = {
+				
+		        {"Entrapment_family","Entrapment"},
+		        {"Entrapment","Entrapment"},
+		        {"Entrapment-7x7","Entrapment"},
+		        {"Entrapment-7x7_variation","7x7 board"},
+		        {"Entrapment-6x7_variation","6x7 board"},
+		        {"Entrapment-6x7","Entrapment-6x7"},
+		        {"Entrapment-7x7x4","Entrapment-7x7x4"},
+		        {"Entrapment-7x7x4_variation","7x7 with 4 roamers"},
+		 
+		};
+		InternationalStrings.put(EntrapmentStrings);
+		InternationalStrings.put(EntrapmentStringPairs);
+	}
 }

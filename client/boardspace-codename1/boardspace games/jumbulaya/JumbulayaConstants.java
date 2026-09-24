@@ -126,6 +126,7 @@ public interface JumbulayaConstants
  enum Option
  {
 	 OpenRacks(OpenRackMessage,true);
+	 public static final Option[] allValues = values();
 	 String message;
 	 boolean allowedForRobot = true;
 	 JumbulayaChip onIcon;

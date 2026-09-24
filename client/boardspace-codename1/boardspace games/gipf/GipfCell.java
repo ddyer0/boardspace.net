@@ -119,7 +119,6 @@ public class GipfCell extends stackCell<GipfCell,GipfChip> implements PlacementP
 		return(false);
 	}
 
-
 	public int getLastPlacement(boolean empty) {
 		return empty ? lastEmptied : lastPlaced;
 	}

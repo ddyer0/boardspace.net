@@ -409,7 +409,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     private int optionWidth(FontMetrics fm)
     {
     	int sz = 0;
-    	for(TabId op : TabId.values())
+    	for(TabId op : TabId.allValues)
     	{
     		if(op.trueName!=null) { sz = Math.max(sz, fm.stringWidth(s.get(op.trueName))); }
     		if(op.falseName!=null) { sz = Math.max(sz, fm.stringWidth(s.get(op.falseName))); }

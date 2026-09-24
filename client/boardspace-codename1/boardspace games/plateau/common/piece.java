@@ -196,7 +196,7 @@ public class piece implements PlateauConstants
 
     void resetColor(String col)
     {
-        for (Face f : Face.values())
+        for (Face f : Face.allValues)
         {
             if (f.shortName.equals(col))
             {

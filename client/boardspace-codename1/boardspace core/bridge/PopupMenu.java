@@ -21,7 +21,7 @@ import com.codename1.ui.events.ActionEvent;
 
 import lib.FontManager;
 
-public class PopupMenu extends Menu {
+public class PopupMenu extends Menu {	// someday, BMenu
 	private boolean showing = false;
 	public PopupMenu() 
 		{ super(); }

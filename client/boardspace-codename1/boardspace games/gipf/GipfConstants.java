@@ -40,8 +40,10 @@ public interface GipfConstants
 		Yinsh("Yinsh potential"),
 		Punct("Punct potential");
 		String menuItem = null;
+		public static final Potential[] allValues = values();
 		Potential(String tt) { menuItem = tt;  }
 		public String menuItem() { return menuItem; }
+		public static void putStrings() { InternationalStrings.put(values()); }
 	};
 
 	enum GColor { W, B};
@@ -198,8 +200,9 @@ public interface GipfConstants
     		};
     		InternationalStrings.put(GipfStrings);
        		InternationalStrings.put(GipfStringPairs);
-       		InternationalStrings.put(Potential.values());
+       		InternationalStrings.put(Potential.allValues);
        		GipfState.putStrings();
+       		Potential.putStrings();
 
     }
     

@@ -541,7 +541,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
     	boolean leadin = !mutable_game_record && time<5000;
     	if(leadin) { highlight=null; }
      	boolean canHit = G.pointInRect(highlight,brect);
-    	int cs = Math.max(5,(int)gb.cellSize());
+    	int cs = Math.max(5,gb.cellSize());
     	Rectangle oldClip = GC.combinedClip(gc,brect);
     	//GC.fillRect(gc,new Color(0.8f,0.8f,0.85f),brect);
         //

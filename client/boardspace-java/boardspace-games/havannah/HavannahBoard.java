@@ -645,6 +645,7 @@ private void swapDetails()
 	CellStack s = occupiedCells[0];
 	occupiedCells[0] = occupiedCells[1];
 	occupiedCells[1] = s;
+
 	swapped = !swapped;
 }
 void doSwap(replayMode replay)

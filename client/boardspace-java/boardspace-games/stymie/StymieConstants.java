@@ -95,6 +95,7 @@ public interface StymieConstants
 		Antipode_g("AG"),
     	BoardLocation(null),
     	EmptyBoard(null),;
+		public static final StymieId[] allValues = values();
     	String shortName = name();
     	StymieChip chip;
     	public String shortName() { return(shortName); }

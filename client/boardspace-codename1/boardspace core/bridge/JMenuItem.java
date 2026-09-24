@@ -217,9 +217,9 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 	}
 	public String getValue() { return(value); }
 	public int getWidth() {
-		return icon.getIconWidth();
+		return icon==null ? 1 : icon.getIconWidth();
 	}
 	public int getHeight() {
-		return icon.getIconHeight();
+		return icon==null ? 1 : icon.getIconHeight();
 	}
 }

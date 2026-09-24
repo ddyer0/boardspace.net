@@ -165,8 +165,8 @@ public class LoaViewer extends commonCanvas implements UIC
    	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
    	// center the board in the remaining space
     int stateY = mainY;
-   	int boardW = (int)(nrows*SQUARESIZE);
-   	int boardH = (int)(nrows*SQUARESIZE);
+   	int boardW = (nrows*SQUARESIZE);
+   	int boardH = (nrows*SQUARESIZE);
    	int extraW = Math.max(0, (mainW-boardW)/2);
    	int extraH = Math.max(0, (mainH-boardH-stateH*3)/2);
    	int boardX = mainX+extraW;

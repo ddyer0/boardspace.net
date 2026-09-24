@@ -104,7 +104,8 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 	public ComboBox getMenu() 
 	{
 		if(internalmenu==null) 
-			{ String et = title==null ? "" : title;
+			{
+			  String et = title==null ? "" : title;
 			  ComboBox menu = internalmenu = new ComboBox();
 			  JMenuItem m = new JMenuItem(et);
 			  m.setIsLabel(true);
@@ -112,7 +113,7 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 			  Font de = FontManager.deriveFont(font,FontManager.getFontSize(font)+2,FontManager.BOLD);
 			  m.setFont(de);
 			  add(m);
-
+			  
 			  BSrenderer<JMenuItem> bsRender = new BSrenderer<JMenuItem>(this);
 			  bsRender.setShowNumbers(false);
 			  setBackground(new Color(0xccccff)/*menu.getBackground()*/);
@@ -134,11 +135,13 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 		title = msg;
 		finishInit();
 		if(msg!=null)
-		{ 
-		JMenuItem m = getItem(0);
-		m.setBackground(Color.white);
-		Font mf = m.getFont();
-		m.setFont(FontManager.deriveFont(mf,(int)(mf.getPixelSize()+2),mf.getStyle()));
+		{ 	// make the title visually distinctive
+			JMenuItem m = getItem(0);
+			if(m!=null)
+				{ m.setBackground(Color.white);
+				Font mf = m.getFont();
+				m.setFont(FontManager.deriveFont(mf,(int)(mf.getPixelSize()+2),mf.getStyle()));
+				}
 		}
 	}
 	public int getComponentIndex(JMenu m) 
@@ -192,7 +195,7 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 		  m.setHeight(menuSize.getHeight());
 		  m.setVisible(true);
 		  m.pointerReleased(showingX,showingY);
-		  form.removeComponent(m);  
+		  form.removeComponent(m);
 		  showingOn = null; 
 		}
     	catch (ThreadDeath err) { throw err;}
@@ -307,7 +310,7 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 	}
 	public JMenuItem getItem(int i) 
 	{ 	Object m = getMenu().getModel().getItemAt(i);
-		JMenuItem got = getItems().get(m);
+		JMenuItem got = m==null ? null : getItems().get(m);
 		return(got); }
 
 	public int getItemCount() { return(getMenu().getModel().getSize());  }

@@ -34,6 +34,7 @@ public class BreakingAwayPiece extends chip<BreakingAwayPiece>
 		yellow(Color.yellow,Color.black),
 		white(Color.white,Color.black),
 		green(Color.green,Color.white);
+	  static final ChipColor[] allValues = values();
 	  Color realColor; 
 	  Color dotColor;
 	  ChipColor(Color rc,Color dc) { realColor = rc; dotColor = dc;}
@@ -78,7 +79,7 @@ public class BreakingAwayPiece extends chip<BreakingAwayPiece>
 	BreakingAwayPiece(int idx,Image im,double []scales,String nam,long rv)
 	{	pieceNumber = idx;
 		image = im;
-		color = ChipColor.values()[idx%NCOLORS];
+		color = ChipColor.allValues[idx%NCOLORS];
 		scale = scales;
 		file = nam;
 		randomv = rv;

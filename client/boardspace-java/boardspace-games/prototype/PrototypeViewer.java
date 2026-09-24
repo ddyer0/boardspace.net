@@ -42,7 +42,6 @@ import lib.Toggle;
 import lib.Tokenizer;
 import lib.LFrameProtocol;
 import online.game.*;
-import online.game.Opcodes.GameId;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;

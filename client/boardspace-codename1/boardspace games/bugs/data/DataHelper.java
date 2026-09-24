@@ -33,8 +33,8 @@ public abstract class DataHelper<T extends KeyProvider> {
 	static String DefaultProfile = "Animalia";
     public enum Habitat {
         FRESHWATER, MARINE,AQUATIC, SOIL, FOREST, GRASSLAND, DESERT,
-        URBAN,  VARIED, UNKNOWN
-        
+        URBAN,  VARIED, UNKNOWN;
+        public static final Habitat[] allValues = values();
     }
 
     public enum Flying {

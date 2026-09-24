@@ -189,12 +189,12 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
         int stateH = fh*5/2;
     	
     	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/nrows,(double)mainH/(nrows+0.5));
+    	double cs = Math.min((double)mainW/nrows,mainH/(nrows+0.5));
     	int CELLSIZE = (int)cs;
     	SQUARESIZE = CELLSIZE;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(nrows*CELLSIZE);
+    	int boardW = (nrows*CELLSIZE);
     	int boardH = boardW;
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-stateH-boardH)/2);

@@ -214,8 +214,8 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
     	CELLRADIUS = CELLSIZE/2;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(nrows*CELLSIZE);
+    	int boardW = (ncols*CELLSIZE);
+    	int boardH = (nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;

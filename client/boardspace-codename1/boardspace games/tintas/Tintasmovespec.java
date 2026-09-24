@@ -170,7 +170,7 @@ public class Tintasmovespec extends commonMove implements TintasConstants
             break;
         }
     }
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
     	Text str = TextChunk.create(shortMoveString());
     	if(target!=null)

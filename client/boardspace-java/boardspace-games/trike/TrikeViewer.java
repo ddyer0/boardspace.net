@@ -326,8 +326,8 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
     	CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(nrows*CELLSIZE);
+    	int boardW = (ncols*CELLSIZE);
+    	int boardH = (nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;
@@ -767,35 +767,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
     {	//DISABLE_VERIFY=true;
     	super.verifyGameRecord();
     }
- // for reference, here's the standard definition
- //   public void verifyGameRecord()
- //   {	BoardProtocol ourB =  getBoard();
- //   	int ourDig = ourB.Digest();
- //   	BoardProtocol dup = dupBoard = ourB.cloneBoard();
- //   	int dupDig = dup.Digest();
- //   	G.Assert(dupDig==ourDig,"Duplicate Digest Matches");
- //   	dup.doInit();
- //   	int step = History.size();
- //   	int limit = viewStep>=0 ? viewStep : step;
- //   	for(int i=0;i<limit;i++) 
- //   		{ commonMove mv = History.elementAt(i);
- //   		  //G.print(".. "+mv);
- //   		  dup.Execute(mv); 
- //   		}
- //   	int dupRedig = dup.Digest();
- //   	G.Assert(dup.whoseTurn()==ourB.whoseTurn(),"Replay whose turn matches");
- //   	G.Assert(dup.moveNumber()==ourB.moveNumber(),"Replay move number matches");
- //   	if(dupRedig!=ourDig)
- //   	{
- //   	//int d0 = ourB.Digest();
- //   	//int d1 = dup.Digest();
- //   	G.Assert(false,"Replay digest matches");
- //   	}
- //   	// note: can't quite do this because the timing of "SetDrawState" is wrong.  ourB
- //   	// may be a draw where dup is not if ourB is pending a draw.
- //   	//G.Assert(dup.getState()==ourB.getState(),"Replay state matches");
- //   	dupBoard = null;
- //   }
+
     
 /**
  * the preferred mouse gesture style is to let the user "pick up" objects

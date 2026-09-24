@@ -374,7 +374,7 @@ public void initPolySolverRobot(ExtendedHashtable info,int strategy)
 	 UniverseBoard gb = (UniverseBoard) gboard;
 	 InitRobot(newParam, info, strategy);
 	 GameBoard = (UniverseBoard)gboard;
-     board = (UniverseBoard)GameBoard.cloneBoard();
+     board = GameBoard.cloneBoard();
      STRATEGY = strategy;
      STORED_CHILD_LIMIT_STOP = false;
      WEAKBOT = (strategy==WEAKBOT_LEVEL);
@@ -656,7 +656,7 @@ Update -1.0 0 P1[onboard B 4 1 J 10] P0[onboard A 5 6 D 7]
  public void runGame_train(ViewerProtocol v,final BoardProtocol b)
  {	CellStack stack = new CellStack();
  	GameBoard = (UniverseBoard)b;
- 	board = (UniverseBoard)GameBoard.cloneBoard();
+ 	board = GameBoard.cloneBoard();
  	try {
  	for(UniverseCell c = GameBoard.allCells; c !=null; c=c.next)
  	{	UniverseChip top = c.topChip();

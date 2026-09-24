@@ -1175,7 +1175,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 	/**
 	 * tunnels, per allegiance.  We ignore that there is no icarite tunnel
 	 */
-    private int tunnelPosition[] = new int[Allegiance.values().length];
+    private int tunnelPosition[] = new int[Allegiance.allValues.length];
   
     public int getTunnelPosition(Allegiance faction)
     {	return(tunnelPosition[faction.ordinal()]);
@@ -1209,7 +1209,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     /**
      * allegiance track for each faction
      */
-    private int allegiance[] = new int[Allegiance.values().length];
+    private int allegiance[] = new int[Allegiance.allValues.length];
     public int getAllegianceValue(Allegiance faction)
     {	return(allegiance[faction.ordinal()]);
     }
@@ -1261,13 +1261,15 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 		Step4AfterTerri, Step4AfterLars,  Step4AfterJadwiga, Step4AfterSpiros, 
 		Step4AfterShaheena, Step4AfterHajoon,
 		StepNext,
-		Step5};
+		Step5;
+		public static final ProceedStep[] allValues = values();
+		};
 	
 	long steps = 0;
 	private ProceedStep proceedGameStep = ProceedStep.Start;				// sub-state of the turn windup.
 	private void clearSteps() { steps = 0; }
 	private void registerStep(ProceedStep next)
-    {	ProceedStep v[] = ProceedStep.values();
+    {	ProceedStep v[] = ProceedStep.allValues;
     	int idx = 0;
     	int last = v.length;
     	int bit = 1;
@@ -1568,7 +1570,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
       	
     	for(int i=players.length;i<MAX_PLAYERS;i++)
     	{
-    		for(Allegiance a : Allegiance.values())
+    		for(Allegiance a : Allegiance.allValues)
     		{	if(a!=Allegiance.Factionless)
     			{
     			// it doesn't matter what player is supplied as this is setup
@@ -2012,7 +2014,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 		{ setKnowlegeDisplay(p.color,p.knowledge);
 		  setMoraleDisplay(p.color,p.morale);
 		}
-    	for(Allegiance f : Allegiance.values())
+    	for(Allegiance f : Allegiance.allValues)
     		{ if(f!=Allegiance.Factionless)
     			{setAllegianceDisplay(f,getAllegianceValue(f));
     			if(f!=Allegiance.Icarite) { setTunnelDisplay(f,getTunnelPosition(f)); }
@@ -2093,7 +2095,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     	REINIT_SIMULTANEOUS_PLAY = SIMULTANEOUS_PLAY = false;
     	if(isIIB()||revision>=123)
     	{	int maxr = 0;
-    		for(Allegiance a : Allegiance.values()) { maxr = Math.max(maxr,activeRecruitsWithFaction(a)); }
+    		for(Allegiance a : Allegiance.allValues) { maxr = Math.max(maxr,activeRecruitsWithFaction(a)); }
     		for(EPlayer p : players)
     		{
     			RecruitChip recruit = (RecruitChip)p.activeRecruits.topChip();
@@ -8407,7 +8409,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 	 {
 		if(p.recruitAppliesToMe(RecruitChip.KofiTheHermit))
 		{	boolean trigger = false;
-			for(Allegiance a : Allegiance.values())
+			for(Allegiance a : Allegiance.allValues)
 			{
 				trigger |= allegianceIsActive(a);
 			}
@@ -9694,6 +9696,8 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 		 //p1("paying artifactx3 only");
 		 addPayArtifactMoves(all,p);
 		 break;
+		 
+		 
 	 case ArtifactAndBlissx2AndCommodity:
 	 	{
 	 	 //p1("pay "+cost); // tested 3/21

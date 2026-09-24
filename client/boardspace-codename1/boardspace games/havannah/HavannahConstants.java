@@ -69,6 +69,7 @@ public interface HavannahConstants
     	White_Chip_Pool("W"),
     	BoardLocation(null),
     	EmptyBoard(null);
+		public static HavannahId[] allValues = values();
     	String shortName = name();
     	HavannahChip chip;
     	public String shortName() { return(shortName); }
