@@ -1066,7 +1066,7 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,
 		// are in sync, although if this does fail you'll no doubt be at a loss
 		// to explain why.
 		
-		G.Assert(Digest() == from_b.Digest(), "Digest matches");
+        checkDigestSame(from_b);
 
 	}
 

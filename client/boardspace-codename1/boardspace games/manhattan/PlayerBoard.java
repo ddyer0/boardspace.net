@@ -470,7 +470,7 @@ public class PlayerBoard implements ManhattanConstants
 		G.Assert(turnOptions.members()==other.turnOptions.members(),"same turn options");
 		G.Assert(b.sameContents(stockpile,other.stockpile),"stockpile mismatch");
 		/// for debugging only, normally this is redudnant because of the digest check in the main board
-		///G.Assert(Digest1(new Random(424))==other.Digest1(new Random(424)),"sameboard ok, digest mismatched");
+		///        checkDigestSame(from_b);
 	}
 	
 	

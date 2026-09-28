@@ -501,5 +501,11 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
 	public boolean drawIsPossible() { return false; }
 	public boolean canOfferDraw() { return false; }
 	
-
+	public void checkDigestSame(BaseBoard from_b)
+	{	long myDigest = Digest();
+		long fromDigest = from_b.Digest();
+		if(myDigest!=fromDigest)
+		{	G.Error("from_b digest mismatch");
+		}
+	}
 }

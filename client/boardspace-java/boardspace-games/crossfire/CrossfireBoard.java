@@ -210,7 +210,7 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
-        G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
+        checkDigestSame(from_b);
 
     }
 

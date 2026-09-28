@@ -30,7 +30,7 @@ public class EntrapmentCell extends stackCell<EntrapmentCell,EntrapmentChip> imp
 {	int sweepCounter=0;
 	int lastPicked = -1;
 	int lastDropped = -1;
-
+	EntrapmentBoard board = null;
 
 	public int getLastPlacement(boolean empty)
 	{
@@ -49,6 +49,15 @@ public class EntrapmentCell extends stackCell<EntrapmentCell,EntrapmentChip> imp
 	{	super(Geometry.Square,c,r);
 		rackLocation = EntrapmentId.BoardLocation;
 		barriers = new EntrapmentCell[geometry.n];
+	}
+	public boolean isBarrier()
+	{
+		switch(rackLocation())
+		{
+		case VBarriers:
+		case HBarriers: return true;
+		default: return false;
+		}
 	}
 	public EntrapmentCell(Random r,Geometry geo,EntrapmentId rack)
 	{	super(r,geo,rack);

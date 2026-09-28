@@ -240,7 +240,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
         // here, check any other state of the board to see if
         G.Assert(sameCells(s_focus,from_b.s_focus), "focus not the same");
         G.Assert(undoInfo==from_b.undoInfo,"undoInfo mismatch");
-        G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
+        checkDigestSame(from_b);
     }
 
     /** this is used in fraud detection to see if the same game is being played

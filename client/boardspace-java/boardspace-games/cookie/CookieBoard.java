@@ -518,7 +518,7 @@ class CookieBoard extends hexBoard<CookieCell> implements BoardProtocol,CookieCo
         G.Assert(sameCells(crawlCell,from_b.crawlCell),"crawl Cell matches");
         G.Assert(sameCells(cherryCell,from_b.cherryCell),"cherry cell matches");
         G.Assert(cherryChip==from_b.cherryChip,"cherryChip matches");
-        G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
+        checkDigestSame(from_b);
         
     }
 

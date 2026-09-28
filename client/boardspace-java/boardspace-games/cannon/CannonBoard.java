@@ -163,7 +163,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
-        G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
+        checkDigestSame(from_b);
 
     }
 
@@ -1095,7 +1095,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
  int getTownMoves(CommonMoveStack  v,int offset,int skip,int who)
  {	int n=0;
  	int homeRow = (who==FIRST_PLAYER_INDEX) ? boardRows : 1;
- 	for(int i=offset;i<boardColumns;i+=skip)
+ 	for(int i=offset-1;i<boardColumns;i+=skip)
  	{	char col = (char)('A'+i-1);
  		if(getCell(col,homeRow).topChip()==null)
  		{	n++;

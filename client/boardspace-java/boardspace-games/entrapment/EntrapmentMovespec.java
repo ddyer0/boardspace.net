@@ -19,6 +19,7 @@ package entrapment;
 import online.game.*;
 
 import lib.G;
+import lib.Plog;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
@@ -53,12 +54,7 @@ public class EntrapmentMovespec extends commonMove implements EntrapmentConstant
 	int from_row; // for from-to moves, the source row
     char to_col; // for from-to moves, the destination column
     int to_row; // for from-to moves, the destination row
-    int undoInfo;	// the state of the move before state, for UNDO
     public EntrapmentChip chip;
-    EntrapmentState state;
-    int deadInfo;
-    EntrapmentCell placed1;
-    EntrapmentCell dropped1;
     public EntrapmentMovespec()
     {
     } // default constructor
@@ -104,8 +100,6 @@ public class EntrapmentMovespec extends commonMove implements EntrapmentConstant
         return ((op == other.op) 
 				&& (source == other.source)
 				&& (dest == other.dest)
-				&& (undoInfo == other.undoInfo)
-				&& (state == other.state)
 				&& (to_row == other.to_row) 
 				&& (to_col == other.to_col)
 				&& (from_row == other.from_row)
@@ -121,12 +115,7 @@ public class EntrapmentMovespec extends commonMove implements EntrapmentConstant
         to.to_row = to_row;
         to.from_col = from_col;
         to.from_row = from_row;
-        to.undoInfo = undoInfo;
-        to.state = state;
-        to.deadInfo = deadInfo;
         to.source = source;
-        to.placed1 = placed1;
-        to.dropped1 = dropped1;
         to.chip = chip;
     }
 

@@ -214,8 +214,8 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
     	SQUARESIZE = CELLSIZE*2;
     	int C2 = CELLSIZE/2;
 
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(ncols*CELLSIZE);
+    	int boardW = (ncols*CELLSIZE);
+    	int boardH = (ncols*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = (mainH-boardH)/2;
     	int boardX = mainX+extraW;
@@ -441,7 +441,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
         // now draw the contents of the board and anything it is pointing at
         //
      	EntrapmentChip moving = gb.pickedObject;
-    	Hashtable<EntrapmentCell,EntrapmentChip> dead = gb.getDead();
+    	CellStack dead = gb.getDead();
     	Hashtable<EntrapmentCell,EntrapmentCell> hittable = gb.getDests();
     	numberMenu.clearSequenceNumbers();
      	if(hittable==null) { hittable = gb.getSources(); }
@@ -468,8 +468,8 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
                     	{ hitCell = cell; 
                     	  StockArt.SmallO.draw(gc,this,ss,xpos,ypos,null);
                     	}
-                    if (dead!=null)
-                    	{ EntrapmentChip ch = dead.get(cell);
+                    if (dead!=null && dead.contains(cell))
+                    	{ EntrapmentChip ch = cell.deadChip;
                     		if(ch!=null)
                     			{ StockArt.SmallX.draw(gc,this,SQUARESIZE,xpos,ypos,null); 
                     			}
@@ -533,9 +533,9 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
             	{ hitCell = cell; 
             	  //StockArt.SmallO.drawChip(gc,this,ss,xpos,ypos,null);
             	}
-            if (dead!=null)
-        	{ EntrapmentChip ch = dead.get(cell);
-        		if(ch!=null)
+            if (dead!=null && dead.contains(cell))
+        	{ EntrapmentChip ch = cell.deadChip;
+        	  if(ch!=null)
         			{ StockArt.SmallX.draw(gc,this,SQUARESIZE,xpos,ypos,null); 
         			}
         	}
@@ -871,6 +871,8 @@ private void playSounds(commonMove m)
      * the elements that we generated in sgf_save
      * summary: 5/25/2023
      * 	6210 files visited 0 problems
+     * 9/27/2016
+     *  6458 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

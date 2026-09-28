@@ -452,8 +452,8 @@ class SyzygyBoard extends hexBoard<SyzygyCell> implements BoardProtocol,SyzygyCo
         G.Assert((stackIndex == from_b.stackIndex),"stackIndex matches");
         G.Assert(SyzygyCell.sameCell(cherryCell,from_b.cherryCell),"cherry cell matches");
         G.Assert(cherryChip==from_b.cherryChip,"cherryChip matches");
-        G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
-        
+        checkDigestSame(from_b);
+       
     }
 
     /** 

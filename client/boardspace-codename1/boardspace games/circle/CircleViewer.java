@@ -528,7 +528,7 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
     }
     public void drawCircleOfLife(Graphics gc,Rectangle boardRect)
     {	
-    	CR[] vals = CR.values();
+    	CR[] vals = CR.allValues;
     	int rad = Math.min(G.Width(boardRect),G.Height(boardRect))/2	;
     	int idx = 0;
     	int nval = vals.length;

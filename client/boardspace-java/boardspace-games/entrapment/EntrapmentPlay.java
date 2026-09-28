@@ -59,7 +59,16 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
     {
     }
  
-
+    // not needed for alpha-beta searches, which do not use threads
+    public RobotProtocol copyPlayer(String from)	// from is the thread name
+    {	RobotProtocol c = super.copyPlayer(from);
+    	EntrapmentPlay cc = (EntrapmentPlay)c;
+    	cc.strategy = strategy;
+    	cc.evaluator = evaluator;
+    	cc.board.initRobotValues(cc);
+    	return cc;
+    
+    }
 /** undo the effect of a previous Make_Move.  These
  * will always be done in reverse sequence
  */
@@ -75,13 +84,17 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
         board.RobotExecute(mm);
      }
 
+    private CommonMoveStack movelist = new ParallelCommonMoveStack();
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
-    public CommonMoveStack  List_Of_Legal_Moves()
-    {   return(board.GetListOfMoves());
+    public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
+    {   //Plog.log.addLog("get moves");
+    	return getMoveList(movelist,threads);
+    	//Plog.log.addLog("Got ",movelist);
+    	//return movelist;
     }
     
     
@@ -122,7 +135,7 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
      * */
     public void StaticEval()
     {
-    	EntrapmentBoard evboard = (EntrapmentBoard)GameBoard.cloneBoard();
+    	EntrapmentBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
@@ -138,7 +151,7 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (EntrapmentBoard) gboard;
-        board = (EntrapmentBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         strategy = strat;
         switch(strat)
         {
@@ -178,6 +191,7 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
     {
         board.copyFrom(GameBoard);
         board.clearDead();
+        board.initRobotValues(this);
     }
 /** search for a move on behalf onf player p and report the result
  * to the game.  This is called in the robot process, so the normal
@@ -187,7 +201,7 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
  {	InitBoardFromGame();
  }
  
- // final a move from-to for a barrier is slow, because there are a lot of mostly redudnant "froms"
+ // find a move from-to for a barrier is slow, because there are a lot of mostly redundant "froms"
  // so we generate an extra "drop" barrier move, and if it's selected we find a matching "remove"
  // move using a mostly valid method.
  private EntrapmentMovespec convertToMoveBarrier(EntrapmentMovespec move)
@@ -242,13 +256,17 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
             if(board.board_state==EntrapmentState.REMOVE_BARRIER_STATE) { depth -=2; }
             
             Search_Driver search_state = Setup_For_Search(depth, false);
+            search_state.recheck_evaluations = 20;	// recheck every n'th evaluation (max 1 per node)
+            search_state.recheck_slop = 0.01;
+
             search_state.save_all_variations = SAVE_TREE;
             search_state.allow_killer = KILLER;
             search_state.verbose=verbose;			// debugging
             search_state.save_top_digest = true;	// always on as a background check
-            search_state.save_digest=false;	// debugging only
+            search_state.save_digest=true;	// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
             search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.max_threads = 0;//DEPLOY_THREADS;
             search_state.allow_good_enough = true;
 
             if (move == null)

@@ -42,7 +42,7 @@ import lib.StackIterator;
  */
 
 
-public class Search_Driver extends CommonDriver implements Constants,Opcodes
+public class Search_Driver extends CommonDriver implements Constants,Opcodes,ActivePool
 {	// if true, when there is a single choice just use it.  This is normally the correct thing,
 	// but might not be if the overall play depends on getting an accurate value for the moves
 	// below the bottleneck
@@ -907,14 +907,16 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     		threadPool = new Sthread[max_threads];
     		threadPoolSize = max_threads;
     		for(int i=0;i<max_threads;i++)
-    			{ threadPool[i] = new Sthread(this,robot.copyPlayer("alphabeta"),i );
+    			{ RobotProtocol newbot = robot.copyPlayer("alphabeta");
+    			  newbot.setSearcher(this);
+    			  threadPool[i] = new Sthread(this,newbot,i,threadPool);
      			  threadPool[i].start(); }
     	}
     }
     public void makeThreadMoves(commonMove ch)
     {	try {
     	if(threadPool!=null)
-    	{
+    	{	lastActiveTime =  G.nanoTime();
     		for(Sthread s : threadPool) { s.makeMove(ch); }
     	}}
     	catch (Throwable e)
@@ -925,7 +927,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     public void unmakeThreadMoves(commonMove ch)
     {	try {
     	if(threadPool!=null)
-    	{
+    	{	lastActiveTime =  G.nanoTime();
     		for(Sthread s : threadPool) { s.unmakeMove(ch); }
     	}}
     	catch (Throwable e)
@@ -1116,10 +1118,10 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         {	
         	int startIndex0 = startIndex;
         	commonMove mm = null;
-   
         	if(threadPool!=null)
         	{
         	// separate starting and finishing so parallel threads can do the work
+        	lastActiveTime = G.nanoTime(); 
         	while(startIndex<sz && startEval(mvec[startIndex])) 
         		{ 
         		//G.print("start "+mm2+" @ "+startIndex);
@@ -1136,10 +1138,15 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         	startIndex++;
             total_evaluations++;
         	long now = G.nanoTime();
+        	lastActiveTime = now; 
             Static_Evaluate_Move(mm);
     		evalAndSortEval += G.nanoTime()-now;
         	}
-        	if(mm!=null)
+        	if(mm==null)
+        	{
+        		Sthread.waitIfStuck(threadPool);
+        	}
+        	else
         	{ 
         	mvec[finIndex++] = mm; 
         	double localEval = mm.local_evaluation();
@@ -1353,14 +1360,14 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
      * @return a move selected as next
      */
     public commonMove Find_Static_Best_Move(int randomn,double dif)
-    {	createThreadPool();
+    {	robot.setSearcher(this);
+    	createThreadPool();
         try
         {	
         	if(verbose>0) 
     		{ G.print("Initial search depth: ",max_depth," time ",progressive_time_limit*60); 
     		}
 
-        	robot.setSearcher(this);
             Search_Result done = Search_Result.Active;
             current_node = root_node = new Search_Node(this, null,null);
             robot.setProgress(0.0);
@@ -1512,4 +1519,9 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     //   } 
     //   return(next);
     // }
+
+    long lastActiveTime = 0;
+	public long lastActiveTime() {
+		return lastActiveTime;
+	}
 }

@@ -947,7 +947,6 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	    	double val = depthLimited&&!gameOverNow ? Static_Evaluate_Depth_Limited_Position(mm) : Static_Evaluate_Position(mm);
 	    	
 	        mm.setEvaluations(val,gameOverNow);
-	        
 	        Unmake_Move(mm);
 	        
 

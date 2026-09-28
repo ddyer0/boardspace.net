@@ -533,7 +533,7 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
         G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
-        G.Assert(myIndex==from_b.myIndex,"Myindex mismatch");
+        checkDigestSame(from_b);
     }
 
     /** 

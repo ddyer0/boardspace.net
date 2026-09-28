@@ -25,7 +25,6 @@ import lib.exCanvas;
 import online.game.chip;
 
 
-
 //
 // basic class to describe construction of polyominoes of any size
 // by a drawing algorithm with some number of orthogonal steps
@@ -34,17 +33,21 @@ public enum OminoStep implements UniverseConstants
 {
 	L(-1, 0),	// step left
 	R(1, 0), 	// step right
-	U( 0,-1),	// step down
+	U(0,-1),	// step down
 	D(0, 1), 	// step up
+	
 	LU(-1,-1),	// step left and up
-	LD(-1, 1), 	// step left and down
-	DR(1, 1),	// step down and right
-	DL(-1, 1),  // step down and left
 	UL(-1,-1), 	// step up and left	
+
+	LD(-1, 1), 	// step left and down
+	DL(-1, 1),  // step down and left
+	
+	DR(1, 1),	// step down and right
+	RD(1, 1),	// step right and down
+
 	UR(1, -1), 	// step up and right
 	RU(1,-1), 	// step right and up
-	RD(1, 1);	// step right and down
-
+;
 	// constructor
 	OminoStep(int x,int y)
 	{	dx = x;
@@ -54,11 +57,14 @@ public enum OminoStep implements UniverseConstants
 	
 	int dx = 0;
 	int dy = 0;
-
-
+	int clockDirection = -1;
+	private OminoStep flipped = null;
+	private OminoStep rotated = null;
+	
 	// get the corresponding step if the poly is rotated 90 degrees clockwise
-	OminoStep getRotated()
-	{	switch(this)
+	private OminoStep getRotatedInt()
+	{	
+		switch(this)
 		{
    		case U: return(R);
 		case D: return(L);
@@ -77,7 +83,7 @@ public enum OminoStep implements UniverseConstants
 	}
 	
 	// get the corresponding step if the poly is flipped on the y axis
-	private OminoStep getFlipped() 
+	private OminoStep getFlippedInt() 
 	{	switch(this)
 		{
 		case U: return(D);
@@ -100,8 +106,8 @@ public enum OminoStep implements UniverseConstants
 	// rotated and flipped as specified
 	public OminoStep permutedDirection(int rot,boolean flip)
 	{	OminoStep dir = this;
-		while(rot-- > 0) { dir = dir.getRotated(); }
-		if(flip) { dir = dir.getFlipped(); }
+		while(rot-- > 0) { dir = dir.rotated; }
+		if(flip) { dir = dir.flipped; }
 		return(dir);
  	}
 
@@ -330,8 +336,14 @@ public enum OminoStep implements UniverseConstants
     	}
     	return(false);
     }
-
+	static {
+    	for(OminoStep o : values())
+    	{
+    		o.rotated = o.getRotatedInt();
+    		o.flipped = o.getFlippedInt();    		
+    	}
+	}
 }
-    
+
 
 

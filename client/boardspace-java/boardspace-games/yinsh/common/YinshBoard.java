@@ -554,7 +554,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         G.Assert(movingOrigin == from_b.movingOrigin,"movingOrigin matches");
         G.Assert(placedDest == from_b.placedDest,"placed digest matches");
         G.Assert(placementCount == from_b.placementCount,"placementCount matches");
-        G.Assert(Digest()==from_b.Digest(), "Digest matches");
+        checkDigestSame(from_b);
     }
 
     private long Digest_Rings(Random r, int[] rack)

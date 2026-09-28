@@ -356,7 +356,7 @@ class TrenchBoard
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
         if(robot==null && DEBUG)
-        	{ G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
+        	{         checkDigestSame(from_b);
         	}
 
     }

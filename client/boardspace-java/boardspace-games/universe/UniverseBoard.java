@@ -20,7 +20,6 @@ import java.awt.Rectangle;
 import java.util.*;
 
 import online.game.*;
-import online.game.cell.Geometry;
 import universe.UniverseChip.ChipColor;
 import lib.*;
 import lib.Random;
@@ -883,7 +882,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
-        G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
+        checkDigestSame(from_b);
 
     }
 
@@ -996,7 +995,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
 	    regionIndex = from_b.regionIndex;
 	    sweep_counter = from_b.sweep_counter;
 	    placementIndex = from_b.placementIndex;
-        if(G.debug()) { sameboard(from_b); }
+        if(DEBUG) { sameboard(from_b); }
    }
     public int[] saveSudokuValues()
     {
@@ -1050,9 +1049,9 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
    			{	UniverseCell d1 = d;
 			boolean retry = false;
 			switch(step.dx)
-    		{	case -1:	d = d.exitTo(CELL_LEFT);
+    		{	case -1:	d = d.fastExitTo(CELL_LEFT);
     						break;
-    			case 1:		d = d.exitTo(CELL_RIGHT);
+    			case 1:		d = d.fastExitTo(CELL_RIGHT);
     						break;
     			default:
     		}
@@ -1066,9 +1065,9 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
 	    	if(d!=null)
     		{
     		switch(step.dy)
-    		{	case -1:	d = d.exitTo(CELL_UP);
+    		{	case -1:	d = d.fastExitTo(CELL_UP);
     						break;
-    			case 1:		d = d.exitTo(CELL_DOWN);
+    			case 1:		d = d.fastExitTo(CELL_DOWN);
     						break;
 			default:
 				break;
@@ -1076,9 +1075,9 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     		if(retry && (d!=null))
     		{	
     			switch(step.dx)
-        		{	case -1:	d = d.exitTo(CELL_LEFT);
+        		{	case -1:	d = d.fastExitTo(CELL_LEFT);
         						break;
-        			case 1:		d = d.exitTo(CELL_RIGHT);
+        			case 1:		d = d.fastExitTo(CELL_RIGHT);
         						break;
         			default:
         		}	
@@ -1128,7 +1127,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
    			occupied.push(c); 
     		c.addChip(ch,0);
     		if((c.diagonalResult&allDiag_mask)!=0) { removeFromDiag(c);  }
-        	G.Assert(c.geometry==Geometry.Square,"is a square cell");
+        	//G.Assert(c.geometry==Geometry.Square,"is a square cell");
         	UniverseCell d = c;
         	int idx = 1;
         	for( OminoStep step : ch.pattern)
@@ -1234,7 +1233,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     	    			default:
     	    		}	
     			}
-    			G.Assert(d!=null,"Stepped off the board");
+    			//G.Assert(d!=null,"Stepped off the board");
     			d.sweep_counter = c.sweep_counter;
     			d.removeTop();
     			occupied.remove(d,false);
@@ -2131,7 +2130,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     // drop the floating object.
     //
     void dropObject(UniverseCell c)
-    {   G.Assert(pickedObject!=null,"pickedObject should not be null"); 	    		
+    {  	if(DEBUG) { G.Assert(pickedObject!=null,"pickedObject should not be null");} 	    		
     	switch(c.rackLocation())
 		{
 		default: throw G.Error("Not expecting rackLocation %s",c.rackLocation);
@@ -2264,7 +2263,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     	addChip(pickedCell,ch);
     }
     void pickObject(UniverseCell c,int rotation)
-    {	G.Assert(pickedObject==null,"pickedObject should be null");
+    {	if(DEBUG) { G.Assert(pickedObject==null,"pickedObject should be null"); }
     	switch(c.rackLocation())
     	{
 		default: throw G.Error("Not expecting rackLocation %s",c.rackLocation);
@@ -2804,7 +2803,8 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
         		case PUZZLE_STATE:
         		case PLAY_OR_SWAP_STATE:
         		case PLAY_STATE:
-        			{G.Assert(pickedObject==null,"something is moving");
+        			{
+        			if(DEBUG) { G.Assert(pickedObject==null,"something is moving");}
         			UniverseCell src = revision<101
         					? getCell(UniverseId.ChipRack, (char)('A'+m.player), m.from_row)
         					: getCell(UniverseId.ChipRack, m.from_col, m.from_row);
@@ -2866,7 +2866,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
         case MOVE_DROPB:
 			{
 			UniverseCell c = getCell(UniverseId.BoardLocation, m.to_col, m.to_row);
-        	G.Assert(pickedObject!=null,"something is moving");
+        	if(DEBUG) { G.Assert(pickedObject!=null,"something is moving");}
         	consecutivePasses = 0;
             if(isSource(c) && (pickedObject==originalPickedObject)) 
             	{ 
@@ -2897,7 +2897,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
         	consecutivePasses = 0;
         	// come here only where there's something to pick, which must
         	// be a temporary p
-        	G.Assert(pickedObject==null,"something already moving");
+        	if(DEBUG) { G.Assert(pickedObject==null,"something already moving"); }
         	if(isDest(getCell(m.from_col,m.from_row)))
         		{ unDropObject(); 
         		  setState(UniverseState.PLAY_STATE);
@@ -3184,7 +3184,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     {	int adj_mask = 1<<playerIndex;
     	int diag_mask = 0x100<<playerIndex;
 		for(int i=0;i<4;i++) 
-			{ UniverseCell d = c.exitTo(i);
+			{ UniverseCell d = c.fastExitTo(i);
 			  if(d!=null) 
 			  {
 			   UniverseChip chip = d.chip;
@@ -3195,7 +3195,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
 			  {
 				  for(int dir = 1;dir<4; dir+=2)
 				  {
-					  UniverseCell e = d.exitTo((dir+i)&3);
+					  UniverseCell e = d.fastExitTo((dir+i)&3);
 					  if((e!=null) && (e.chip==null) && ((e.diagonalResult&(diag_mask|adj_mask))==0))
 					  	{ e.diagonalResult |= diag_mask; 
 					  	  points.pushNew(e); 
@@ -3405,8 +3405,11 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     		case Diagonal_Blocks_Duo:
     		case Blokus_Duo:
     			// colorindex is a swap of 0 1 
-    	    	validateDiagonalsCacheForPlayer(getPlayerIndexForOwner(ch));
-    			return(canAddDiagonalChip(c,ch,null));
+    		{
+    			int player = getPlayerIndexForOwner(ch);
+    	    	validateDiagonalsCacheForPlayer(player);
+    			return(canAddDiagonalChip(c,ch,player,null));
+    		}
     			// has to touch diagonally, except for the first move of course
     			// break;
     		default:	throw G.Error("Not expecting %s",rules);
@@ -3474,8 +3477,6 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     	undoInfo = 0;
     	//G.print("R "+m);
         // to undo undoInfo transitions is to simple put the original undoInfo back.
-        G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
-
         if (Execute(m,replayMode.Replay))
         {
         	if (DoneState())
@@ -3537,7 +3538,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
         		case PASS_STATE:
         		case PLAY_OR_SWAP_STATE:
         		case PLAY_STATE:
-        			G.Assert(pickedObject==null,"something is moving");
+        			if(DEBUG) { G.Assert(pickedObject==null,"something is moving"); }
         			pickObject(getCell(UniverseId.BoardLocation,m.to_col,m.to_row),-1);
         			originalPickedObject = pickedObject = UniverseChip.getIsomer(undo/100);
         			dropObject(getCell(UniverseId.ChipRack,m.from_col, m.from_row));
@@ -3608,10 +3609,9 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     // has to be maintained separately
     // 
 
-    public boolean canAddDiagonalChip(UniverseCell c,UniverseChip ch,UniverseCell home_diagonal)
+    public boolean canAddDiagonalChip(UniverseCell c,UniverseChip ch,int playerIndex,UniverseCell home_diagonal)
     {	if(c.chip!=null) { return(false); }
-    	int playerIndex = getPlayerIndexForOwner(ch);
-    	int diag_mask = 0x100<<playerIndex;
+        int diag_mask = 0x100<<playerIndex;
     	int adj_mask = 1<<playerIndex;
     	boolean hasDiagonal = (c.diagonalResult&diag_mask)!=0;
     	UniverseCell d = c;
@@ -3623,9 +3623,9 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     	{	UniverseCell d1 = d;
     		boolean retry = false;
     		switch(step.dx)
-    		{	case -1:	d = d.exitTo(CELL_LEFT);
+    		{	case -1:	d = d.fastExitTo(CELL_LEFT);
     						break;
-    			case 1:		d = d.exitTo(CELL_RIGHT);
+    			case 1:		d = d.fastExitTo(CELL_RIGHT);
     						break;
     			default:
     		}
@@ -3636,9 +3636,9 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     			retry = true;
     			}
     		switch(step.dy)
-    		{	case -1:	d = d.exitTo(CELL_UP);
+    		{	case -1:	d = d.fastExitTo(CELL_UP);
     						break;
-    			case 1:		d = d.exitTo(CELL_DOWN);
+    			case 1:		d = d.fastExitTo(CELL_DOWN);
     						break;
 			default:
 				break;
@@ -3646,9 +3646,9 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     		if(retry && (d!=null))
     		{
     			switch(step.dx)
-        		{	case -1:	d = d.exitTo(CELL_LEFT);
+        		{	case -1:	d = d.fastExitTo(CELL_LEFT);
         						break;
-        			case 1:		d = d.exitTo(CELL_RIGHT);
+        			case 1:		d = d.fastExitTo(CELL_RIGHT);
         						break;
         			default:
         		}	
@@ -3708,6 +3708,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     	UniverseCell c = points.elementAt(i);
     	//G.Assert(c.diagonalResult==diagonalSweepResult.diagonal,"not a diagonal point");
  		UniverseChip variations[] = baseChip.getVariations();
+ 		int player =   getPlayerIndexForOwner(baseChip);
 		int nvar = variations.length;
 		for(int varnum = 0,lim = (orientation>=0)?1 : nvar;
 			varnum<lim;
@@ -3718,7 +3719,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
 				UniverseCell startingPoint = c;
 				if((flippable==FlipStyle.allowed)|| !ch.flipped)
 				{
-				if(canAddDiagonalChip(startingPoint,ch,c))
+				if(canAddDiagonalChip(startingPoint,ch,player,c))
 					{	if(all==null) { return(true); }
 						all.push(new UniverseMovespec(MOVE_RACK_BOARD,chipHome.col,chipHome.row,ch.rotated,ch.flipped,c.col,c.row,who));
 						some = true;
@@ -3731,7 +3732,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
 					UniverseCell testCell = getCell(col,row);
 					if(testCell!=null)
 					{
-						if(canAddDiagonalChip(testCell,ch,startingPoint))
+						if(canAddDiagonalChip(testCell,ch,player,startingPoint))
 						{	if(all==null) { return(true); }
 							all.push(new UniverseMovespec(MOVE_RACK_BOARD,chipHome.col,chipHome.row,ch.rotated,ch.flipped,col,row,who));
 							some = true;
@@ -3756,7 +3757,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
 			UniverseCell to = getCell(UniverseId.BoardLocation,m.to_col,m.to_row);
 			if(to.chip==null)
 			{
-				return(canAddDiagonalChip(to,ch.getVariation(m.rotation%4,m.rotation>=4),null));
+				return(canAddDiagonalChip(to,ch.getVariation(m.rotation%4,m.rotation>=4),getPlayerIndexForOwner(ch),null));
 			}}
     		return(false);
     	case MOVE_PASS:
@@ -3772,15 +3773,16 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     	int index = points.size();				
     	// note that diagonalPoints is supposed to be used in a random order,
     	// so it doesn't matter that we actually randomize it in the process of using it here.
-    	while(index>0)
+		UniverseChip variations[] = baseChip.getVariations();
+		int player = getPlayerIndexForOwner(baseChip);
+		while(index>0)
    		{
     	int off = Random.nextSmallInt(rand,index);					// pick a random element
     	UniverseCell c = points.elementAt(off);			// get it (and below, swap it to the top)
     	points.setElementAt(points.elementAt(--index),off);	// reload the slot with the last element
     	points.setElementAt(c,index);				// reload the last element with the current element
     	
- 		UniverseChip variations[] = baseChip.getVariations();
-		int nvar = variations.length;
+ 		int nvar = variations.length;
 		int lastOffset = baseChip.patternSize()-1;			// all variations will have the same size
 		int randomchipoffset=Random.nextSmallInt(rand,lastOffset+1);	// we'll start all variations at the same random offset
 		for(int varnum = 0,lim = nvar,randvar=Random.nextSmallInt(rand,lim);
@@ -3803,7 +3805,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
 					UniverseCell testCell = getCell(col,row);
 					if(testCell!=null)
 					{
-						if(canAddDiagonalChip(testCell,ch,c))
+						if(canAddDiagonalChip(testCell,ch,player,c))
 						{	return(new UniverseMovespec(MOVE_RACK_BOARD,chipHome.col,chipHome.row,ch.rotated,ch.flipped,col,row,who));
 						}
 					
@@ -3822,6 +3824,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     	    	for(UniverseCell c = allCells; c!=null; c=c.next)
    		{
     	int diag_mask = 0x100<<who;
+    	int player = getPlayerIndexForOwner(baseChip);
    		if(c.chip==null && (c.diagonalResult&diag_mask)!=0) 
    		{	
  			UniverseChip variations[] = baseChip.getVariations();
@@ -3833,7 +3836,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
 				int varidx = orientation>=0 ? (varnum+orientation)%nvar : varnum;
 				UniverseChip ch = variations[varidx];
 
-				if( ((flippable==FlipStyle.allowed)|| !ch.flipped) && canAddDiagonalChip(c,ch,null))
+				if( ((flippable==FlipStyle.allowed)|| !ch.flipped) && canAddDiagonalChip(c,ch,player,null))
 					{	if(all==null) { return(true); }
 						all.push(new UniverseMovespec(MOVE_RACK_BOARD,chipHome.col,chipHome.row,ch.rotated,ch.flipped,c.col,c.row,who));
 						some = true;
@@ -4273,11 +4276,11 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
   		}
  	 return(val);
  }
- public CommonMoveStack  GetListOfMoves()
- {	return(getListOfMoves(whoseTurn));
+ public CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	return(getListOfMoves(all,whoseTurn));
  }
- public CommonMoveStack getListOfMoves(int who)
- {	CommonMoveStack  all = new CommonMoveStack();
+ public CommonMoveStack getListOfMoves(CommonMoveStack all,int who)
+ {	
  	switch(rules)
  	{
  	default: throw G.Error("Not implemented");
@@ -4420,7 +4423,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
 				mainBoard.copyFrom(save);
 				return;
  			}
- 		CommonMoveStack moves = (((pass&(1<<whoseTurn))==0) ? getListOfMoves(whoseTurn) : null);
+ 		CommonMoveStack moves = (((pass&(1<<whoseTurn))==0) ? getListOfMoves(new CommonMoveStack(),whoseTurn) : null);
  		if(moves==null) { moves = new CommonMoveStack(); moves.push(new UniverseMovespec(MOVE_PASS,whoseTurn)); }
  		while(moves.size()>0)
  		{	UniverseMovespec next = (UniverseMovespec)moves.pop();

@@ -687,7 +687,7 @@ public class BugsBoard
         G.Assert(sameCells(goalMarket,from_b.goalMarket),"goalMarket mismatch");
         for(int i=0;i<pbs.length;i++) { pbs[i].sameBoard(from_b.pbs[i]); }
         
-        G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
+        checkDigestSame(from_b);
         
 
     }

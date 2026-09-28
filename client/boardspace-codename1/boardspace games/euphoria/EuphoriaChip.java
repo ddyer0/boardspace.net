@@ -175,7 +175,7 @@ public class EuphoriaChip extends chip<EuphoriaChip>
     	return(super.pointInsideCell(p,x,y,sqx*2,sqy*2));
     }
     static private EuphoriaChip[] colorArray(int baseidx,String basename)
-    {	Colors co[] = Colors.values();
+    {	Colors co[] = Colors.allValues;
     	EuphoriaChip val[] = new EuphoriaChip[co.length];
     	for(Colors c : co)
     	{	int idx = c.ordinal();
@@ -254,6 +254,5 @@ public class EuphoriaChip extends chip<EuphoriaChip>
 		imagesLoaded = true;
  		}
 	}   
-
 	
 }

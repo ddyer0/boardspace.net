@@ -20,6 +20,7 @@ import common.GameInfo;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.Http;
+import lib.Plog;
 import lib.Random;
 import lib.Task;
 import lib.TimeControl;
@@ -931,7 +932,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 		 return Static_Evaluate_Search_Move(mm,current_depth,master);
 	 }
 	 public double Static_Evaluate_Search_Move(commonMove mm,int current_depth,CommonDriver master)
-	    { 
+	    { 	
 		 	Make_Move(mm);
 	    	if(master.check_duplicate_digests)
 		    	{ 
@@ -959,7 +960,6 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	    	double val = depthLimited&&!gameOverNow ? Static_Evaluate_Depth_Limited_Position(mm) : Static_Evaluate_Position(mm);
 	    	
 	        mm.setEvaluations(val,gameOverNow);
-	        
 	        Unmake_Move(mm);
 	        
 

@@ -27,7 +27,6 @@ import lib.DrawingObject;
 import lib.G;
 import lib.HitPoint;
 
-
 /**
  * stackCell extends cell with a stack of chips.  The stack size is expanded
  * as necessary.  Either stackCell or {@link chipCell} should be the
@@ -188,7 +187,11 @@ public abstract class stackCell
 	 * add a chip and grow the stack if needed
 	 * @param newchip
 	 */
-	public void addChip(COMPONENTTYPE newchip) { addChip_local(newchip); }
+	public void addChip(COMPONENTTYPE newchip)
+	{ 
+	  addChip_local(newchip); 
+	
+	}
 	
 	private final void addChip_local(COMPONENTTYPE newcup) 
 	{ 	if(newcup==null) { G.Error("new chip is null"); }
@@ -317,7 +320,8 @@ public abstract class stackCell
 	 * @return the chip removed
 	 */
 	public COMPONENTTYPE removeTop()
-	{	if(chipIndex<0) { G.Error("there is no chip"); }
+	{	
+	    if(chipIndex<0) { G.Error("there is no chip"); }
 		COMPONENTTYPE oldc = chipStack[chipIndex];
 		chipStack[chipIndex--] = null;
 		return(oldc);

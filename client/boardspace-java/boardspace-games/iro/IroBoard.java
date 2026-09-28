@@ -371,9 +371,8 @@ class IroBoard
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
-        long d1 = Digest();
-        long d2 = from_b.Digest();
-        G.Assert(d1==d2,"Digest matches");
+        checkDigestSame(from_b);
+
 
     }
 
