@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,7 +12,7 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package entrapment;
 
@@ -47,7 +47,7 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
 	private static final int BESTBOT_DEPTH = 7;
 	private int MAX_DEPTH = BESTBOT_DEPTH;
 	
-     /* strategies */
+	     /* strategies */
 	private int strategy = DUMBOT_LEVEL;
 	private Evaluator evaluator = null;
 	
@@ -59,7 +59,16 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
     {
     }
  
-
+    // needed for searches, which use threads
+    public RobotProtocol copyPlayer(String from)	// from is the thread name
+    {	RobotProtocol c = super.copyPlayer(from);
+    	EntrapmentPlay cc = (EntrapmentPlay)c;
+    	cc.strategy = strategy;
+    	cc.evaluator = evaluator;
+    	cc.board.initRobotValues(cc);
+    	return cc;
+    
+    }
 /** undo the effect of a previous Make_Move.  These
  * will always be done in reverse sequence
  */
@@ -75,13 +84,17 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
         board.RobotExecute(mm);
      }
 
+    private CommonMoveStack movelist = new ParallelCommonMoveStack();
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
-    public CommonMoveStack  List_Of_Legal_Moves()
-    {   return(board.GetListOfMoves());
+    public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
+    {   //Plog.log.addLog("get moves");
+    	return getMoveList(movelist,threads);
+    	//Plog.log.addLog("Got ",movelist);
+    	//return movelist;
     }
     
     
@@ -96,7 +109,7 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
      */
     private double ScoreForPlayer(EntrapmentBoard evboard,int player,boolean print)
     {	
-    	return evaluator.evaluate(evboard, player, print);
+     	return evaluator.evaluate(evboard, player, print);
     }
     
     /**
@@ -178,6 +191,7 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
     {
         board.copyFrom(GameBoard);
         board.clearDead();
+        board.initRobotValues(this);
     }
 /** search for a move on behalf onf player p and report the result
  * to the game.  This is called in the robot process, so the normal
@@ -187,7 +201,7 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
  {	InitBoardFromGame();
  }
  
- // final a move from-to for a barrier is slow, because there are a lot of mostly redudnant "froms"
+ // find a move from-to for a barrier is slow, because there are a lot of mostly redundant "froms"
  // so we generate an extra "drop" barrier move, and if it's selected we find a matching "remove"
  // move using a mostly valid method.
  private EntrapmentMovespec convertToMoveBarrier(EntrapmentMovespec move)
@@ -202,8 +216,6 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
 	 
 	 newMove.op = MOVE_BOARD_BOARD;
 	 newMove.dest = move.dest;
-	 newMove.to_col = move.to_col;
-	 newMove.to_row = move.to_row;
 	 board.setState(state);
 	 board.setWhoseTurn(turn);
 	 Make_Move(newMove);
@@ -220,7 +232,7 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
 
             if (board.DoneState())
             { // avoid problems with gameover by just supplying a done
-                move = new EntrapmentMovespec("Done", board.whoseTurn);
+                move = new EntrapmentMovespec(MOVE_DONE, board.whoseTurn);
             }
 
             // it's important that the robot randomize the first few moves a little bit.
@@ -242,13 +254,21 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
             if(board.board_state==EntrapmentState.REMOVE_BARRIER_STATE) { depth -=2; }
             
             Search_Driver search_state = Setup_For_Search(depth, false);
+       	   // if nonzero,
+       	   // recheck every n'th evaluation (max 1 per node)
+            // check thread generated move list against unthreaded
+            // check synchronization between master and threads during search
+            search_state.debug_threads = 0;	
+            search_state.recheck_slop = 0.01;
+
             search_state.save_all_variations = SAVE_TREE;
             search_state.allow_killer = KILLER;
             search_state.verbose=verbose;			// debugging
             search_state.save_top_digest = true;	// always on as a background check
-            search_state.save_digest=false;	// debugging only
+            search_state.save_digest=true;	// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
             search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.max_threads = 0;//DEPLOY_THREADS;
             search_state.allow_good_enough = true;
 
             if (move == null)

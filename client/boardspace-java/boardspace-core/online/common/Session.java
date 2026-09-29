@@ -502,7 +502,8 @@ public class Session implements LobbyConstants
 	  }
 	
 	public boolean canIUseThisRobot(Bot n)
-	{	return((currentGame!=null) 
+	{	
+		return((currentGame!=null) 
 				&& (n.idx>=0)
 				&& currentGame.fastEnoughForRobot(n));
 	}

@@ -1061,7 +1061,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	    */
 	   public CommonMoveStack  getMoveList(CommonMoveStack all,Sthread threads[])
 	    {	all.clear();
-	    	boolean debug = all.debug = search_driver.recheck_evaluations!=0;
+	    	boolean debug = all.debug = search_driver.debug_threads!=0;
 	    	if(threads==null)
 	    	{
 	    		return board.getMoveList(all,1,1);
@@ -1082,7 +1082,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	    	{
 	    		search_driver.Abort_Search_In_Progress(""+e);
 	    	}
-	    	if(debug && (moveCycles++ % search_driver.recheck_evaluations==0 ))
+	    	if(debug && (moveCycles++ % search_driver.debug_threads==0 ))
 	    	{	CommonMoveStack ap = getMoveList(new CommonMoveStack(),null);
 	    		G.Assert(ap.size()==all.size(),"wrong number of moves generated, is %s should be %s",all.size(),ap.size());
 	    		for(int i=0;i<ap.size();i++) 

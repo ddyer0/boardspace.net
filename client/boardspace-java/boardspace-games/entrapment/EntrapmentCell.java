@@ -30,7 +30,7 @@ public class EntrapmentCell extends stackCell<EntrapmentCell,EntrapmentChip> imp
 {	int sweepCounter=0;
 	int lastPicked = -1;
 	int lastDropped = -1;
-	EntrapmentBoard board = null;
+
 
 	public int getLastPlacement(boolean empty)
 	{

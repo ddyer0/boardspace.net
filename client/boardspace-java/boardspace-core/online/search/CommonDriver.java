@@ -36,10 +36,12 @@ public abstract class CommonDriver implements TreeProviderProtocol {
 	
 
 	/**
-	 * if nonzero, re-check static evaluations when parallel evaluations are in effect.
-	 * every n'th result is flagged and re-evaluated at the end of the evaluate_and_sort process.
+	 * if nonzero,
+1	 * recheck every n'th evaluation (max 1 per node)
+     * check thread generated move list against unthreaded
+     * check synchronization between master and threads during search
 	 */
-	public int recheck_evaluations = 0;
+	public int debug_threads = 0;
 	/*
 	 * the value of recheck_slop is a bound on how close the evaluations must be, given that
 	 * sometimes floating point arithmetic is slightly unstable. */

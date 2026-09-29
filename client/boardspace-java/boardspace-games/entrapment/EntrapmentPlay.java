@@ -59,7 +59,7 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
     {
     }
  
-    // not needed for alpha-beta searches, which do not use threads
+    // needed for searches, which use threads
     public RobotProtocol copyPlayer(String from)	// from is the thread name
     {	RobotProtocol c = super.copyPlayer(from);
     	EntrapmentPlay cc = (EntrapmentPlay)c;
@@ -193,7 +193,7 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
         board.clearDead();
         board.initRobotValues(this);
     }
-/** search for a move on behalf onf player p and report the result
+/** search for a move on behalf of player p and report the result
  * to the game.  This is called in the robot process, so the normal
  * game UI is not encumbered by the search.
  */
@@ -216,8 +216,6 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
 	 
 	 newMove.op = MOVE_BOARD_BOARD;
 	 newMove.dest = move.dest;
-	 newMove.to_col = move.to_col;
-	 newMove.to_row = move.to_row;
 	 board.setState(state);
 	 board.setWhoseTurn(turn);
 	 Make_Move(newMove);
@@ -234,7 +232,7 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
 
             if (board.DoneState())
             { // avoid problems with gameover by just supplying a done
-                move = new EntrapmentMovespec("Done", board.whoseTurn);
+                move = new EntrapmentMovespec(MOVE_DONE, board.whoseTurn);
             }
 
             // it's important that the robot randomize the first few moves a little bit.
@@ -256,7 +254,11 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
             if(board.board_state==EntrapmentState.REMOVE_BARRIER_STATE) { depth -=2; }
             
             Search_Driver search_state = Setup_For_Search(depth, false);
-            search_state.recheck_evaluations = 20;	// recheck every n'th evaluation (max 1 per node)
+       	   // if nonzero,
+       	   // recheck every n'th evaluation (max 1 per node)
+            // check thread generated move list against unthreaded
+            // check synchronization between master and threads during search
+            search_state.debug_threads = 0;	
             search_state.recheck_slop = 0.01;
 
             search_state.save_all_variations = SAVE_TREE;

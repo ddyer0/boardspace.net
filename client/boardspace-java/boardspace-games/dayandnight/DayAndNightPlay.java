@@ -99,7 +99,7 @@ public class DayAndNightPlay extends commonRobot<DayAndNightBoard> implements Ru
     {
     }
 
-    // not needed for alpha-beta searches, which do not use threads
+    // needed for searches, which use threads
     public RobotProtocol copyPlayer(String from)	// from is the thread name
     {	RobotProtocol c = super.copyPlayer(from);
     	DayAndNightPlay cc = (DayAndNightPlay)c;

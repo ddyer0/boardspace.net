@@ -159,7 +159,6 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
 	// factory method
 	public EntrapmentCell newcell(char c,int r)
 	{	EntrapmentCell cx = new EntrapmentCell(c,r);
-		cx.board = this;
 		return cx;
 	}
     public EntrapmentBoard(String init,long rv,int[]map,int rev) // default constructor
@@ -214,7 +213,6 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
     				adj.barriers[inv] = bar;
     				bar.next = barriers;
     				barriers = bar;
-    				bar.board = this;
     				nb++;
     			}
     		}
@@ -316,7 +314,8 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
         Random r = new Random(64 * 1000); // init the random number generator
         long v = super.Digest(r);
         v ^= Digest(r,allBarriers);
-        if(robotDepth<=0) {
+        if(!robotBoard)
+       	{
         	// don't include for the bot, it uses them slightly differently
         	v ^= Digest(r,pickedSourceStack);
         	v ^= Digest(r,droppedDestStack);
@@ -373,6 +372,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
 		copyFrom(allBarriers,from_b.allBarriers);
         board_state = from_b.board_state;
         unresign = from_b.unresign;
+        robotBoard = from_b.robotBoard;
         if(G.debug()) { sameboard(from_b); }
 	}
     public void doInit(String game, long rv) {
@@ -400,15 +400,12 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
      	for(int pl=FIRST_PLAYER_INDEX;pl<=SECOND_PLAYER_INDEX; pl++)
     	{
     	EntrapmentCell cell = unplacedBarriers[pl]=new EntrapmentCell(RackLocation[map[pl]]);
-    	cell.board = this;
       	for(int i=0;i<STARTING_BARRIERS;i++) 
       		{ cell.addChip(EntrapmentChip.getVBarrier(pl,false));
       		}
       	 
     	cell = deadRoamers[pl] = new EntrapmentCell(DeadRoamerLocation[map[pl]]);
-    	cell.board = this;
     	cell = unplacedRoamers[pl] = new EntrapmentCell(RoamerLocation[map[pl]]);
-    	cell.board = this;
     	for(int i=0;i<roamers_per_player;i++) { cell.addChip(EntrapmentChip.getChip(map[pl])); }
     	
     	win[pl] = false;
@@ -479,7 +476,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
     			addRoamerEscapeMoves(all,1,1,whoseTurn);
      			while(all.top()!=null)
     			{	EntrapmentMovespec m = (EntrapmentMovespec)all.pop();
-    				EntrapmentCell c = getCell(m.source,m.from_col,m.from_row);
+    				EntrapmentCell c = getCell(m.source);
     				h.put(c,c);
     			}
     			}
@@ -551,7 +548,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
     				
 	     			while(all.top()!=null)
 	    			{	EntrapmentMovespec m = (EntrapmentMovespec)all.pop();
-	    				EntrapmentCell c = getCell(m.dest,m.to_col,m.to_row);
+	    				EntrapmentCell c = getCell(m.dest);
 	    				h.put(c,c);
 	    			}
     				}
@@ -660,8 +657,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
     	if(killed) { checkTrapped(false,replay); }
     }
     private void removeDead(EntrapmentCell ps,replayMode replay)
-    {	G.Assert(ps.board==this,"mine removedead");
-
+    {	
     	//Plog.log.addLog("dead "+ps);
 
     	EntrapmentChip ch = ps.deadChip = removeChip(ps); 
@@ -675,7 +671,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
 	    if(ps.trapped) { nTrapped[playerIndex(ch)]--; ps.trapped=false; }
     }
     private void doDead(EntrapmentCell ps,replayMode replay)
-    { G.Assert(ps.board==this,"mine dodead");
+    { 
    	  boolean isDead = isDead(ps);
    	  // newly placed cells get the first opportunity to be dead.
    	  if(isDead) 
@@ -684,7 +680,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
    	  }
     }
     private void undoDead(EntrapmentCell ps)
-    {   G.Assert(ps.board==this,"mine undodead");
+    {   
     	EntrapmentChip ch = ps.deadChip;
     	if(ch!=null)
     	{
@@ -784,7 +780,6 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
     	if(po!=null)
     	{
     	EntrapmentCell ps = pickedSourceStack.pop();
-    	G.Assert(ps.board==this,"mine unpick");
     	ps.lastPicked = prevLastPicked;
     	prevLastPicked = -1;
     	
@@ -831,7 +826,6 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
        prevLastDropped = c.lastDropped;
        c.lastDropped = dropState;
        dropState++;
-       G.Assert(c.board==this,"mine drop");
        addChip(c,dropped);
        checkDead(c,replay);
        checkTrapped(true,replay);
@@ -861,8 +855,10 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
     		}
         return (NothingMoving);
     }
-
-    private EntrapmentCell getCell(EntrapmentId source,char col,int row)
+    
+    public EntrapmentCell getCell(EntrapmentId source) { return getCell(source,'@',-1); }
+    
+    public EntrapmentCell getCell(EntrapmentId source,char col,int row)
     {	EntrapmentCell c = null;
         switch (source)
         {
@@ -904,7 +900,6 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
     private void pickObject(EntrapmentCell c,replayMode replay)
     {	G.Assert((pickedObject==null),"ready to pick");
         pickedSourceStack.push(c);
-        G.Assert(c.board==this,"mine pick");
         prevLastPicked = c.lastPicked;
         c.lastPicked = dropState;
         pickedObject = removeChip(c);
@@ -1071,10 +1066,10 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
         case MOVE_BOARD_BOARD:
      		{
         	G.Assert((pickedObject==null),"something is already moving");
-        	EntrapmentCell src = getCell(m.source, m.from_col, m.from_row);
+        	EntrapmentCell src = getCell(m.source);
         	if(m.op==MOVE_ADD) {  src.addChip(EntrapmentChip.getBarrier(whoseTurn)); }
         	pickObject(src,replay);
-        	EntrapmentCell dst = getCell(m.dest,m.to_col,m.to_row);
+        	EntrapmentCell dst = getCell(m.dest);
            	if(src.rackLocation==EntrapmentId.BoardLocation) { flipBarriers(src,dst,1); }
         	m.chip = dropObject(dst,replay);
         	
@@ -1091,7 +1086,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
         case MOVE_DROPB:
         case MOVE_DROP:
         	{
-        	EntrapmentCell dest = getCell(m.dest, m.to_col, m.to_row);
+        	EntrapmentCell dest = getCell(m.dest);
             if(isSource(dest)) { unPickObject(replay); }
             else { 
             	if(board_state!=EntrapmentState.PUZZLE_STATE)
@@ -1118,7 +1113,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
         	// is not a legal move, but the robot makes them as part of his search
         	// for a valid move-from-to barrier move.
         	{
-        	EntrapmentCell src = getCell(m.source, m.from_col, m.from_row);
+        	EntrapmentCell src = getCell(m.source);
         	pickObject(src,replay);			// vaporize a barrier
         	m.chip = pickedObject;
         	pickedObject = null;
@@ -1131,7 +1126,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
         	// come here only where there's something to pick, which must
         	// be a temporary p
         	{
-        	EntrapmentCell src = getCell(m.source, m.from_col, m.from_row);
+        	EntrapmentCell src = getCell(m.source);
         	if((board_state==EntrapmentState.CONFIRM_STATE) && isDest(src))
         		{ 
         			EntrapmentCell src2 = pickedSourceStack.top();
@@ -1332,9 +1327,11 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
         }
     }
 
+    boolean robotBoard = false;
     EntrapmentPlay robot = null;
     public void initRobotValues(EntrapmentPlay bot)
     {
+    	robotBoard = true;
     	robot = bot;
     }
     private StateStack robotState = new StateStack();
@@ -1403,7 +1400,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
              break;
         case MOVE_REMOVE:
         	{	// non-canonical move used only by the robot
-        		EntrapmentCell dest = getCell(m.source,m.from_col,m.from_row);
+        		EntrapmentCell dest = getCell(m.source);
         		EntrapmentCell src = unplacedBarriers[m.player];
         		EntrapmentChip po = EntrapmentChip.getBarrier(m.player);
         		src.addChip(po);
@@ -1416,8 +1413,8 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
         case MOVE_ADD:
         case MOVE_BOARD_BOARD:
         	{	
-        		EntrapmentCell dst = getCell(m.dest, m.to_col, m.to_row);
-        		EntrapmentCell src = getCell(m.source,m.from_col,m.from_row);
+        		EntrapmentCell dst = getCell(m.dest);
+        		EntrapmentCell src = getCell(m.source);
         		if(src.rackLocation==EntrapmentId.BoardLocation) { flipBarriers(src,dst,-1); }
         		droppedDestStack.push(dst);
         		pickedSourceStack.push(src);
@@ -1450,7 +1447,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
 	 		if((c.topChip()==null) && (c.linkCount==CELL_FULL_TURN))
 	 		{
 	 		// robot never places on the edges
-	 		all.addElement(new EntrapmentMovespec(MOVE_RACK_BOARD,unplacedRoamers[who].rackLocation(),c.rackLocation(),c.col,c.row,who));
+	 		all.addElement(new EntrapmentMovespec(MOVE_RACK_BOARD,unplacedRoamers[who],c,who));
 	 		}}
 	 	}
  }
@@ -1461,7 +1458,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
 		EntrapmentCell c = allBarriers[i];
 		if(c.topChip()==null)
 		{
-		all.addElement(new EntrapmentMovespec(MOVE_RACK_BOARD,unplacedBarriers[who].rackLocation(),c.rackLocation(),c.col,c.row,who));
+		all.addElement(new EntrapmentMovespec(MOVE_RACK_BOARD,unplacedBarriers[who],c,who));
 		}}
 	}
 }
@@ -1471,7 +1468,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
 	 	EntrapmentCell c = allBarriers[i];
 		if(c.topChip()==null)
 		{
-		all.addElement(new EntrapmentMovespec(MOVE_ADD,unplacedBarriers[who].rackLocation(),c.rackLocation(),c.col,c.row,who));
+		all.addElement(new EntrapmentMovespec(MOVE_ADD,unplacedBarriers[who],c,who));
 		}}
 }
  
@@ -1601,7 +1598,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
 		 if(isMovableBarrier(who,dtop)) { barriers++; }
 		 	else  
 		 	{// dest top is empty
-				 all.addElement(new EntrapmentMovespec(MOVE_BOARD_BOARD,src.rackLocation(),src.col,src.row,dest.rackLocation(),dest.col,dest.row,who));
+				 all.addElement(new EntrapmentMovespec(MOVE_BOARD_BOARD,src,dest,who));
 		 	}
 		 if(isMovableBarrier(who,btop)) { barriers++; }
 		 if(barriers<2)
@@ -1613,7 +1610,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
 			 EntrapmentChip b2Top = dest.barriers[dir].topChip();
 			 if(isImpassableBarrier(who,b2Top)) { break; }
 			 if(isMovableBarrier(who,b2Top) && (barriers==1)) { break; }
-			 all.addElement(new EntrapmentMovespec(MOVE_BOARD_BOARD,src.rackLocation(),src.col,src.row,d2.rackLocation(),d2.col,d2.row,who));
+			 all.addElement(new EntrapmentMovespec(MOVE_BOARD_BOARD,src,d2,who));
 		 	}
 		 }
 		 } while(false); 
@@ -1627,7 +1624,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
  	{	EntrapmentCell dest = allBarriers[i];
  		EntrapmentChip ch = dest.topChip();
  		if((ch==null)&&(dest!=src))
- 		{	all.addElement(new EntrapmentMovespec(MOVE_BOARD_BOARD,src.rackLocation(),src.col,src.row,dest.rackLocation(),dest.col,dest.row,who));
+ 		{	all.addElement(new EntrapmentMovespec(MOVE_BOARD_BOARD,src,dest,who));
  		}
  	}
  }
@@ -1639,7 +1636,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
  	for(int i=0,lim=r.length;i<lim;i++)
  	{	EntrapmentCell c = r[i];
  		if((c!=null)&&c.trapped) 
- 			{ all.addElement(new EntrapmentMovespec(MOVE_BOARD_BOARD,c.rackLocation(),c.col,c.row,dest.rackLocation(),dest.col,dest.row,who)); 
+ 			{ all.addElement(new EntrapmentMovespec(MOVE_BOARD_BOARD,c,dest,who)); 
  			}
 	}}
  }
@@ -1659,7 +1656,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
 	 for(int j=0;j<lim;j++)
 	 	{	
 		EntrapmentCell d = allBarriers[j];
- 		if(d.topChip()==null) { all.addElement(new EntrapmentMovespec(MOVE_BOARD_BOARD,c.rackLocation(),c.col,c.row,d.rackLocation(),d.col,d.row,who)); }
+ 		if(d.topChip()==null) { all.addElement(new EntrapmentMovespec(MOVE_BOARD_BOARD,c,d,who)); }
 	 	}
  	 }
  	}
@@ -1672,7 +1669,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
  		{EntrapmentChip top = c.topChip();
 	 		if((top!=null) && (playerIndex(top)==who) && !top.isUp())
 	 		{
-	 		 all.addElement(new EntrapmentMovespec(MOVE_REMOVE,c.rackLocation(),c.col,c.row,who));
+	 		 all.addElement(new EntrapmentMovespec(MOVE_REMOVE,c,who));
 	 		}
 	 	}
  	}

@@ -99,7 +99,7 @@ public class TrikePlay extends commonRobot<TrikeBoard> implements Runnable, Trik
     {
     }
 
-    // not needed for alpha-beta searches, which do not use threads
+    // needed for searches, which use threads
     public RobotProtocol copyPlayer(String from)	// from is the thread name
     {	RobotProtocol c = super.copyPlayer(from);
     	TrikePlay cc = (TrikePlay)c;

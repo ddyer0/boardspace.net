@@ -54,7 +54,7 @@ public class CannonPlay extends commonRobot<CannonBoard> implements Runnable,
     {
     }
 
-    // not needed for alpha-beta searches, which do not use threads
+    // needed for searches, which use threads
     public RobotProtocol copyPlayer(String from)	// from is the thread name
     {	RobotProtocol c = super.copyPlayer(from);
     	CannonPlay cc = (CannonPlay)c;

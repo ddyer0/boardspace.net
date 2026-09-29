@@ -666,7 +666,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
  */
     public commonMove ParseNewMove(String st, int player)
     {
-        return (new EntrapmentMovespec(st, player));
+        return (new EntrapmentMovespec(b,st, player));
     }
     
 

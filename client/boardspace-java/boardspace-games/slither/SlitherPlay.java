@@ -107,7 +107,7 @@ public class SlitherPlay extends commonRobot<SlitherBoard> implements Runnable, 
     {
     }
 
-    // not needed for alpha-beta searches, which do not use threads
+    // needed for searches, which use threads
     public RobotProtocol copyPlayer(String from)	// from is the thread name
     {	RobotProtocol c = super.copyPlayer(from);
     	SlitherPlay cc = (SlitherPlay)c;

@@ -111,7 +111,7 @@ public class PrototypePlay
     {
     }
 
-    // not needed for alpha-beta searches, which do not use threads
+    // needed for searches, which use threads
     public RobotProtocol copyPlayer(String from)	// from is the thread name
     {	RobotProtocol c = super.copyPlayer(from);
     	PrototypePlay cc = (PrototypePlay)c;
@@ -321,7 +321,11 @@ public class PrototypePlay
                // the best solution is to use dif=0.0;  For games with fools mates,
                // set dif so the really bad choices will be avoided
                Search_Driver search_state = Setup_For_Search(depth, false);
-               search_state.recheck_evaluations = 0;	// recheck every n'th evaluation (max 1 per node)
+          	   // if nonzero,
+           	   // recheck every n'th evaluation (max 1 per node)
+               // check thread generated move list against unthreaded
+               // check synchronization between master and threads during search
+               search_state.debug_threads = 0;	// recheck every n'th evaluation (max 1 per node)
                search_state.recheck_slop = 0.01;
                search_state.save_all_variations = SAVE_TREE;
                search_state.good_enough_to_quit = GOOD_ENOUGH_VALUE;

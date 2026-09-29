@@ -83,7 +83,7 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
     {
     }
 
-    // not needed for alpha-beta searches, which do not use threads
+    // needed for searches, which use threads
     public RobotProtocol copyPlayer(String from)	// from is the thread name
     {	RobotProtocol c = super.copyPlayer(from);
     	IroPlay cc = (IroPlay)c;

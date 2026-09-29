@@ -50,6 +50,15 @@ public class EntrapmentCell extends stackCell<EntrapmentCell,EntrapmentChip> imp
 		rackLocation = EntrapmentId.BoardLocation;
 		barriers = new EntrapmentCell[geometry.n];
 	}
+	public boolean isBarrier()
+	{
+		switch(rackLocation())
+		{
+		case VBarriers:
+		case HBarriers: return true;
+		default: return false;
+		}
+	}
 	public EntrapmentCell(Random r,Geometry geo,EntrapmentId rack)
 	{	super(r,geo,rack);
 	}
@@ -93,5 +102,6 @@ public class EntrapmentCell extends stackCell<EntrapmentCell,EntrapmentChip> imp
 	public long Digest(Random r)
 	{	return(super.Digest(r)+((deadChip!=null) ? deadChip.Digest() : 0));
 	}
+
 
 }

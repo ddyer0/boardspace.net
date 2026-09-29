@@ -99,7 +99,7 @@ public class BugPlay extends commonRobot<BugBoard> implements Runnable, BugConst
     {
     }
 
-    // not needed for alpha-beta searches, which do not use threads
+    // needed for searches, which use threads
     public RobotProtocol copyPlayer(String from)	// from is the thread name
     {	RobotProtocol c = super.copyPlayer(from);
     	BugPlay cc = (BugPlay)c;

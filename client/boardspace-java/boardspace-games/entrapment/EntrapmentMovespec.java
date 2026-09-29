@@ -19,7 +19,6 @@ package entrapment;
 import online.game.*;
 
 import lib.G;
-import lib.Plog;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
@@ -48,49 +47,34 @@ public class EntrapmentMovespec extends commonMove implements EntrapmentConstant
 		D.putInt("OnBoard",MOVE_RACK_BOARD);
    }
 
-    EntrapmentId source; // where from
-    EntrapmentId dest;	// where to
-	char from_col; //for from-to moves, the source column
-	int from_row; // for from-to moves, the source row
-    char to_col; // for from-to moves, the destination column
-    int to_row; // for from-to moves, the destination row
+    EntrapmentCell source; // where from
+    EntrapmentCell dest;	// where to
     public EntrapmentChip chip;
     public EntrapmentMovespec()
     {
     } // default constructor
-
-    /* constructor */
-    public EntrapmentMovespec(String str, int p)
+    public EntrapmentMovespec(int opc,int who)
     {
-        parse(new Tokenizer(str), p);
+    	op = opc;
+    	player = who;
+    }
+    /* constructor */
+    public EntrapmentMovespec(EntrapmentBoard b,String str, int p)
+    {
+        parse(b,new Tokenizer(str), p);
     }
 
     // constructor from drop from rack moves
-    public EntrapmentMovespec(int opc,EntrapmentId src,EntrapmentId dst,char col,int row,int pl)
+    public EntrapmentMovespec(int opc,EntrapmentCell src,EntrapmentCell dst,int pl)
     {	op = opc;
     	source = src;
     	dest = dst;
-    	to_col = col;
-    	to_row = row;
-    	player = pl;
-    }
-    // constructor for board to board moves
-    public EntrapmentMovespec(int opc,EntrapmentId src,char fc,int fr,EntrapmentId dst,char tc,int tr,int pl)
-    {	op = opc;
-    	source = src;
-    	dest = dst;
-    	to_col = tc;
-    	to_row = tr;
-    	from_col = fc;
-    	from_row = fr;
     	player = pl;
     }
     // constructor for remove from board moves
-    public EntrapmentMovespec(int opc,EntrapmentId src,char fc,int fr,int pl)
+    public EntrapmentMovespec(int opc,EntrapmentCell src,int pl)
     {	op = opc;
     	source = src;
-    	from_col = fc;
-    	from_row = fr;
     	player = pl;
     }   
     public boolean Same_Move_P(commonMove oth)
@@ -100,10 +84,6 @@ public class EntrapmentMovespec extends commonMove implements EntrapmentConstant
         return ((op == other.op) 
 				&& (source == other.source)
 				&& (dest == other.dest)
-				&& (to_row == other.to_row) 
-				&& (to_col == other.to_col)
-				&& (from_row == other.from_row)
-				&& (from_col == other.from_col)
 				&& (player == other.player));
     }
 
@@ -111,10 +91,6 @@ public class EntrapmentMovespec extends commonMove implements EntrapmentConstant
     {	super.Copy_Slots(to);
         to.player = player;
 		to.dest = dest;
-        to.to_col = to_col;
-        to.to_row = to_row;
-        to.from_col = from_col;
-        to.from_row = from_row;
         to.source = source;
         to.chip = chip;
     }
@@ -133,7 +109,7 @@ public class EntrapmentMovespec extends commonMove implements EntrapmentConstant
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(Tokenizer msg, int p)
+    private void parse(EntrapmentBoard b,Tokenizer msg, int p)
     {
         String cmd = firstAfterIndex(msg);
         player = p;
@@ -146,40 +122,30 @@ public class EntrapmentMovespec extends commonMove implements EntrapmentConstant
         
        case MOVE_ADD:
        case MOVE_RACK_BOARD:	// a robot move from the unplacedBarriers to the board
-        	source = EntrapmentId.get(msg.nextToken());
-            dest = EntrapmentId.get(msg.nextToken());	// white unplacedBarriers or black unplacedBarriers
- 	        to_col = msg.charToken();			// destination cell col
-	        to_row = msg.intToken();  			// destination cell row
-	        break;
+        	source = b.getCell(EntrapmentId.get(msg.nextToken()));
+            dest = b.getCell(EntrapmentId.get(msg.nextToken()),msg.charToken(),msg.intToken());	// white unplacedBarriers or black unplacedBarriers
+ 	        break;
 	        
        case MOVE_BOARD_BOARD:			// robot move from board to board
-            source = EntrapmentId.get(msg.nextToken());	// h v or r	
-            from_col = msg.charToken();	//from col,row
-            from_row = msg.intToken();
-            dest = EntrapmentId.get(msg.nextToken());
- 	        to_col = msg.charToken();		//to col row
-	        to_row = msg.intToken();
-	        break;
+            source = b.getCell(EntrapmentId.get(msg.nextToken()),msg.charToken(),msg.intToken());	// h v or r	
+            dest = b.getCell(EntrapmentId.get(msg.nextToken()),msg.charToken(),msg.intToken());
+ 	        break;
 
         case MOVE_PICKB:
         case MOVE_REMOVE:
-        	source = EntrapmentId.get(msg.nextToken());
-            from_col = msg.charToken();	//from col,row
-            from_row = msg.intToken();
+        	source = b.getCell(EntrapmentId.get(msg.nextToken()), msg.charToken(),msg.intToken());
             break;
             
         case MOVE_PICK:
-            source = EntrapmentId.get(msg.nextToken());
+            source = b.getCell(EntrapmentId.get(msg.nextToken()));
             break;
             
         case MOVE_DROPB:
-           	dest = EntrapmentId.get(msg.nextToken());
-            to_col = msg.charToken();	//from col,row
-            to_row = msg.intToken();
+           	dest = b.getCell(EntrapmentId.get(msg.nextToken()),msg.charToken(),msg.intToken());
             break;
             
         case MOVE_DROP:
-            dest = EntrapmentId.get(msg.nextToken());
+            dest = b.getCell(EntrapmentId.get(msg.nextToken()));
             break;
 
         case MOVE_START:
@@ -211,18 +177,18 @@ public class EntrapmentMovespec extends commonMove implements EntrapmentConstant
         {
         case MOVE_PICKB:
         case MOVE_REMOVE:
-        	return(icon(v," ",from_col,from_row,"-"));
+        	return(icon(v," ",source.col,source.row,"-"));
         case MOVE_DROPB:
-        	return(icon(v," ",to_col,to_row));
+        	return(icon(v," ",dest.col,dest.row));
         case MOVE_DROP:
-            return (icon(v,dest.shortName));
+            return (icon(v,dest.rackLocation().shortName));
         case MOVE_PICK:
             return (icon(v," "));
         case MOVE_ADD:
         case MOVE_RACK_BOARD:
-        	return(icon(v," ",to_col ,to_row));
+        	return(icon(v," ",dest.col ,dest.row));
         case MOVE_BOARD_BOARD:
-        	return(icon(v," ",from_col,from_row,"-",to_col , to_row));
+        	return(icon(v," ",source.col,source.row,"-",dest.col , dest.row));
         case MOVE_DONE:
             return (TextChunk.create(""));
 
@@ -245,22 +211,22 @@ public class EntrapmentMovespec extends commonMove implements EntrapmentConstant
         {
 		case MOVE_ADD:
 		case MOVE_RACK_BOARD:
-			return(opname+source.shortName+" " +dest.shortName+" "+ to_col + " " + to_row);
+			return(opname+source.rackLocation().shortName+" " +dest.rackLocation().shortName+" "+ dest.col + " " + dest.row);
 
 		case MOVE_BOARD_BOARD:
-			return(opname+ source.shortName+" "+from_col + " " + from_row+" "+dest.shortName+" "+  to_col + " " + to_row);
+			return(opname+ source.rackLocation().shortName+" "+source.col + " " + source.row+" "+dest.rackLocation().shortName+" "+  dest.col + " " + dest.row);
 
 		case MOVE_PICK:
-            return (opname+source.shortName);
+            return (opname+source.rackLocation().shortName);
 		case MOVE_DROP:
-            return (opname+dest.shortName);
+            return (opname+dest.rackLocation().shortName);
 
 		case MOVE_PICKB:
 		case MOVE_REMOVE:
-			return(opname+source.shortName+" "+from_col+" "+from_row);
+			return(opname+source.rackLocation().shortName+" "+source.col+" "+source.row);
 			
 		case MOVE_DROPB:
-			return(opname+ dest.shortName+" "+to_col+" "+to_row);
+			return(opname+ dest.rackLocation().shortName+" "+dest.col+" "+dest.row);
 			
         case MOVE_START:
             return (indx+"Start P" + player);

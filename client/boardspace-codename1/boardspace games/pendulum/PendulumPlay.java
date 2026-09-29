@@ -99,7 +99,7 @@ public class PendulumPlay extends commonMPRobot<PendulumBoard> implements Runnab
     {
     }
 
-    // not needed for alpha-beta searches, which do not use threads
+    // needed for searches, which use threads
     public RobotProtocol copyPlayer(String from)	// from is the thread name
     {	RobotProtocol c = super.copyPlayer(from);
     	PendulumPlay cc = (PendulumPlay)c;

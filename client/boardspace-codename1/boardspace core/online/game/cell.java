@@ -406,7 +406,7 @@ public abstract class cell<FINALTYPE
 	public long hiddenDigest() 
 	{ if(randomv==0) 
 		{ 
-		return(getClassHash()+rackLocation.name().hashCode()*1000L+col*200+row+1); 
+		return(randomv = (getClassHash()+rackLocation.name().hashCode()*1000L+col*200+row+1)); 
 		}
 		return(randomv); 
 	}

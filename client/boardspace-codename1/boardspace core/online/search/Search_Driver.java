@@ -91,47 +91,69 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes,Act
 	
 	public void Make_Move(commonMove child)
 	{	currentMove = child;
+		BoardProtocol robo = robot.getBoard();
+		long startingDigest = save_digest || debug_threads>0 ? robo.Digest() : 0;
+		
 		try {
 		if(save_digest)
-			{ BoardProtocol robo = robot.getBoard();
-			  long dig = robo.Digest(); 
-			  digestStack.push(dig);
+			{
+			  digestStack.push(startingDigest);
 			  //
 			  // the rest of this is  a super slow careful test to assist debugging
 			  //
 			  BoardProtocol ob = robo.cloneBoard();
 			  boardStack.push(ob);
 			  long odig = ob.Digest();
-			  if(dig!=odig)
+			  if(startingDigest!=odig)
 				  {
 				  ob.sameboard(robo);
 				  throw G.Error("not a good copy before making the move, digest mismatch but sameboard matches");
 				  }
 			  robot.Make_Move(child);
 			  robot.Unmake_Move(child);
-			  dig = robo.Digest();
-			  if(odig!=dig)
+			  odig = robo.Digest();
+			  if(odig!=startingDigest)
 			  {	ob.sameboard(robo);
 			  throw G.Error("board mismatch after make/unmake, digest mismatches but sameboard matches %s -> %s after %s",ob,robo,child);
 			  }
+			}
 			if(threadPool!=null)
 			{
 				makeThreadMoves(child);
-				Sthread.waitForIdle(threadPool);
-				long tdig = robo.Digest();
-				if(tdig!=dig)
+				
+				if(debug_threads>0)
+				{	Sthread.waitForIdle(threadPool);
+					long odig = robo.Digest();
+					if(odig!=startingDigest)
+					{	G.Error("threads changed our digest");
+					}
+				}
+			}
+		
+			robot.Make_Move(child);
+			if(debug_threads>0 && threadPool!=null)
+			{
+				long newDigest = robo.Digest();
+				// this test is motivated by development of Entrapment, where a bug let the same move
+				// produce different results in some threads, and was very hard to debug.  The underlying
+				// problem was that a permitted reordering of the move generator resulted in a different
+				// victim of a capture being chosen.
+				for(Sthread s : threadPool)
 				{
-					G.Error("threads changed our digest");
+					BoardProtocol rb = s.getRobot().getBoard();
+					long rdigest = rb.Digest();
+					if(rdigest!=newDigest)
+				{
+						rb.sameboard(robo);
+						throw G.Error("robot out of sync with master");
 				}
 			}
 			
 			}
 		else
 		{
-		makeThreadMoves(child);
+				Sthread.waitForIdle(threadPool);
 			}
-		robot.Make_Move(child);
-		Sthread.waitForIdle(threadPool);
 		}
 		catch (Throwable err)
 		{
@@ -1150,7 +1172,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes,Act
         	{ 
         	mvec[finIndex++] = mm; 
         	double localEval = mm.local_evaluation();
-        	if(recheck_evaluations>0 && total_evaluations%recheck_evaluations==0)
+        	if(debug_threads>0 && total_evaluations%debug_threads==0)
         	{
         		recheckMove = mm;
         		recheckMoveEval = localEval;

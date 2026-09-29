@@ -98,7 +98,7 @@ public class EpaminondasPlay extends commonRobot<EpaminondasBoard> implements Ru
     {
     }
 
-    // not needed for alpha-beta searches, which do not use threads
+    // needed for searches, which use threads
     public RobotProtocol copyPlayer(String from)	// from is the thread name
     {	RobotProtocol c = super.copyPlayer(from);
     	EpaminondasPlay cc = (EpaminondasPlay)c;
