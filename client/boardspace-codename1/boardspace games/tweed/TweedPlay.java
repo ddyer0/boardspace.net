@@ -168,7 +168,7 @@ public class TweedPlay extends commonRobot<TweedBoard> implements Runnable, Twee
      * pruned with alpha-beta.
      */
         public CommonMoveStack  List_Of_Legal_Moves()
-        {	movelist.clear();
+        {	
             return(board.GetListOfMoves(movelist,greedy && (board.whoseTurn==movingForPlayer)));
         }
 

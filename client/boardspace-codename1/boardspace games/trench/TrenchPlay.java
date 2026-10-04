@@ -167,9 +167,10 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
      * be evaluated and sorted, then used as fodder for the depth limited search
      * pruned with alpha-beta.
      */
-    CommonMoveStack movelist = new ParallelCommonMoveStack();
+    CommonMoveStack movelist = new CommonMoveStack();
     public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
-    {	return getMoveList(movelist,threads);
+    {	// metering shows that using threads is a losing proposition
+    	return getMoveList(movelist,null /* threads */);
         }
 
         /**

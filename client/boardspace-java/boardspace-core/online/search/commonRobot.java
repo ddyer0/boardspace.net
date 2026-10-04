@@ -49,8 +49,9 @@ class GetMoves implements Task
 			off = o;
 		}
 		public void doit()
-		{
+		{	
 			board.getMoveList(all,off,inc);
+			
 		}
 }
 
@@ -644,23 +645,17 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
                 	BoardProtocol b = getBoard();
                 	if(b!=null) 
                 		{
-                		int moven = b.moveNumber();
-                		long dig = b.Digest();
                 		
                 		// make a copy and verify it before we start
                 		BoardProtocol clone = b.cloneBoard();
-                		b.sameboard(clone);
-                		G.Assert(dig==clone.Digest(),"digest matches before");
-                		
+                 		
                     	commonMove m = DoFullMove();
                     	// these are basic consistency checks on the robots
                     	if(checking_digest())
-                    		{int newmoven = b.moveNumber();
-                    		G.Assert(moven==newmoven,"move number preserved");
+                    		{
                     		b.sameboard(clone);
-                    		long newdig = b.Digest();
-                    		G.Assert(dig==newdig,"digest preserved");
-                    		}
+                    		b.checkDigestSame(clone);
+                     		}
                     	setResult(m);
                 		}
                 	else
@@ -1064,6 +1059,21 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	   
 
 	   private int moveCycles = 0;
+	   public CommonMoveStack tempMoveList = null;
+	   public CommonMoveStack getTempMoveList()
+	   { if(tempMoveList==null) { tempMoveList = new CommonMoveStack(); }
+	     return tempMoveList; 
+	   }
+	   /**
+	    * Running move generation in parallel with the worker threads seemed like an obvious idea,
+	    * but actual metering showed it to be 10x slower than running with a single thread.   After
+	    * a lot of investigation, it turned ough that the synchronized push on the shared CommonMoveStack
+	    * was the major reason. Giving each thread its own result stack and then merging them cut the
+	    * 10x slower to 2x slower.  Still, net effect for the games to date is that it's not worth
+	    * doing, especially considering the care that has to be taken to split the move generation
+	    * among 5 processes.
+	    */
+	   public boolean parallelize_movelist = true;
 	   /**
 	    * get the move list partitioned among the threads and the master thread
 	    * This is intended to be compatible
@@ -1072,23 +1082,68 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	    * @return
 	    */
 	   public CommonMoveStack  getMoveList(CommonMoveStack all,Sthread threads[])
-	    {	all.clear();
+	    {	
+		   /*
+		    * after extensive metering, I've concluded that trying to parallelize move generation
+		    * is a negative sum game.  The work interval is too short to overcome some inherent
+		    * communication overhead.  
+		    * 
+Nodes: 26701 Evals: 100152 Killers: 86 (100%) Alpha: 329(312) Skipped Evals: 866583(48%) Time: 4386.0.0.0
+EvalAndSort 13346 evals 317.0396972875768uS/call 96% 13346 Generate moves 10uS/call 3%  no threads
+gen 0% self 100% wait 0% 9
+
+Nodes: 25875 Evals: 159033 Killers: 103 (100%) Alpha: 341(322) Skipped Evals: 813080(48%) Time: 3492.0.0.0
+EvalAndSort 12933 evals 255.75990876053507uS/call 94% 12933 Generate moves 11uS/call 4%  1 threads evtime 3271mS
+gen 0% self 62% wait 36% 9
+
+
+Nodes: 25465 Evals: 247474 Killers: 28 (100%) Alpha: 273(255) Skipped Evals: 824381(48%) Time: 2459.0.0.0
+EvalAndSort 12728 evals 158.4517441860465uS/call 81% 12728 Generate moves 30uS/call 15%  4 threads evtime 7036mS
+gen 0% self 54% wait 43% 26
+*/
+		    all.clear();
 	    	boolean debug = all.debug = search_driver.debug_threads!=0;
-	    	if(threads==null)
-	    	{
-	    		return board.getMoveList(all,1,1);
+	    	if(!parallelize_movelist || threads==null)
+	    	{	long now = G.nanoTime();
+	    		board.getMoveList(all,1,1);
+	    		long later =  G.nanoTime();
+	    		search_driver.totalSelf += later-now;
+	    		search_driver.totalGen += later-now;
+	    		return all;
 	    	}
 	    	else
 	    	{
 	    	try {
+		    Sthread.waitForIdle(threads);
 	    	int n = threads.length;
+	    	long now = G.nanoTime();
 	    	for(int i=1;i<=n;i++)
 	    		{
 	    		Sthread ex = threads[i-1];
-	    		ex.doSomething(new GetMoves(all,ex.getRobot().getBoard(),i,n+1));
+	    		RobotProtocol robo = ex.getRobot();
+	    		CommonMoveStack mlist = robo.getTempMoveList();
+	    		mlist.clear();
+	    		ex.doSomething(new GetMoves(mlist,robo.getBoard(),i,n+1));
 	    		}
+	    	long launch = G.nanoTime();
 	    	board.getMoveList(all,n+1,n+1);
+	    	long self = G.nanoTime();
 	    	Sthread.waitForIdle(threads);
+	    	long wait = G.nanoTime();
+	    	for(int i=1;i<=n;i++)
+    		{
+    		Sthread ex = threads[i-1];
+    		RobotProtocol robo = ex.getRobot();
+    		CommonMoveStack mlist = robo.getTempMoveList();
+    		all.pushCopy(mlist);
+    		}
+	    	
+	    	search_driver.totalLaunch = launch-now;
+	    	search_driver.totalSelf += self-launch;
+	    	search_driver.totalWait += wait-self;
+	    	search_driver.totalGen += wait-now;
+	    	
+	    	
 	    	}
 	    	catch (Throwable e)
 	    	{

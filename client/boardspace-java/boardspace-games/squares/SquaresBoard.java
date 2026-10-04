@@ -872,8 +872,8 @@ void doSwap(replayMode replay)
  }
   
 
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	if(board_state==SquaresState.PlayOrSwap)
  	{
  		all.addElement(new SquaresMovespec(SWAP,whoseTurn));
@@ -941,7 +941,7 @@ void doSwap(replayMode replay)
  public Hashtable<SquaresCell, SquaresMovespec> getTargets() 
  {
  	Hashtable<SquaresCell,SquaresMovespec> targets = new Hashtable<SquaresCell,SquaresMovespec>();
- 	CommonMoveStack all = GetListOfMoves();
+ 	CommonMoveStack all = GetListOfMoves(new CommonMoveStack());
  	for(int lim=all.size()-1; lim>=0; lim--)
  	{	SquaresMovespec m = (SquaresMovespec)all.elementAt(lim);
  		switch(m.op)

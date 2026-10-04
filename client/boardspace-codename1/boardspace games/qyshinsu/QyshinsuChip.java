@@ -19,6 +19,7 @@ package qyshinsu;
 import lib.Graphics;
 import lib.Image;
 
+
 import lib.Random;
 import lib.exCanvas;
 import lib.ImageLoader;

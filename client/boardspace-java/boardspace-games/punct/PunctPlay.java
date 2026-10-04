@@ -136,14 +136,14 @@ public class PunctPlay extends commonRobot<PunctGameBoard> implements Runnable, 
         board.RobotExecute(m);
         board.clearDropZoneValue=false;
     }
-
+    CommonMoveStack movelist = new CommonMoveStack();
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {	return(Vector_Of_Legal_Moves(false));
+    {	return(Vector_Of_Legal_Moves(movelist,false));
     }
     
     // true if the opponent will win with any drop move
@@ -152,8 +152,8 @@ public class PunctPlay extends commonRobot<PunctGameBoard> implements Runnable, 
 		return(((NUMREALPIECES-board.piecesOnBoard[nextPlayer[player]])==1)
 				&& (board.centerScore[player]<board.centerScore[nextPlayer[player]]));
     }
-    public CommonMoveStack  Vector_Of_Legal_Moves(boolean printOnce)
-    {  	CommonMoveStack  moves = new CommonMoveStack();
+    public CommonMoveStack  Vector_Of_Legal_Moves(CommonMoveStack moves,boolean printOnce)
+    {  	moves.clear();
     	int typesRemaining = board.pieceTypesRemaining();
     	int skip = (int)(20.0 *  (1.0-((NUMPIECETYPES-(double)typesRemaining)/NUMPIECETYPES)));
  		boolean limit_moves = false;	// if true, limit move-moves to plausible
@@ -518,7 +518,7 @@ public class PunctPlay extends commonRobot<PunctGameBoard> implements Runnable, 
             boardSearchLevel = 0;
 
             int depth = MAX_DEPTH;
-            CommonMoveStack  vm = Vector_Of_Legal_Moves(true);
+            CommonMoveStack  vm = Vector_Of_Legal_Moves(movelist,true);
             int nmoves = vm.size();
             // heuristically adjust the depth
             if(nmoves<110 && (board.piecesOnBoard[board.whoseTurn]>5)) { depth++; }

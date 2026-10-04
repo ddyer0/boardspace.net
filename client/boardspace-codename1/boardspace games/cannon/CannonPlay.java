@@ -80,7 +80,7 @@ public class CannonPlay extends commonRobot<CannonBoard> implements Runnable,
         board.RobotExecute(m);
     }
 
-    CommonMoveStack movelist = new ParallelCommonMoveStack();
+    CommonMoveStack movelist = new CommonMoveStack();
 
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
@@ -93,7 +93,8 @@ public class CannonPlay extends commonRobot<CannonBoard> implements Runnable,
     	// the form that parallelizes getMoveList as long as the move generation
     	// depends on CellStack, which has an unstable order of elements.
     	// experiment showed that using TreeSet, which is stable, is very expensive
-    	return getMoveList(movelist,threads);
+    	// metering shows that using threads is a losing proposition
+    	return getMoveList(movelist,null /* threads */);
     }
     
     

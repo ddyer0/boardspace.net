@@ -3723,8 +3723,8 @@ private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 	 * winning moves, and if present, return only the winning move instead of the whole menagerie.
 	 */
 	plateaumove winningMove = null;
-	public CommonMoveStack GetListOfMoves(Random robotRandom,boolean includeRedundentFlip) 
-	{	CommonMoveStack all = new CommonMoveStack();
+	public CommonMoveStack GetListOfMoves(CommonMoveStack all,Random robotRandom,boolean includeRedundentFlip) 
+	{	all.clear();
 		winningMove = null;
 		switch(board_state)
 		{
@@ -3834,8 +3834,8 @@ private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 	*/
 		return all;
 	}
-	public CommonMoveStack GetListOfMoves() {
-		CommonMoveStack all = GetListOfMoves(new Random(),true);
+	public CommonMoveStack GetListOfMoves(CommonMoveStack all) {
+		GetListOfMoves(all,new Random(),true);
 		return all;
 	}
 	

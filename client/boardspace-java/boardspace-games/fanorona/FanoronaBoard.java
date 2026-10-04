@@ -193,7 +193,9 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
 	    }
     }
 
-    int playerIndex(FanoronaChip ch)  { return(getColorMap()[ch.colorIndex]); }
+    int playerIndex(FanoronaChip ch)
+    { 	return playerChip[0]==ch ? 0 : 1;
+    }
     // add a chip to the board and do associated bookkeeping
     private FanoronaChip addChip(FanoronaCell c,FanoronaChip chip)
     {	c.addChip(chip);	
@@ -844,7 +846,7 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
     // are possible, and "play2" if additional captures are possible.
     private void setNextStateAfterCapture(FanoronaCell dst)
     {
-       	setState((captureDestsFrom(dst,true,true,null,0)>0)
+       	setState((captureDestsFrom(dst,true,true,null,0,1,1)>0)
        				?FanoronaState.PLAY2_STATE
        				:((board_state==FanoronaState.DESIGNATE_STATE) ? FanoronaState.CONFIRM_REMOVE_STATE:FanoronaState.CONFIRM_STATE));	
     }
@@ -1247,7 +1249,7 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
     	}
     	else if(fromCell!=null)
     	{	FanoronaCell temp[] = getTempDest();
-    		int n= forFree ? freeDestsFrom(fromCell,temp,0) : captureDestsFrom(fromCell,true,true,temp,0);
+    		int n= forFree ? freeDestsFrom(fromCell,temp,0) : captureDestsFrom(fromCell,true,true,temp,0,1,1);
     		for(int i=0;i<n;i++) { if (temp[i]==toCell) { val = true;  break; }}
     		returnTempDest(temp);
     	}
@@ -1255,7 +1257,7 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
     	{	FanoronaChip top = toCell.topChip();
     		if(top==playerChip[whoseTurn])
     		{
-    		int n = forFree ? freeDestsFrom(toCell,null,0) : captureDestsFrom(toCell,true,true,null,0);
+    		int n = forFree ? freeDestsFrom(toCell,null,0) : captureDestsFrom(toCell,true,true,null,0,1,1);
     		val = (n>0);
     		}
     	}
@@ -1465,10 +1467,10 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
  	return(false);
  }
 
- private int captureDestsFrom(FanoronaCell c,boolean approach,boolean withdrawal,FanoronaCell dests[],int idx)
+ private int captureDestsFrom(FanoronaCell c,boolean approach,boolean withdrawal,FanoronaCell dests[],int idx,int offset,int skip)
  {	FanoronaChip ctop = (c==pickedSource[stackIndex]) ? pickedObject : c.topChip();
  	if(ctop!=null)
-    {for(int direction=0;direction<8;direction++) 
+    {for(int direction=offset-1;direction<8;direction+=skip) 
  	{ FanoronaCell d = c.moveTo(direction);
  	  if(d!=null)
  	  {
@@ -1512,7 +1514,7 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
 	{
 		FanoronaChip ctop = c.topChip();
 		if(ctop==playerChip[player])
-		{	idx = captureDestsFrom(c,true,true,dest,idx);
+		{	idx = captureDestsFrom(c,true,true,dest,idx,1,1);
 		}
 	}
 	return(idx);
@@ -1532,19 +1534,18 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
 //	return(idx);
 // }
  
- void freeMovesFor(int player,CommonMoveStack  result)
+ void freeMovesFor(int player,CommonMoveStack  result,int offset,int skip)
  {	G.Assert(stackIndex==0,"start of sequence only");
  	FanoronaCell temp[] = getTempDest();
  	FanoronaChip chip = playerChip[player];
-	for(FanoronaCell c = allCells;
-		c!=null;
-		c =c.next)
-	{
+ 	cell<FanoronaCell>cells[] = getCellArray();
+	for(int i=offset-1,lim=cells.length; i<lim; i+=skip)
+	{	FanoronaCell c = (FanoronaCell)cells[i];
 		FanoronaChip ctop = c.topChip();
 		if(ctop==chip)
 		{	int idx = freeDestsFrom(c,temp,0);
-			for(int i=0;i<idx;i++) 
-			{	FanoronaCell dst = temp[i];
+			for(int j=0;j<idx;j++) 
+			{	FanoronaCell dst = temp[j];
 				result.addElement(new FanoronaMovespec(MOVE_BOARD_BOARD,c.col,c.row,dst.col,dst.row,whoseTurn));
 			}
 		}
@@ -1566,11 +1567,12 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
 	}
 	return(false);
 }
- void captureMovesFrom(FanoronaCell from,CommonMoveStack  result)
+ 
+ void captureMovesFrom(FanoronaCell from,CommonMoveStack  result,int offset,int skip)
  {	
 	FanoronaCell temp[]=getTempDest();
 	{
-	int n = captureDestsFrom(from,true,false,temp,0);
+	int n = captureDestsFrom(from,true,false,temp,0, offset, skip);
 	for(int i=0;i<n;i++) 
 		{ //result.addElement(new FanoronaMovespec(MOVE_
 		FanoronaCell dst = temp[i];
@@ -1578,7 +1580,7 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
 		}
 	}
 	{
-	int n = captureDestsFrom(from,false,true,temp,0);
+	int n = captureDestsFrom(from,false,true,temp,0,offset,skip);
 	for(int i=0;i<n;i++) 
 		{ //result.addElement(new FanoronaMovespec(MOVE_
 		FanoronaCell dst = temp[i];
@@ -1588,28 +1590,37 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
 	returnTempDest(temp);
  }
  
+ void captureMovesFrom(FanoronaCell from,CommonMoveStack  result)
+ {	captureMovesFrom(from,result,1,1);
+ }
+ 
  // all capture moves for player.  Valid only at the start of a move sequence
- void captureMovesFor(int player,CommonMoveStack  result)
+ void captureMovesFor(int player,CommonMoveStack  result,int offset,int skip)
  {	G.Assert(stackIndex==0,"start of sequence only");
-	for(FanoronaCell c = allCells;
-		c!=null;
-		c =c.next)
-	{
+ 	cell<FanoronaCell> cells[] = getCellArray();
+ 	for(int i=offset-1,lim=cells.length; i<lim; i+=skip)
+	{	FanoronaCell c = (FanoronaCell)cells[i];
 		FanoronaChip ctop = c.topChip();
 		if(ctop==playerChip[player])
 		{	captureMovesFrom(c,result);
 		}
 	}
  }
- 
- CommonMoveStack  GetListOfMoves(boolean includeDraw)
- {	CommonMoveStack all = new CommonMoveStack();
+ public CommonMoveStack getMoveList(CommonMoveStack all,int offset,int skip)
+ {
+	 return GetListOfMoves(all,offset,skip,robotDepth==0);
+ }
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all, int offset,int skip,boolean includeDraw)
+ {	
   	switch(board_state)
  	{
   	case AcceptOrDecline:
+  		if(offset==1)
+  		{
   		if(drawIsLikely() && (chips_on_board[whoseTurn]<2*chips_on_board[nextPlayer[whoseTurn]]))
   			{ all.addElement(new FanoronaMovespec(MOVE_ACCEPT_DRAW,whoseTurn)); }
   		all.addElement(new FanoronaMovespec(MOVE_DECLINE_DRAW,whoseTurn));
+  		}
   		break;
  	case CONFIRM_STATE:
  	case AcceptPending:
@@ -1618,12 +1629,13 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
  	case CONFIRM_PLAY_STATE:
  	case CONFIRM_REMOVE_STATE:
  	case DRAW_STATE:
-		all.addElement(new FanoronaMovespec(MOVE_DONE,whoseTurn));	// stopping now is an option
+		if(offset==1) { all.addElement(new FanoronaMovespec(MOVE_DONE,whoseTurn)); }	// stopping now is an option 
 		break;
  	case PLAY_STATE:
-		freeMovesFor(whoseTurn,all);
+		freeMovesFor(whoseTurn,all,offset,skip);
 		// we should always find moves, otherwise should be gameover_state
 		if(includeDraw 
+				&& offset==1
 				&& canOfferDraw()
 				&& (chips_on_board[whoseTurn]<2*chips_on_board[nextPlayer[whoseTurn]])	// we don't have too much of an advantage
 				&& (chips_on_board[whoseTurn]*2>chips_on_board[nextPlayer[whoseTurn]])	// or too much of a disadvantage
@@ -1632,19 +1644,20 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
 			{ 
 			all.addElement(new FanoronaMovespec(MOVE_OFFER_DRAW,whoseTurn));
 			}
-		G.Assert(all.size()>0, "no free moves found");
 		break;
  	case PLAY2_STATE:
  		{
  		G.Assert(stackIndex>0,"one capture done");
 		FanoronaCell dst = droppedDest[stackIndex-1];
- 		all.addElement(new FanoronaMovespec(MOVE_DONE,whoseTurn));	// stopping now is an option
-  		captureMovesFrom(dst,all);
+ 		if(offset==1)
+ 			{ all.addElement(new FanoronaMovespec(MOVE_DONE,whoseTurn));	 // stopping now is an option 
+ 			}
+ 		captureMovesFrom(dst,all,offset,skip);
  		}
  		break;
   	case PLAY1_STATE:
  		G.Assert(stackIndex==0,"stack empty");
- 		captureMovesFor(whoseTurn,all); 
+ 		captureMovesFor(whoseTurn,all,offset,skip); 
  		break;
  	default: throw G.Error("not implemented");
  	}

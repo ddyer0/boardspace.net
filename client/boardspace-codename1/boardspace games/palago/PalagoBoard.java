@@ -204,8 +204,7 @@ class PalagoBoard extends infiniteHexBoard<PalagoCell> implements BoardProtocol,
         super.sameboard(from_b); // hexboard compares the boards
 
         //G.Assert(pickedObject==from_b.pickedObject,"same pickedObject");
-        G.Assert((placedChips==from_b.placedChips)
-        		|| ((placedChips!=null)&&placedChips.sameCellLocation(from_b.placedChips)),"same placed list");
+        G.Assert(cell.sameCellLocation(placedChips,from_b.placedChips),"same placed list");
         // here, check any other state of the board to see if
         G.Assert((stackIndex == from_b.stackIndex),"stackIndex matches");
         G.Assert((chips_on_board == from_b.chips_on_board),"chips on board matches");
@@ -859,8 +858,8 @@ class PalagoBoard extends infiniteHexBoard<PalagoCell> implements BoardProtocol,
         }
  }
     
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	switch(board_state)
  	{
  	default:	throw G.Error("Not implemented");

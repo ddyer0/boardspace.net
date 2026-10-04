@@ -838,7 +838,7 @@ public variation gamevariation = variation.hive;
         //G.Assert(sameCells(stunned,from_b.stunned),"stunned piece mismatch");
         G.Assert(pickedObject==from_b.pickedObject, "pickedObject matches");
         G.Assert(piepending==from_b.piepending,"piepending mismatch");
-         
+        if(DEBUG) { checkDigestSame(from_b); }
     }
 
     /** this is used in fraud detection to see if the same game is being played
@@ -864,13 +864,12 @@ public variation gamevariation = variation.hive;
 				}
 			
 		}
-        
         {
         long d1 = r.nextLong();
         long d2 = r.nextLong();
         long d3 = r.nextLong();
 
-        if(swappedRacks) { v ^=d3; }
+       if(swappedRacks) { v ^=d3; }
         // note for hive cells, all the Digest is the same, but for pick/unpick we want the exact identity.
         v ^= (pickedSource!=null) ? d1+pickedSource.randomv :  d2; 
         }
@@ -938,7 +937,7 @@ public variation gamevariation = variation.hive;
         undrawState = from_b.undrawState;
         pickedObject = from_b.pickedObject;
         lastPlacement = from_b.lastPlacement;
-        if(G.debug()) { sameboard(from_b); }
+        if(DEBUG) { sameboard(from_b); }
     }
 
     HivePiece nextFreeChip(HiveId pl, PieceType p)

@@ -143,7 +143,7 @@ public class LyngkPlay extends commonRobot<LyngkBoard> implements Runnable,
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {	movelist.clear();
+    {	
         return(board.GetListOfMoves(movelist));
     }
 

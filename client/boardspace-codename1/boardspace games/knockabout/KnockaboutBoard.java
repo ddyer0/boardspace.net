@@ -986,7 +986,7 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
  }
  
  CommonMoveStack  GetListOfMoves(CommonMoveStack  all,boolean erupting,boolean nonerupting)
- {	
+ {	all.clear();
 	switch(board_state)
 	{
 	case PLAY_STATE:

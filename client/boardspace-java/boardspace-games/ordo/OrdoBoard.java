@@ -399,7 +399,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     		maxCol = Math.max(maxCol,col);   		
     	}
     	double dim = Math.max(maxCol-minCol,maxRow-minRow);
-    	double cluster = 1-((dim*dim)/(double)(ncols*nrows));
+    	double cluster = 1-((dim*dim)/(ncols*nrows));
     	double goalish = (double)(nrows-maxRow)/nrows;
     	double sizeish = (20-nCells)/20.0;
     	
@@ -1709,8 +1709,8 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
 	 }
  	return(some);
  }
- CommonMoveStack  GetListOfMoves(boolean offerdraw)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all,boolean offerdraw)
+ {	all.clear();
  	addMoves(all,offerdraw,whoseTurn);
  	if(all.size()==0) 
  		{ p1("no moves "+moveNumber); 

@@ -248,6 +248,7 @@ public class BugsBoard
 		r.shuffle(map);
 		activeDeck.reInit();
 		int min = 9999;
+		@SuppressWarnings("unused")
 		int carnivore = 0;
 		while((cats.size()<N_ACTIVE_CATEGORIES
 				|| activeDeck.height()<deckSize)
@@ -686,7 +687,7 @@ public class BugsBoard
         G.Assert(sameCells(goalMarket,from_b.goalMarket),"goalMarket mismatch");
         for(int i=0;i<pbs.length;i++) { pbs[i].sameBoard(from_b.pbs[i]); }
         
-        G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
+        checkDigestSame(from_b);
         
 
     }
@@ -1514,8 +1515,8 @@ public boolean addMovesOnBoard(CommonMoveStack all,int op, BugsCell from, BugCar
 	 		}
  }
  
- CommonMoveStack  getListOfMoves(int who)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  getListOfMoves(CommonMoveStack all,int who)
+ {	all.clear();
  	switch(board_state)
  	{
  	case Puzzle:
@@ -1590,7 +1591,7 @@ public boolean addMovesOnBoard(CommonMoveStack all,int op, BugsCell from, BugCar
  {	if(targetsCache==null)
  	{
  	Hashtable<BugsCell,BugsMovespec> targets = new Hashtable<BugsCell,BugsMovespec>();
- 	CommonMoveStack all = getListOfMoves(who);
+ 	CommonMoveStack all = getListOfMoves(new CommonMoveStack(),who);
  	PlayerBoard pb = pbs[who];
  	if(board_state==BugsState.Puzzle || simultaneousTurnsAllowed())
  		{

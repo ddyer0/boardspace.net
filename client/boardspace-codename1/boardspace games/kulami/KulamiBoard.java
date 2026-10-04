@@ -1356,8 +1356,8 @@ void doSwap(replayMode replay)
 	 return(targets);
  }
 
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	if(board_state==KulamiState.PlayOrSwap)
  	{
  		all.addElement(new Kulamimovespec(SWAP,whoseTurn));

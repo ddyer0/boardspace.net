@@ -1508,12 +1508,12 @@ class IroBoard
  	return nMoves;
  }
  
- CommonMoveStack  GetListOfMoves()
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
  {	robotBoard = true;
- 	return getListOfMoves(whoseTurn);
+ 	return getListOfMoves(all,whoseTurn);
  }
- private CommonMoveStack getListOfMoves(int who)
- {	CommonMoveStack all = new CommonMoveStack();
+ private CommonMoveStack getListOfMoves(CommonMoveStack all,int who)
+ {	all.clear();
  	switch(board_state)
  	{
  	case FirstPlay:
@@ -1580,7 +1580,7 @@ class IroBoard
  	Hashtable<IroCell,Iromovespec> targets = new Hashtable<IroCell,Iromovespec>();
  	if(pickedObject==null)
  	{
- 	CommonMoveStack all = getListOfMoves(whoseTurn);
+ 	CommonMoveStack all = getListOfMoves(new CommonMoveStack(),whoseTurn);
  	addSetupMoves(all,whoseTurn);
 	for(int lim=all.size()-1; lim>=0; lim--)
  	{	Iromovespec m = (Iromovespec)all.elementAt(lim);

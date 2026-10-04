@@ -151,5 +151,9 @@ public abstract class CommonDriver implements TreeProviderProtocol {
 	protected abstract void pauseThreads();
 	protected abstract void resumeThreads();
     
+	   public long totalLaunch = 0;
+	   public long totalSelf = 0;
+	   public long totalWait = 0;
+	   public long totalGen = 0;
 
 }

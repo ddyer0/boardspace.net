@@ -70,7 +70,7 @@ public class SantoriniPlay extends commonRobot<SantoriniBoard> implements Runnab
     }
 
     static int MaxMoves = 40;
-    CommonMoveStack movelist = new ParallelCommonMoveStack(MaxMoves);
+    CommonMoveStack movelist = new CommonMoveStack(MaxMoves);
     
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
@@ -78,7 +78,7 @@ public class SantoriniPlay extends commonRobot<SantoriniBoard> implements Runnab
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {   movelist.clear();
+    {  
     	// move generation for Santorini is sufficiently simple, its 
     	// not worth the trouble to split it for threads
     	CommonMoveStack all = board.GetListOfMoves(movelist);

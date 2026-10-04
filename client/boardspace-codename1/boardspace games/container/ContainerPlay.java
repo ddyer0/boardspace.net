@@ -136,6 +136,7 @@ public class ContainerPlay extends commonMPRobot<ContainerBoard> implements Runn
     	ContainerBoard.playerBoard bd = board.getPlayer(evalForPlayer);
     		return(bd.possibleGoalSets[0]);
     }
+    CommonMoveStack movelist = new CommonMoveStack();
     
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
@@ -144,7 +145,7 @@ public class ContainerPlay extends commonMPRobot<ContainerBoard> implements Runn
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {   
-    	return(board.GetListOfMoves(boardSearchLevel,this));
+    	return(board.GetListOfMoves(movelist,boardSearchLevel,this));
     }
     public int overbidAmount()
     {	

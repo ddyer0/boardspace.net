@@ -92,11 +92,12 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
-    public CommonMoveStack movelist = new ParallelCommonMoveStack(60);
+    public CommonMoveStack movelist = new CommonMoveStack(60);
     public CommonMoveStack  List_Of_Legal_Moves(Sthread p[])
-    {  	movelist.clear();
+    {  
     	board.offerDraw = board.robotDepth==0;
-    	CommonMoveStack all = getMoveList(movelist,p);
+    	// metering shows that using threads is a losing proposition
+    	CommonMoveStack all = getMoveList(movelist,null /* p */);
     	return all;
     }
     

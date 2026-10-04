@@ -166,7 +166,7 @@ public class MeridiansPlay extends commonRobot<MeridiansBoard> implements Runnab
      * pruned with alpha-beta.
      */
         public CommonMoveStack  List_Of_Legal_Moves()
-        {	movelist.clear();
+        {	
             return(board.GetListOfMoves(movelist));
         }
 

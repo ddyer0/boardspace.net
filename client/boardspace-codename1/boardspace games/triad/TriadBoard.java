@@ -106,7 +106,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
  	// factory method to generate a board cell
 	public TriadCell newcell(char c,int r)
 	{	TriadCell ce = new TriadCell(c,r);
-		ce.color = ChipColor.allValues[(c-'A'+r)%3];
+		ce.color = ChipColor.values()[(c-'A'+r)%3];
 		return(ce);
 	}
    public TriadBoard(String init,int map[]) // default constructor
@@ -1030,8 +1030,8 @@ int getListOfMovesFrom(TriadCell from,TriadChip top,int who,TriadCell to,int dir
 	getListOfMoves(all,pl,picked);
 	return(all);
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	switch(board_state)
 	 {
  	case PLAY_STATE:

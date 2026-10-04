@@ -1002,8 +1002,8 @@ class DayAndNightBoard
 	return(null);	// couldn't find a cell with moves
  }
  
- CommonMoveStack  GetListOfMoves(Generator generator)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all,Generator generator)
+ {	all.clear();
 
  	switch(board_state)
  	{
@@ -1108,7 +1108,7 @@ class DayAndNightBoard
  public Hashtable<DayAndNightCell, DayAndNightmovespec> getTargets() 
  {
  	Hashtable<DayAndNightCell,DayAndNightmovespec> targets = new Hashtable<DayAndNightCell,DayAndNightmovespec>();
- 	CommonMoveStack all = GetListOfMoves(Generator.UI);
+ 	CommonMoveStack all = GetListOfMoves(new CommonMoveStack(),Generator.UI);
  	for(int lim=all.size()-1; lim>=0; lim--)
  	{	DayAndNightmovespec m = (DayAndNightmovespec)all.elementAt(lim);
  		switch(m.op)

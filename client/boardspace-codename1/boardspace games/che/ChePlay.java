@@ -72,6 +72,7 @@ public class ChePlay extends commonRobot<CheBoard> implements Runnable,   RobotP
     {   Chemovespec mm = (Chemovespec)m;
         board.RobotExecute(mm);
     }
+    CommonMoveStack movelist = new CommonMoveStack();
 
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
@@ -80,7 +81,7 @@ public class ChePlay extends commonRobot<CheBoard> implements Runnable,   RobotP
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {
-        return(board.GetListOfMoves());
+        return(board.GetListOfMoves(movelist));
     }
     // this is the static evaluation used by Dumbot.  When testing a better
     // strategy, leave this untouched as a reference point.  The real meat

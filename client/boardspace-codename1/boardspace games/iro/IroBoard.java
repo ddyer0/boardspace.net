@@ -1508,12 +1508,12 @@ class IroBoard
  	return nMoves;
  }
  
- CommonMoveStack  GetListOfMoves()
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
  {	robotBoard = true;
- 	return getListOfMoves(whoseTurn);
+ 	return getListOfMoves(all,whoseTurn);
  }
- private CommonMoveStack getListOfMoves(int who)
- {	CommonMoveStack all = new CommonMoveStack();
+ private CommonMoveStack getListOfMoves(CommonMoveStack all,int who)
+ {	all.clear();
  	switch(board_state)
  	{
  	case FirstPlay:
@@ -1580,7 +1580,7 @@ class IroBoard
  	Hashtable<IroCell,Iromovespec> targets = new Hashtable<IroCell,Iromovespec>();
  	if(pickedObject==null)
  	{
- 	CommonMoveStack all = getListOfMoves(whoseTurn);
+ 	CommonMoveStack all = getListOfMoves(new CommonMoveStack(),whoseTurn);
  	addSetupMoves(all,whoseTurn);
 	for(int lim=all.size()-1; lim>=0; lim--)
  	{	Iromovespec m = (Iromovespec)all.elementAt(lim);
@@ -1696,7 +1696,7 @@ public double simpleScore(int player,double position_weight,double wood_weight)
 	// value in 0-1 which indicates value of position
 	CellStack occ = occupiedCells[player];
 	int nleft = occ.size();
-	double wood = (nleft*wood_weight)/(nCols*2);// 0-0.5 for the wood
+	double wood = (double)(nleft*wood_weight)/(nCols*2);// 0-0.5 for the wood
 	//G.Assert(wood<=wood_weight,"wood bug");
 	switch(board_state)
 	{
@@ -1708,8 +1708,8 @@ public double simpleScore(int player,double position_weight,double wood_weight)
 		CellStack c = occupiedCells[player];
 		int cs = c.size();
 		if(cs==0) { return 0; }
-		double nMoves = countPieceMoves(player);
-		return nMoves;
+		int nMoves = countPieceMoves(player);
+		return (double)nMoves;
 		}
 	default:
 		if(nleft>0 && position_weight>0)

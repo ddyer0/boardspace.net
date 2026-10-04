@@ -1008,7 +1008,11 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     		{ return false; }
     	return true;
     }
-    
+    public boolean isMasterPlayer()
+    {	commonPlayer pl = getActivePlayer();
+    	commonPlayer cu = getPlayerOrTemp(bb.whoseTurn);
+    	return (pl == (cu.isRobot ? cu.robotRunner : cu));
+    }
      public void ViewerRun(int n)
         {
         	super.ViewerRun(n);
@@ -1016,7 +1020,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
         	{
         if(!reviewMode() 
           	 && (bb.allApproved())
-          	 && (isOfflineGame()||(bb.whoseTurn == getActivePlayer().boardIndex)))
+        		&& (isOfflineGame()||isMasterPlayer()))
             	{	  
             	// this triggers the conversion from ephemeral state to running with a 
             	// particular endgame condition.

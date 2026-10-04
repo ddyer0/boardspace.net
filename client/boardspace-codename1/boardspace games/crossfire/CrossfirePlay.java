@@ -119,6 +119,7 @@ public class CrossfirePlay extends commonRobot<CrossfireBoard> implements Runnab
     {   CrossfireMovespec mm = (CrossfireMovespec)m;
         board.RobotExecute(mm);
      }
+    CommonMoveStack movelist = new CommonMoveStack();
 
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
@@ -127,7 +128,7 @@ public class CrossfirePlay extends commonRobot<CrossfireBoard> implements Runnab
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {
-        return(board.GetListOfMoves());
+        return(board.GetListOfMoves(movelist));
     }
     /**
     * this is the static evaluation used by Dumbot.  When testing a better

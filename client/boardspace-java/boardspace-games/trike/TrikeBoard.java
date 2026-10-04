@@ -920,8 +920,8 @@ void doSwap(replayMode replay)
 			 }
 	 return some;
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	if(board_state==TrikeState.PlayOrSwap)
  	{
  		all.addElement(new Trikemovespec(SWAP,whoseTurn));
@@ -997,7 +997,7 @@ void doSwap(replayMode replay)
  public Hashtable<TrikeCell, Trikemovespec> getTargets() 
  {
  	Hashtable<TrikeCell,Trikemovespec> targets = new Hashtable<TrikeCell,Trikemovespec>();
- 	CommonMoveStack all = GetListOfMoves();
+ 	CommonMoveStack all = GetListOfMoves(new CommonMoveStack());
  	for(int lim=all.size()-1; lim>=0; lim--)
  	{	Trikemovespec m = (Trikemovespec)all.elementAt(lim);
  		switch(m.op)

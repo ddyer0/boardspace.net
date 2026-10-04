@@ -2147,7 +2147,7 @@ import tammany.TammanyConstants.TammanyId;
  
  	if(pickedObject!=null)
  	{
- 	CommonMoveStack  all = GetListOfMoves();
+ 	CommonMoveStack  all = GetListOfMoves(new CommonMoveStack());
  	while(all.size()>0)
  		{
  		TammanyMovespec m = (TammanyMovespec)all.pop();
@@ -2176,7 +2176,7 @@ import tammany.TammanyConstants.TammanyId;
  
  	if(pickedObject==null)
  	{
- 	CommonMoveStack  all = GetListOfMoves();
+ 	CommonMoveStack  all = GetListOfMoves(new CommonMoveStack());
  	while(all.size()>0)
  		{
  		TammanyMovespec m = (TammanyMovespec)all.pop();
@@ -3151,8 +3151,8 @@ import tammany.TammanyConstants.TammanyId;
 	 return(addDoubleSlanderMoves(null, whoseTurn));
  }
  
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	int who = whoseTurn;
  	setLeaders();
  	switch(board_state)

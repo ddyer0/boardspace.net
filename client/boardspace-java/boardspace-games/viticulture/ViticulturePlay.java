@@ -195,7 +195,7 @@ public class ViticulturePlay extends commonMPRobot<ViticultureBoard>
         mm.cards = null;
         board.RobotExecute(mm);
     }
-
+    CommonMoveStack movelist = new CommonMoveStack();
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
@@ -206,7 +206,7 @@ public class ViticulturePlay extends commonMPRobot<ViticultureBoard>
         int newn = board.moveNumber();
     	boolean needassign = (newn<=boardMoveNumber);
     	boardMoveNumber = newn;
-    	CommonMoveStack all = board.GetListOfMoves(MoveGenerator.Robot);
+    	CommonMoveStack all = board.GetListOfMoves(movelist,MoveGenerator.Robot);
     	if(needassign)
     		{ // assign weights to the moves.  If we're still in the UCT tree, these
     		  // are used to pre-bias the win rate of the nodes.  If we're in the random
@@ -381,7 +381,7 @@ public void PrepareToMove(int playerIndex)
   */
  public commonMove Get_Random_Move(Random rand)
  {	
-	 CommonMoveStack all = board.GetListOfMoves(MoveGenerator.Randomizer);
+	 CommonMoveStack all = board.GetListOfMoves(new CommonMoveStack(),MoveGenerator.Randomizer);
 	 if(evaluator.weight==0)
 	 	{
 		 int idx = rand.nextInt(all.size());

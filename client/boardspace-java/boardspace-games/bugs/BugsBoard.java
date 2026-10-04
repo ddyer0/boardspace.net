@@ -1515,8 +1515,8 @@ public boolean addMovesOnBoard(CommonMoveStack all,int op, BugsCell from, BugCar
 	 		}
  }
  
- CommonMoveStack  getListOfMoves(int who)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  getListOfMoves(CommonMoveStack all,int who)
+ {	all.clear();
  	switch(board_state)
  	{
  	case Puzzle:
@@ -1591,7 +1591,7 @@ public boolean addMovesOnBoard(CommonMoveStack all,int op, BugsCell from, BugCar
  {	if(targetsCache==null)
  	{
  	Hashtable<BugsCell,BugsMovespec> targets = new Hashtable<BugsCell,BugsMovespec>();
- 	CommonMoveStack all = getListOfMoves(who);
+ 	CommonMoveStack all = getListOfMoves(new CommonMoveStack(),who);
  	PlayerBoard pb = pbs[who];
  	if(board_state==BugsState.Puzzle || simultaneousTurnsAllowed())
  		{

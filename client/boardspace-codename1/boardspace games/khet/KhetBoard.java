@@ -1047,7 +1047,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
  	default:
 		if((pickedObject==null))
 		{
-			CommonMoveStack moves = GetListOfMoves();
+			CommonMoveStack moves = GetListOfMoves(new CommonMoveStack());
 			while(moves.size()>0)
 			{
 				KhetMovespec m = (KhetMovespec)moves.pop();

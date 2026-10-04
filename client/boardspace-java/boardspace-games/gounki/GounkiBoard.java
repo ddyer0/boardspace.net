@@ -1385,6 +1385,7 @@ default:
  CommonMoveStack  getListOfMoves(CommonMoveStack all0,int who,boolean robot)
  {	CommonMoveStack all = all0;
  	if(all==null) { all = new CommonMoveStack(); }
+ 	all.clear();
  	switch(board_state)
  	{
  	default: break;
@@ -1402,8 +1403,8 @@ default:
  	}
  	return(all);
  }
- CommonMoveStack  GetListOfMoves()
- {	return(getListOfMoves(null,whoseTurn,true));
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	return(getListOfMoves(all,whoseTurn,true));
  }
 
 //when undrop or unpick, don't leave cells with futurevalues of dropState

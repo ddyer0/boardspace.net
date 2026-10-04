@@ -149,7 +149,7 @@ public class BugPlay extends commonRobot<BugBoard> implements Runnable, BugConst
      * pruned with alpha-beta.
      */
         public CommonMoveStack  List_Of_Legal_Moves()
-        {	movelist.clear();
+        {	
             return(board.GetListOfMoves(movelist));
         }
 

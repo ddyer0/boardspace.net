@@ -1148,8 +1148,8 @@ class TraxGameBoard  extends BaseBoard implements BoardProtocol,TraxConstants
         }
  }
     
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	if(tilesOnBoard==0)
  	{	all.addElement(new Traxmovespec("dropb 0 @ 0",whoseTurn));
  		all.addElement(new Traxmovespec("dropb 4 @ 0",whoseTurn));

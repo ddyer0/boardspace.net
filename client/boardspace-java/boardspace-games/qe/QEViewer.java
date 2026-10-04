@@ -344,8 +344,8 @@ public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode repl
        	int C2 = CELLSIZE/2;
             	// center the board in the remaining space
         int stateH = fh*5/2;
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)((nrows-1)*CELLSIZE);
+    	int boardW = (ncols*CELLSIZE);
+    	int boardH = ((nrows-1)*CELLSIZE);
     	int extraW = (mainW-boardW)/2;
     	int extraH = (mainH-boardH)/2;
     	int boardX = mainX+extraW;

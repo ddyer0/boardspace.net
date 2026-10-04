@@ -16,7 +16,6 @@
  */
 package online.search;
 
-
 import online.game.*;
 import online.game.commonMove.EStatus;
 
@@ -42,7 +41,7 @@ import lib.StackIterator;
  */
 
 
-public class Search_Driver extends CommonDriver implements Constants,Opcodes,ActivePool
+public class Search_Driver extends CommonDriver implements Constants,Opcodes
 {	// if true, when there is a single choice just use it.  This is normally the correct thing,
 	// but might not be if the overall play depends on getting an accurate value for the moves
 	// below the bottleneck
@@ -71,8 +70,9 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes,Act
 	public void setRobot(RobotProtocol r) { robot = r; }
 	public long evalAndSortTime = 0;
 	public long evalAndSortCalls = 0;
-	public long evalAndSortEval = 0;
-	
+	public long generateMoveTime = 0;
+	public long generateMoveCount = 0;
+	public long totalTime = 0;
 	/**
 	 * the most recently made move, cleared by Unmake_Move.
 	 */
@@ -814,9 +814,15 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes,Act
         if(evalAndSortCalls>0)
         {
         G.print("EvalAndSort "
-        			+(evalAndSortTime/(evalAndSortCalls*1e3))+"uS/call "
-        			+evalAndSortCalls+" eval "+((evalAndSortEval*100)/evalAndSortTime)+"% "+(int)(evalAndSortEval/1e6)+"mS"
+        			+evalAndSortCalls+" evals "+(evalAndSortTime/(evalAndSortCalls*1e3))+"uS/call "
+        			+((evalAndSortTime*100)/totalTime)+"% "
+           			+generateMoveCount+" Generate moves "+(generateMoveTime/(generateMoveCount*1000))+"uS/call "
+        			+((generateMoveTime*100)/totalTime)+"% "
         			+((threadPoolSize==0)?" no threads" : " "+threadPoolSize+" threads"+" evtime "+(int)(threadEvalTime/1e6)+"mS"));
+        if(totalGen>0)
+        	{G.print("gen ",totalLaunch*100/totalGen,"% self ",totalSelf*100/totalGen,"% wait ",totalWait*100/totalGen,"% ",totalGen/(generateMoveCount*1000));
+        
+        	}
         }
     }
     //
@@ -911,7 +917,14 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes,Act
             total_searches++;
             evalAndSortTime += ss.evalAndSortTime;
             evalAndSortCalls += ss.evalAndSortCalls;
-            evalAndSortEval += ss.evalAndSortEval;
+            totalTime += ss.totalTime;
+            generateMoveTime += ss.generateMoveTime;
+            generateMoveCount += ss.generateMoveCount;
+            
+            totalGen += ss.totalGen;
+            totalSelf += ss.totalSelf;
+            totalWait += ss.totalWait;
+            totalLaunch += ss.totalLaunch;
             ss.total_searches = -1; /* flag so we won't accumulate again */
         }
     }
@@ -919,7 +932,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes,Act
     public Sthread threadPool[] = null;
     private int threadPoolSize = 0;
     long threadEvalTime = 0;
-
+    public ThreadPoolMonitor monitor = null;
     public void createThreadPool()
     {
     	threadPool = null;
@@ -928,17 +941,18 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes,Act
     	{
     		threadPool = new Sthread[max_threads];
     		threadPoolSize = max_threads;
-    		for(int i=0;i<max_threads;i++)
+    		monitor = new ThreadPoolMonitor(threadPoolSize+1);
+    		for(int i=0;i<threadPoolSize;i++)
     			{ RobotProtocol newbot = robot.copyPlayer("alphabeta");
     			  newbot.setSearcher(this);
-    			  threadPool[i] = new Sthread(this,newbot,i,threadPool);
+    			  threadPool[i] = new Sthread(this,newbot,i,monitor);
      			  threadPool[i].start(); }
     	}
     }
     public void makeThreadMoves(commonMove ch)
     {	try {
     	if(threadPool!=null)
-    	{	lastActiveTime =  G.nanoTime();
+    	{	setActive();
     		for(Sthread s : threadPool) { s.makeMove(ch); }
     	}}
     	catch (Throwable e)
@@ -949,7 +963,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes,Act
     public void unmakeThreadMoves(commonMove ch)
     {	try {
     	if(threadPool!=null)
-    	{	lastActiveTime =  G.nanoTime();
+    	{	setActive();
     		for(Sthread s : threadPool) { s.unmakeMove(ch); }
     	}}
     	catch (Throwable e)
@@ -1041,10 +1055,15 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes,Act
     		G.Error("move ",mm," was ",was," is ",is);
     	}
     }
+    private void setActive()
+    {
+    	if(monitor!=null) { monitor.setActive(threadPoolSize);}
+    }
     public int Evaluate_And_Sort_Moves(Search_Node sn,commonMove mvec[])
     {	//boolean all_depth_limited = true;
     	boolean all_terminals = true;
     	long startTime = G.nanoTime();
+    	long lastActive = startTime;
     	//boolean some_depth_limited = false;
     	sn.prepare_clock = search_clock;
     	boolean some_terminals = false;
@@ -1140,10 +1159,10 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes,Act
         {	
         	int startIndex0 = startIndex;
         	commonMove mm = null;
-        	if(threadPool!=null)
+        	if( threadPool!=null)
         	{
         	// separate starting and finishing so parallel threads can do the work
-        	lastActiveTime = G.nanoTime(); 
+        	setActive();
         	while(startIndex<sz && startEval(mvec[startIndex])) 
         		{ 
         		//G.print("start "+mm2+" @ "+startIndex);
@@ -1159,14 +1178,19 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes,Act
         	//G.print("mstart "+mm+" @ "+startIndex0);
         	startIndex++;
             total_evaluations++;
-        	long now = G.nanoTime();
-        	lastActiveTime = now; 
+        	setActive();
             Static_Evaluate_Move(mm);
-    		evalAndSortEval += G.nanoTime()-now;
         	}
         	if(mm==null)
+        	{	long now = G.nanoTime();
+        		if(now-lastActive>ThreadPoolMonitor.stuckCheckThreshold)
         	{
-        		Sthread.waitIfStuck(threadPool);
+        		lastActive=now;
+        		if(Sthread.waitIfStuck(monitor))
+        		{
+        			//G.print("Stuck ",startIndex0," of ",sz);
+        		}
+        		}
         	}
         	else
         	{ 
@@ -1383,6 +1407,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes,Act
      */
     public commonMove Find_Static_Best_Move(int randomn,double dif)
     {	robot.setSearcher(this);
+    	long now = G.nanoTime();
     	createThreadPool();
         try
         {	
@@ -1479,6 +1504,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes,Act
             robot.setProgress(0.0);
 			active = false;
             finished=true;
+            totalTime += G.nanoTime()-now;
         }
     }
 	   
@@ -1542,8 +1568,4 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes,Act
     //   return(next);
     // }
 
-    long lastActiveTime = 0;
-	public long lastActiveTime() {
-		return lastActiveTime;
-	}
 }

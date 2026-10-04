@@ -153,9 +153,9 @@ public class Traxmovespec extends commonMove implements TraxConstants
     
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
-    	return(shortMoveText((TraxGameViewer)v,font));
+    	return(shortMoveText((TraxGameViewer)v,f));
     }
     public Text shortMoveText(TraxGameViewer v,Font f)
     {

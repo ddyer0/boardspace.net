@@ -1100,7 +1100,7 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
  	return(ci<=1 ? getColorMap()[ci] : ci);
  }
  CommonMoveStack  GetListOfMoves(CommonMoveStack  all,boolean erupting,boolean nonerupting)
- {	
+ {	all.clear();
 	switch(board_state)
 	{
 	default:

@@ -665,8 +665,7 @@ public abstract class cell<FINALTYPE
      * @return the cell found in the desired direction, or null if it doesn't exist.
      */
     public FINALTYPE exitTo(int dir)
-    {	if(geometry==Geometry.Standalone) { throw G.Error("%s has no exits",this); }
-    	int len = adjacent.length;
+    {  	int len = adjacent.length;
     	int md = dir%len;				//modulo 0-n
 		FINALTYPE ap = adjacent[md<0 ? md+len : md];
      	return(ap);
@@ -765,7 +764,7 @@ public abstract class cell<FINALTYPE
      */
     public boolean hasLink(FINALTYPE to)
     {
-    	if(adjacent!=null) { for(Object l : adjacent) { if(l==to) { return(true); }} }
+    	if(adjacent!=null) { for(FINALTYPE l : adjacent) { if(l==to) { return(true); }} }
     	return(false);
     }
     /** add a unidirectional link between this cell and to 

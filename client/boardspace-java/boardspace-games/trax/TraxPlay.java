@@ -94,7 +94,7 @@ public class TraxPlay extends commonRobot<TraxGameBoard> implements Runnable, Tr
     	boardSearchLevel++;
         board.RobotExecute(mm);
     }
-
+    CommonMoveStack movelist = new CommonMoveStack();
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
@@ -102,7 +102,7 @@ public class TraxPlay extends commonRobot<TraxGameBoard> implements Runnable, Tr
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {
-        return(board.GetListOfMoves());
+        return(board.GetListOfMoves(movelist));
     }
     /** return a value of the current board position for the specified player.
      * this should be greatest for a winning position.  The evaluations ought

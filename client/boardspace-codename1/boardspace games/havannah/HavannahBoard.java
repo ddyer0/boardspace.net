@@ -979,8 +979,8 @@ void doSwap(replayMode replay)
  		HavannahCell empty = emptyCells.elementAt(off);
  		return(new HavannahMovespec(MOVE_DROPB,empty.col,empty.row,playerColor[whoseTurn],whoseTurn));
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	if(board_state==HavannahState.PlayOrSwap)
  	{
  		all.addElement(new HavannahMovespec(SWAP,whoseTurn));

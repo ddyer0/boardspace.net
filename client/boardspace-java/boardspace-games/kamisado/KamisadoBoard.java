@@ -834,8 +834,8 @@ class KamisadoBoard extends rectBoard<KamisadoCell> implements BoardProtocol,Kam
  {
 	 return(getListOfMoves(null,who));
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	getListOfMoves(all,whoseTurn);
  	if(all.size()==0) 
  		{ all.push(new KamisadoMovespec(MOVE_PASS,whoseTurn)); 

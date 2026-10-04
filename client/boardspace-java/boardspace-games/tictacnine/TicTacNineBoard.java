@@ -764,8 +764,8 @@ class TicTacNineBoard extends rectBoard<TicTacNineCell> implements BoardProtocol
         }
  }
 
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	G.Error("Not implemented");
   	return(all);
  }

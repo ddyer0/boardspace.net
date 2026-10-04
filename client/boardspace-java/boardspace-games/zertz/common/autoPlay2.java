@@ -170,10 +170,10 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
         
     }
 
-   CommonMoveStack movelist = new ParallelCommonMoveStack();
+   CommonMoveStack movelist = new CommonMoveStack();
    public CommonMoveStack  List_Of_Legal_Moves()
     {	// note that getBoardMoveList isn't trivial to parallelize
-	    movelist.clear();
+	    
      	boolean forme = (board.whoseTurn==searchForPlayer);
     	boolean restricted = (boardSearchLevel > 0) && forme;
         getBoardMoveList(restricted, movelist);
@@ -319,7 +319,8 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
     /** get the move list from the private board */
     public void getBoardMoveList(boolean restricted, CommonMoveStack  result)
     {	int emptyCount = 0;
-         int p = board.whoseTurn;
+        int p = board.whoseTurn;
+        result.clear();
         ZertzState state = board.getState();
 
         switch (state)

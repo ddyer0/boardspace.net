@@ -211,7 +211,7 @@ public class TzaarMovespec extends commonMove implements TzaarConstants
     	return(message);
     }
     
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
         switch (op)
         {

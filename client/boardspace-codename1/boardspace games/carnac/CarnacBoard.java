@@ -1132,8 +1132,8 @@ class CarnacBoard extends squareBoard<CarnacCell> implements BoardProtocol,Carna
  	throw G.Error("shouldn't run out of board");
  }
  
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	switch(board_state)
  	{
  	default:

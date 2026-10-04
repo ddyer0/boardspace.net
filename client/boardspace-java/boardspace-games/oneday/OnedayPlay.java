@@ -76,14 +76,14 @@ public class OnedayPlay extends commonMPRobot<OnedayBoard> implements Runnable, 
         board.RobotExecute(mm);
         boardSearchLevel++;
     }
-
+    CommonMoveStack movelist = new CommonMoveStack();
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {   return(board.GetListOfMoves());
+    {   return(board.GetListOfMoves(movelist));
     }
     
     
@@ -115,7 +115,7 @@ public class OnedayPlay extends commonMPRobot<OnedayBoard> implements Runnable, 
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (OnedayBoard) gboard;
-        board = (OnedayBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
     	RESHUFFLE = true;
     	MONTEBOT = true;
         switch(strategy)

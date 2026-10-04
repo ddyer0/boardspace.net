@@ -4280,7 +4280,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
  {	return(getListOfMoves(all,whoseTurn));
  }
  public CommonMoveStack getListOfMoves(CommonMoveStack all,int who)
- {	
+ {	all.clear();
  	switch(rules)
  	{
  	default: throw G.Error("Not implemented");

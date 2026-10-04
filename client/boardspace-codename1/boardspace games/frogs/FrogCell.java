@@ -163,5 +163,4 @@ public class FrogCell extends stackCell<FrogCell,FrogPiece> implements Placement
 	{	super(rv,loc);
 	}
 	public FrogId rackLocation() { return((FrogId)rackLocation); }
-
 }

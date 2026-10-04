@@ -64,10 +64,10 @@ public class GipfPlay extends commonRobot<GipfBoard> implements Runnable, GipfCo
         boardSearchLevel++;
     }
 
-
+    CommonMoveStack moveList = new CommonMoveStack(); 
     public CommonMoveStack  List_Of_Legal_Moves()
     {
-        return(board.GetListOfMoves());
+        return(board.GetListOfMoves(moveList));
     }
 
     private double ScoreForPlayer(GipfBoard evboard,int player,boolean print)

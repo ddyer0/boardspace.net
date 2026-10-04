@@ -1050,8 +1050,8 @@ public boolean hasLegalMoves(MorelliCell c,MorelliChip top,int who)
  	}}
  	return(some);
  }
- public CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ public CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	return getListOfMoves(all,1,1);
  }
  public CommonMoveStack getListOfMoves(CommonMoveStack all,int offset,int skip)

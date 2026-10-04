@@ -58,6 +58,7 @@ public class CarnacPlay extends commonRobot<CarnacBoard> implements Runnable,
     {  
         board.RobotExecute(m);
     }
+    CommonMoveStack movelist = new CommonMoveStack();
 
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
@@ -65,7 +66,7 @@ public class CarnacPlay extends commonRobot<CarnacBoard> implements Runnable,
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {   return(board.GetListOfMoves());
+    {   return(board.GetListOfMoves(movelist));
     }
     
 

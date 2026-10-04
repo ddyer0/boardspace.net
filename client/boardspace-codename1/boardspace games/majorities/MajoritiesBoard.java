@@ -869,8 +869,8 @@ class MajoritiesBoard extends hexBoard<MajoritiesCell> implements BoardProtocol,
  		G.Assert(empty.chip==null,"isn't empty");
  		return(new MajoritiesMovespec(MOVE_DROPB,empty.col,empty.row,playerColor[whoseTurn],whoseTurn));
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack ();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	switch(board_state)
  	{
  	case Play:

@@ -1053,8 +1053,8 @@ class DipoleBoard extends rectBoard<DipoleCell> implements BoardProtocol,DipoleC
  }
  
  // get a list of moves for the robot to consider
- public CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ public CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	DipoleCell temp[]=getTempDest();
  	for(int i=0;i<darkCells.length;i++)
  	{	DipoleCell c = darkCells[i];

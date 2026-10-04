@@ -89,9 +89,10 @@ public class RoboPlay extends commonRobot<Loa_Board> implements Runnable, Consta
             System.out.println("Eval is " + eval);
         }
     }
-
+    CommonMoveStack result = new CommonMoveStack();
+    
     public CommonMoveStack  List_Of_Legal_Moves()
-    {	CommonMoveStack result = new CommonMoveStack();
+    {	result.clear();
         List_Moves lm = board.next_player.List_Of_Legal_Moves();
         int cp = (board.next_player == board.white) ? 1 : 0;
 

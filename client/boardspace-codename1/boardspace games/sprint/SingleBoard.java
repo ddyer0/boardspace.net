@@ -1337,8 +1337,8 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
 
  
 
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
     recordProgress(0);
     validate(false);
     switch(board_state)

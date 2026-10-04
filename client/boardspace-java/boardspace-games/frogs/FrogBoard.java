@@ -1466,8 +1466,8 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 
 	}
 
-	CommonMoveStack  GetListOfMoves0(int who) {
-		CommonMoveStack all = new CommonMoveStack();
+	CommonMoveStack  GetListOfMoves0(CommonMoveStack all,int who) {
+		all.clear();
 		switch (board_state) {
 		case MOVE_FROG_STATE:
 			getFrogMoveMoves(all, who);
@@ -1487,8 +1487,8 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 		return (all);
 	}
 
-	public CommonMoveStack  GetListOfMoves() {
-		CommonMoveStack  all = GetListOfMoves0(whoseTurn);
+	public CommonMoveStack  GetListOfMoves(CommonMoveStack all) {
+		GetListOfMoves0(all,whoseTurn);
 		if (all.size() == 0) {
 			all.addElement(new FrogMovespec(whoseTurn, MOVE_PASS));
 		}

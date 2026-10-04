@@ -1198,7 +1198,7 @@ private boolean addPlaceControlLineMovesA(CommonMoveStack all,CellStack fromAll,
 	 return false;
  }
  CommonMoveStack  GetListOfMoves(CommonMoveStack all,boolean greedy)
- {	
+ {	all.clear();
  	if(board_state==TweedState.PlayOrSwap)
  	{
  		all.addElement(new TweedMovespec(MOVE_SWAP,whoseTurn));

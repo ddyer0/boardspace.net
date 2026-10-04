@@ -62,14 +62,14 @@ public class ModxPlay extends commonRobot<ModxBoard> implements Runnable, ModxCo
     {   ModxMovespec mm = (ModxMovespec)m;
         board.RobotExecute(mm);
     }
-
+    CommonMoveStack movelist = new CommonMoveStack();
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {   return(board.GetListOfMoves());
+    {   return(board.GetListOfMoves(movelist));
     }
     
     
@@ -82,7 +82,7 @@ public class ModxPlay extends commonRobot<ModxBoard> implements Runnable, ModxCo
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (ModxBoard) gboard;
-        board = GameBoard.cloneBoard();
+        board = (ModxBoard)GameBoard.cloneBoard();
         MONTEBOT = true;
         terminalNodeOptimize = true;
         switch(strategy)

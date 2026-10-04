@@ -115,6 +115,7 @@ public class CrosswordsPlay extends commonMPRobot<CrosswordsBoard> implements Ru
     {   Crosswordsmovespec mm = (Crosswordsmovespec)m;
         board.RobotExecute(mm);
     }
+    CommonMoveStack movelist = new CommonMoveStack();
 
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
@@ -123,7 +124,7 @@ public class CrosswordsPlay extends commonMPRobot<CrosswordsBoard> implements Ru
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {
-        return(board.GetListOfMoves());
+        return(board.GetListOfMoves(movelist));
     }
 
     // not used, but invoked if debugging 
@@ -199,7 +200,7 @@ public void PrepareToMove(int playerIndex)
  public commonMove DoHillClimbingMove()
  {	commonMove move = null;
  	try {	startTime = G.Date();
-        	CommonMoveStack all = board.GetListOfMoves();
+        	CommonMoveStack all = board.GetListOfMoves(new CommonMoveStack());
         	if(all.size()>0)
         	{
         		move = all.elementAt(0);

@@ -1133,8 +1133,8 @@ class PalabraBoard extends squareBoard<PalabraCell> implements BoardProtocol,Pal
 	 }
 		 
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	switch(board_state)
  	{
  	case PLAY_STATE:

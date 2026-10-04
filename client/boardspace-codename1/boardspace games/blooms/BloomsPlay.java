@@ -146,7 +146,6 @@ public class BloomsPlay extends commonRobot<BloomsBoard> implements Runnable, Bl
     private CommonMoveStack movelist = new CommonMoveStack();
     public CommonMoveStack  List_Of_Legal_Moves()
     {	int player = board.simultaneousTurnsAllowed() ? forPlayer : board.whoseTurn;
-    	movelist.clear();
     	switch(Strategy)
     	{
     	default: throw G.Error("Not expecting strategy %s",Strategy);

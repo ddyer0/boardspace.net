@@ -1298,8 +1298,8 @@ public Hashtable<MorrisCell,MorrisMovespec>getTargets()
 	 }
  	return(some);
  }
- CommonMoveStack GetListOfMoves(boolean offerdraw)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack GetListOfMoves(CommonMoveStack all,boolean offerdraw)
+ {	all.clear();
  	addMoves(all,offerdraw,whoseTurn);
  	return(all);
  }

@@ -210,8 +210,8 @@ public class Loa_Board extends BaseBoard implements BoardProtocol,UIC,Play2Const
         for (int i = 0; i < squares.length; i++)
         {
             squares[i] = new Square_State();
-            black_zhash[i] = (int) (0x7fffffff * r.nextInt());
-            white_zhash[i] = (int) (0x7fffffff * r.nextInt());
+            black_zhash[i] = (0x7fffffff * r.nextInt());
+            white_zhash[i] = (0x7fffffff * r.nextInt());
         }
         for(int x=0;x<sz;x++)
         {

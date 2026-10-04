@@ -1109,7 +1109,7 @@ private Color playerBackground[] = {
     	{
     	case PayCost:
     		{
-    		CommonMoveStack all = gb.GetListOfMoves();
+    		CommonMoveStack all = gb.GetListOfMoves(new CommonMoveStack());
     		int hit_index = hp.hit_index;
     		for(int lim=all.size()-1; lim>=0; lim--)
     			{

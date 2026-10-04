@@ -1609,8 +1609,8 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
  	}
  	return(some);
   }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	getListOfMoves(all,whoseTurn);
  	
  	return(all);

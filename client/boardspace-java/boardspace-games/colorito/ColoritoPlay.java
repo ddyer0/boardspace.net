@@ -72,6 +72,7 @@ public class ColoritoPlay extends commonRobot <ColoritoBoard>implements Runnable
     {   ColoritoMovespec mm = (ColoritoMovespec)m;
         board.RobotExecute(mm,(board.robotDepth==0));
     }
+    CommonMoveStack movelist = new CommonMoveStack();
 
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
@@ -79,7 +80,7 @@ public class ColoritoPlay extends commonRobot <ColoritoBoard>implements Runnable
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {   return(board.GetListOfMoves(board.robotDepth>=2));
+    {   return(board.GetListOfMoves(movelist,board.robotDepth>=2));
     }
     
     /** return a value of the current board position for the specified player.
@@ -127,7 +128,7 @@ public class ColoritoPlay extends commonRobot <ColoritoBoard>implements Runnable
      * */
     public void StaticEval()
     {
-    	ColoritoBoard evboard = (ColoritoBoard)GameBoard.cloneBoard();
+    	ColoritoBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
@@ -143,7 +144,7 @@ public class ColoritoPlay extends commonRobot <ColoritoBoard>implements Runnable
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (ColoritoBoard) gboard;
-        board = (ColoritoBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         switch(strategy)
         {
         case WEAKBOT_LEVEL:

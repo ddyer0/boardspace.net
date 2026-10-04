@@ -139,7 +139,7 @@ public class MagnetPlay extends commonRobot<MagnetBoard> implements Runnable,
     {
   		  board.randomizeHiddenState(robotRandom,robotPlayer);	
     }
-
+    CommonMoveStack movelist = new CommonMoveStack();
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
@@ -147,7 +147,7 @@ public class MagnetPlay extends commonRobot<MagnetBoard> implements Runnable,
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {
-        CommonMoveStack all = board.GetListOfMoves();
+        CommonMoveStack all = board.GetListOfMoves(movelist);
         return(all);
     }
 

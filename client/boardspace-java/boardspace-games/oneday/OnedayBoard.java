@@ -1717,8 +1717,8 @@ public class OnedayBoard extends RBoard<OnedayCell> implements BoardProtocol,One
 	 	}
  }
  
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	switch(board_state)
  	{
  	case NormalStart:

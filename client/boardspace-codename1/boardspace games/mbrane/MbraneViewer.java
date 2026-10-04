@@ -50,7 +50,7 @@ import online.search.SimpleRobotProtocol;
  * TODO: needs rotation options like crosswords
  *  
 */
-public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements MbraneConstants,NumberMenuHost
+public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements MbraneConstants
 {		
     static final String Mbrane_SGF = "MBrane"; // sgf game number allocated for Mbrane
 

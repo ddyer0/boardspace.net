@@ -44,7 +44,6 @@ public class Warp6Cell extends chipCell<Warp6Cell,Warp6Chip> implements Warp6Con
 	}
 	public WarpId rackLocation() { return((WarpId)rackLocation); }
 	public void reInit() { chip = null;  }
-
 	
 	public Warp6Chip removeChip()
 	{	Warp6Chip cc = topChip();

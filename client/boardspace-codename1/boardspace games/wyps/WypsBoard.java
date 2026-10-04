@@ -417,7 +417,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
 										// revision 103 makes rack size same as handsize, not rack size
 										// revision 104 changes the way draw tiles works when the draw pile is empty
 	public int getMaxRevisionLevel() { return(REVISION); }
-	static DictionaryHash privateDictionaryInternal = new DictionaryHash(50,1); 
+	static DictionaryHash privateDictionaryInternal = new DictionaryHash(100,1); 
     private static boolean privateDictionaryInited = false;
     private synchronized void initPrivateDictionary()
     {

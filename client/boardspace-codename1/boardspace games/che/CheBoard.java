@@ -767,8 +767,8 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
         }
  }
   
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
 
  	switch(board_state)
  	{

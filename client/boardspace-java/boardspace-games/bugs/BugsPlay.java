@@ -172,6 +172,7 @@ public class BugsPlay extends commonMPRobot<BugsBoard> implements Runnable, Bugs
 	    randomPhase = true;
     }
 
+    CommonMoveStack movelist = new CommonMoveStack();
 
     /** return a Vector of moves to consider at this point.  It doesn't have to be
      * the complete list, but that is the usual procedure. Moves in this list will
@@ -180,7 +181,7 @@ public class BugsPlay extends commonMPRobot<BugsBoard> implements Runnable, Bugs
      */
         public CommonMoveStack  List_Of_Legal_Moves()
         {	int pl  =  board.whoseTurn;  
-            CommonMoveStack all = board.getListOfMoves(pl);
+            CommonMoveStack all = board.getListOfMoves(movelist,pl);
             return all;
         }
 

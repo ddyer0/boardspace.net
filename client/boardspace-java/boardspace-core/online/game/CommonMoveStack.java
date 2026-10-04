@@ -31,5 +31,7 @@ public class CommonMoveStack extends OStack<commonMove>
 	public boolean eq(commonMove me,commonMove other) { return me.Same_Move_P(other); }
 	public CommonMoveStack(int sz) { super(sz); }
 	public CommonMoveStack() { super(); }
+	public void clear() { fastClear(); }
 	public boolean debug = G.DEBUG;
+
 }

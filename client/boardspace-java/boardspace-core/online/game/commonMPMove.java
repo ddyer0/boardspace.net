@@ -31,7 +31,7 @@ public abstract class commonMPMove extends commonMove implements Play6Constants 
 	public void Copy_Slots(commonMPMove to)
 	 {
 		 super.Copy_Slots(to);
-		 playerScores = to.playerScores;
+		 to.playerScores = playerScores;
 	 }
 	
 	static public void addStandardMoves(ExtendedHashtable D,Object... more)

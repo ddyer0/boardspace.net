@@ -2542,8 +2542,8 @@ private void undoCaptures(int uncap,int who)
    		}
    }
 
-   public CommonMoveStack  GetListOfMoves()
-   {	CommonMoveStack v = new CommonMoveStack();
+   public CommonMoveStack  GetListOfMoves(CommonMoveStack v)
+   {	v.clear();
    		switch(board_state)
    		{
    		default: 

@@ -631,8 +631,8 @@ class UCTMPThread extends Thread implements Opcodes,UCTThread
 		}
 		G.Assert(terminal||currentMove!=null,"should be one move");
 		
-
-		boolean scorable = true;
+		boolean killed = currentNode.isKilled();
+		boolean scorable = !killed;
 		//if(terminal||gameOver) 
 		//	{ Log.addLog("terminal "+terminal+" gameover "+gameOver);
 		//	}
@@ -664,8 +664,8 @@ class UCTMPThread extends Thread implements Opcodes,UCTThread
 					}
 			}
 		}
-		else if(!currentNode.isKilled())
-		{
+		else if(!killed)
+		{	
 			robot.Start_Simulation(master,currentNode);
 			double val0 =runSimulation(currentMove);
 			if( (randomSimulationDepth==1) 
@@ -681,7 +681,7 @@ class UCTMPThread extends Thread implements Opcodes,UCTThread
 
 			robot.Finish_Simulation(master,currentNode);
 		}
-		else { scorable = false; }
+
 		
 		/* BACKPROP */
 		
@@ -737,7 +737,7 @@ class UCTMPThread extends Thread implements Opcodes,UCTThread
 	}
 	// unwind the tree part of the search.  Note that at this point
 	// the state of the board will be random in blitz searches
-	private void unwindAndScore(boolean scorable,boolean gameOver0,commonMove scoreMove)
+	private void unwindAndScore(boolean scorable,boolean gameOver,commonMove scoreMove)
 	{	
 		if(scoreMove!=null)
 		{
@@ -755,7 +755,7 @@ class UCTMPThread extends Thread implements Opcodes,UCTThread
 			else 
 			{ scoredCount++; }
 		scorable &= isScored;
-		boolean simplify = gameOver0 && master.only_child_optimization;
+		boolean simplify = gameOver && master.only_child_optimization;
 		//boolean scorable = currentNode.getVisits()>=0;
 		//commonMove last_tree_move = currentMove;
 		//double rescore = val;

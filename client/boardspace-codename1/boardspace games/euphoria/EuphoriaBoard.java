@@ -8797,7 +8797,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
  	case ActivateOneRecruit:
  	case DiscardResources:
  		{	try {
- 			CommonMoveStack all = GetListOfMoves(p,gui_errors==0);
+ 			CommonMoveStack all = GetListOfMoves(new CommonMoveStack(),p,gui_errors==0);
  			while(all.size()>0)
  			{
  				EuphoriaMovespec m = (EuphoriaMovespec)all.pop();
@@ -11185,12 +11185,12 @@ EPlayer robotPlayer = null;
 	 return(m.montecarloWeight);
  }
  
- CommonMoveStack  GetListOfMoves()
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
  {	
-	 return(GetListOfMoves(players[whoseTurn],true));
+	 return(GetListOfMoves(all,players[whoseTurn],true));
  }
- CommonMoveStack  GetListOfMoves(EPlayer p,boolean err_if_none)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all,EPlayer p,boolean err_if_none)
+ {	all.clear();
   	switch(board_state)
  	{
  	default:

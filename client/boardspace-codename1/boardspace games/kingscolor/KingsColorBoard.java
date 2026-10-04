@@ -750,7 +750,7 @@ class KingsColorBoard
     			setState(next);	
 	    		if(next==KingsColorState.Check)
 	    		{	// check if there is any escape
-	    			CommonMoveStack raw = GetListOfMoves(whoseTurn);
+	    			CommonMoveStack raw = GetListOfMoves(new CommonMoveStack(),whoseTurn);
 	    			CommonMoveStack all = filterCheckMoves(raw,whoseTurn);
 
 	    			if(all.size()==0) 
@@ -1288,20 +1288,20 @@ class KingsColorBoard
 	 return(some);
  }
 
- CommonMoveStack  GetListOfMoves()
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
  {
-	 return GetListOfMoves(whoseTurn);
+	 return GetListOfMoves(all,whoseTurn);
  }
  private boolean hasMoves()
  {
 	 return getListOfMoves(null,whoseTurn);
  }
- CommonMoveStack GetListOfMoves(int who)
+ CommonMoveStack GetListOfMoves(CommonMoveStack all,int who)
  {
-	 return GetListOfMoves(who,null,null);
+	 return GetListOfMoves(all,who,null,null);
  }
- CommonMoveStack  GetListOfMoves(int who,KingsColorCell from,KingsColorChip move)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all,int who,KingsColorCell from,KingsColorChip move)
+ {	
  	getListOfMoves(all,from,move,who);
  	return(all);
  }
@@ -1317,6 +1317,7 @@ class KingsColorBoard
  }
  private boolean getListOfMoves(CommonMoveStack all,KingsColorCell from,KingsColorChip movingChip,int who)
  {	boolean some = false;
+ 	if(all!=null) { all.clear(); }
  	switch(board_state)
  	{
  	case Gameover:
@@ -1409,7 +1410,7 @@ KingsColorBoard targetBoard = null;
  }
  private Hashtable<KingsColorCell, KingsColormovespec>getTargetsInternal(KingsColorBoard parent,int who)
  {
-	CommonMoveStack all = GetListOfMoves(who,getSource(),pickedObject);
+	CommonMoveStack all = GetListOfMoves(new CommonMoveStack(),who,getSource(),pickedObject);
 	return filterTargets(parent,all,who,pickedObject);
  }
  /* get targets as though it were someone's move

@@ -1731,8 +1731,8 @@ class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,Octile
  }
  
  // get moves for the robot
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
     int who = whoseTurn;
     getListOfMoves(all,who);
     if(all.size()==0) { all.addElement(new OctilesMovespec(PASS,who)); }

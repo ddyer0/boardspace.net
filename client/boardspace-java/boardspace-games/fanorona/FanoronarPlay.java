@@ -68,15 +68,18 @@ public class FanoronarPlay extends commonRobot<FanoronaBoard> implements Runnabl
     {   FanoronaMovespec mm = (FanoronaMovespec)m;
         board.RobotExecute(mm);
     }
+    
+    CommonMoveStack movelist = new CommonMoveStack();
 
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
-    public CommonMoveStack  List_Of_Legal_Moves()
-    {
-        return(board.GetListOfMoves(board.robotDepth==0));
+    public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
+    {	
+    	// metering shows that using threads is a losing proposition
+    	return(getMoveList(movelist,null /* threads */));
     }
     
     
@@ -183,6 +186,11 @@ public class FanoronarPlay extends commonRobot<FanoronaBoard> implements Runnabl
 
             int depth = MAX_DEPTH;
             Search_Driver search_state = Setup_For_Search(depth, false);
+            
+            search_state.debug_threads = 0;
+            search_state.max_threads = DEPLOY_THREADS;
+            search_state.recheck_slop = 0.01;
+            
             search_state.save_all_variations = SAVE_TREE;
             search_state.allow_killer = KILLER;
             search_state.verbose=verbose;			// debugging
@@ -196,7 +204,7 @@ public class FanoronarPlay extends commonRobot<FanoronaBoard> implements Runnabl
             if (move == null)
             {
                 move = search_state.Find_Static_Best_Move(randomn);
-                search_state.showResult(move,false);
+                search_state.showResult(move,true);
             }
         }
         finally

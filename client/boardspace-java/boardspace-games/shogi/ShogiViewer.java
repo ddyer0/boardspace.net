@@ -305,7 +305,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
         int bishop = ShogiChip.PieceType.Bishop.ordinal();
       
         GC.frameRect(gc,Color.black,r);
-        for(ShogiChip.PieceType type : ShogiChip.PieceType.values())
+        for(ShogiChip.PieceType type : ShogiChip.PieceType.allValues)
         {
         	if(type.demoted==type)
         	{	int ord = type.ordinal();
@@ -448,7 +448,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
 	            					highlight.hitObject = cell;
 	            					highlight.hitCode = ShogiId.FlipButton;
 	            				}
-	            				ornaments[index].draw(gc,this,(int)(SQUARESIZE*1),xpos,ypos+SQUARESIZE/4,null);
+	            				ornaments[index].draw(gc,this,(SQUARESIZE*1),xpos,ypos+SQUARESIZE/4,null);
 	            			}
 	            		}
 	            	}

@@ -164,7 +164,7 @@ class ArimaaBoard extends squareBoard<ArimaaCell> implements BoardProtocol,Arima
     	setColorMap(cmap, 2);
         int map [] = getColorMap();
         Random r = new Random(5685343);
-        for(int i=0,pl=FIRST_PLAYER_INDEX;i<=SECOND_PLAYER_INDEX; i++,pl=nextPlayer[pl])
+        for(int i=0;i<=1; i++)
     	{	ArimaaCell c = handicap[i] = new ArimaaCell(r);
     		ArimaaId rackid = RackLocation[map[i]];
     		c.rackLocation = rackid==ArimaaId.B ? ArimaaId.BH : ArimaaId.WH;
@@ -265,7 +265,7 @@ class ArimaaBoard extends squareBoard<ArimaaCell> implements BoardProtocol,Arima
         G.Assert(stackIndex==from_b.stackIndex,"stackIndex matches");
         for(int idx=0; idx<stackIndex;idx++)
         {
-        	G.Assert(cell.sameCell(pickedSourceStack[idx],from_b.pickedSourceStack[idx]),"same source stack");
+        	G.Assert(ArimaaCell.sameCell(pickedSourceStack[idx],from_b.pickedSourceStack[idx]),"same source stack");
         	G.Assert(ArimaaCell.sameCell(droppedDestStack[idx],from_b.droppedDestStack[idx]),"same source stack");
         }
         // do not include deststack.  it contains similar but not identical elements
@@ -449,7 +449,7 @@ public long positionDigest()
         case DRAW_STATE:
         case RESIGN_STATE:
             moveNumber++; //the move is complete in these states
-            setWhoseTurn(nextPlayer[whoseTurn]);
+            setWhoseTurn(whoseTurn^1);
             return;
         }
     }
@@ -513,7 +513,7 @@ public long positionDigest()
     	if(board_state==ArimaaState.GAMEOVER_STATE) { return(win[player]); }
     	if(!started) { return(false); }
     	if(rabbitInHomeRow(player)) { return(true); }
-    	if(rabbitsOnBoard[nextPlayer[player]]==0) { return(true); }
+    	if(rabbitsOnBoard[player^1]==0) { return(true); }
     	return(false);
     }
     private boolean checked = false;
@@ -689,7 +689,7 @@ public long positionDigest()
    			ArimaaCell tr2 = trapCells[2];
    			ArimaaCell tr3 = trapCells[3];
 			for(int player=FIRST_PLAYER_INDEX; player<=SECOND_PLAYER_INDEX; player++)
-			{	int next = nextPlayer[player];
+			{	int next = player^1;
 				int key = getTrapMapKey(player,tr0.trap_adj[player],tr0.trap_adj[next],
 						tr1.trap_adj[player],tr1.trap_adj[next],
 						tr2.trap_adj[player],tr2.trap_adj[next],
@@ -835,7 +835,7 @@ public long positionDigest()
     public void scoreTraps()
     {	ArimaaChip mostPower = null;
     	{	//this is for use by the viewer
-    		int nextTurn = nextPlayer[whoseTurn];
+    		int nextTurn = whoseTurn^1;
     		for(ArimaaCell occ = allCells; occ!=null; occ=occ.next)
     			{ ArimaaChip top = occ.topChip();
     			  if((top!=null) 
@@ -1006,7 +1006,7 @@ public long positionDigest()
     	//
     	double tmapscore = 0.0;
     	double my_tmap[][] = currentTrapMap[player];
-    	double opp_tmap[][] = currentTrapMap[nextPlayer[player]];
+    	double opp_tmap[][] = currentTrapMap[player^1];
     	if(my_elephant!=null)
     	{	
     		tmapscore += SUPPORT_WEIGHT*disScore(my_elephant,my_camel,my_tmap,wood_value[ArimaaChip.CAMEL_INDEX]);
@@ -1310,7 +1310,7 @@ public long positionDigest()
     	//
     	double tmapscore = 0.0;
     	double my_tmap[][] = currentTrapMap[player];
-    	double opp_tmap[][] = currentTrapMap[nextPlayer[player]];
+    	double opp_tmap[][] = currentTrapMap[player^1];
     	if(my_elephant!=null)
     	{	
     		tmapscore += SUPPORT_WEIGHT*disScore(my_elephant,my_camel,my_tmap,wood_value[ArimaaChip.CAMEL_INDEX]);
@@ -1877,7 +1877,7 @@ public long positionDigest()
     		break;
         case PUZZLE_STATE:
         case INITIAL_SETUP_STATE:
-        	if(started || ((rabbitsOnBoard[whoseTurn]>0)&&(rabbitsOnBoard[nextPlayer[whoseTurn]]>0)))
+        	if(started || ((rabbitsOnBoard[whoseTurn]>0)&&(rabbitsOnBoard[whoseTurn^1]>0)))
         		{ setState(ArimaaState.PLAY_STATE);
         		  started = true;
         		  playStep = 0;
@@ -1900,7 +1900,7 @@ public long positionDigest()
         }
         else
         {	boolean win1 = WinForPlayerNow(whoseTurn);
-        	boolean win2 = WinForPlayerNow(nextPlayer[whoseTurn]);
+        	boolean win2 = WinForPlayerNow(whoseTurn^1);
         	if(win1 || win2)  { setGameOver(win1,win2); }
         	else 
         	{
@@ -2531,7 +2531,7 @@ public long positionDigest()
 	int bigEnemy = 0;
 	int myPower = ch.chipPower();
 	int myPlayer = playerIndex(ch);
-	int otherPlayer = nextPlayer[myPlayer];
+	int otherPlayer = myPlayer^1;
  	for(int dir=0;dir<CELL_FULL_TURN;dir++)
  	{	ArimaaCell adj = from.fastExitTo(dir);
  		if(adj!=null)
@@ -2640,7 +2640,7 @@ public long positionDigest()
  	{
  	int myPlayer = playerIndex(ch);
  	int myPower = ch.chipPower();
- 	int otherPlayer = nextPlayer[myPlayer];
+ 	int otherPlayer = myPlayer^1;
  	int backward_direction = myPlayer==playerColor[FIRST_PLAYER_INDEX] ? CELL_UP : CELL_DOWN;
  	boolean canPushPull = ((step+1)<STEPS_PER_TURN);	// push/pull take two steps
  	{
@@ -2717,7 +2717,7 @@ public long positionDigest()
  	{
  	int myPlayer = playerIndex(ch);
  	int myPower = ch.chipPower();
- 	int otherPlayer = nextPlayer[myPlayer];
+ 	int otherPlayer = myPlayer^1;
  	int backward_direction = myPlayer==FIRST_PLAYER_INDEX ? CELL_UP : CELL_DOWN;
  	boolean canPushPull = ((step+1)<STEPS_PER_TURN);	// push/pull take two steps
  	int nDirs = CELL_FULL_TURN;
@@ -3100,6 +3100,7 @@ public long positionDigest()
 		 break;
 	 case PLAY_STATE:
 		 cell<ArimaaCell> cells[] = getCellArray();
+		 // this iteration is ok because the cell array never changes order
 		 for(int i=offset-1; i<fullBoardSize;i+=skip)
 		 {	ArimaaCell c = (ArimaaCell)cells[i];
 	 		ArimaaChip ch = c.topChip();

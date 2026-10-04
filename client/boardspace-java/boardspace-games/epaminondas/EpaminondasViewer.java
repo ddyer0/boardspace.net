@@ -434,6 +434,7 @@ public class EpaminondasViewer extends CCanvas<EpaminondasCell,EpaminondasBoard>
      * */
     public void drawFixedElements(Graphics gc)
     { 
+    	GC.fillRect(gc,Color.black,boardRect);
      EpaminondasChip.backgroundTile.image.tileImage(gc, fullRect);   
       drawRotatedFixedBoard(gc, boardRect);
      }
@@ -444,7 +445,7 @@ public class EpaminondasViewer extends CCanvas<EpaminondasCell,EpaminondasBoard>
     	// and which are using copyies of the real board for drawing.
     	// Not so important for boards which are always the same dimensions, but it's always safe.
     	EpaminondasBoard gb = disB(gc);
-        boolean reviewBackground = reviewMode()&&!mutable_game_record;
+    	boolean reviewBackground = reviewMode()&&!mutable_game_record;
         if(reviewBackground)
         {	 
          EpaminondasChip.backgroundReviewTile.image.tileImage(gc,brect);   

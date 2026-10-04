@@ -1446,8 +1446,8 @@ public boolean hasMoves()
 	}
  	return(some);
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	addMoves(all,whoseTurn);
 	if(all.size()==0)
 	{	G.Error("No moves generated");

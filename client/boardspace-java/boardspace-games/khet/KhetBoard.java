@@ -1046,7 +1046,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
  	default:
 		if((pickedObject==null))
 		{
-			CommonMoveStack moves = GetListOfMoves();
+			CommonMoveStack moves = GetListOfMoves(new CommonMoveStack());
 			while(moves.size()>0)
 			{
 				KhetMovespec m = (KhetMovespec)moves.pop();
@@ -1137,8 +1137,8 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
 			}
 	return(some);
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	if(!getListOfMoves(all,whoseTurn)) { all.push(new KhetMovespec(MOVE_RESIGN,whoseTurn)); }
   	return(all);
  }

@@ -124,7 +124,7 @@ public class SlitherChip extends chip<SlitherChip> implements CommonConfig,Slith
             
 	public static SlitherChip getChip(int color)
 	{
-				return(SlitherId.values()[color].chip);
+				return(SlitherId.allValues[color].chip);
 			}
 
 	public static SlitherChip backgroundTile = new SlitherChip( "background-tile-nomask",null);

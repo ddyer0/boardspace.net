@@ -135,7 +135,7 @@ public class PendulumPlay extends commonMPRobot<PendulumBoard> implements Runnab
     {   PendulumMovespec mm = (PendulumMovespec)m;
         board.RobotExecute(mm);
     }
-    
+    CommonMoveStack movelist = new CommonMoveStack();
 
     /** return a Vector of moves to consider at this point.  It doesn't have to be
      * the complete list, but that is the usual procedure. Moves in this list will
@@ -144,7 +144,7 @@ public class PendulumPlay extends commonMPRobot<PendulumBoard> implements Runnab
      */
         public CommonMoveStack  List_Of_Legal_Moves()
         {
-            return(board.GetListOfMoves(board.whoseTurn));
+            return(board.GetListOfMoves(movelist,board.whoseTurn));
         }
 
         /**

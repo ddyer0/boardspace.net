@@ -9213,7 +9213,7 @@ private CommonMoveStack getDraftMoves()
 		 case Puzzle: break;
 		 default: 
 		 	{
-			 CommonMoveStack all = GetListOfMoves(MoveGenerator.All);
+			 CommonMoveStack all = GetListOfMoves(new CommonMoveStack(),MoveGenerator.All);
 			 includeBasedOn(all,val);
 		 	}
 		 }}
@@ -11018,8 +11018,8 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 	 return false;
  }
 
- CommonMoveStack  GetListOfMoves(MoveGenerator generator)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all,MoveGenerator generator)
+ {	all.clear();
  	PlayerBoard pb = getCurrentPlayerBoard();
  	
  	return getListOfMoves(generator,all,pb);

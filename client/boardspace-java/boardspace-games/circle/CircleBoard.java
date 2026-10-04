@@ -936,8 +936,8 @@ class CircleBoard
 	 return null;
  }
  
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
 
  	switch(board_state)
  	{
@@ -999,7 +999,7 @@ class CircleBoard
  public Hashtable<CircleCell, CircleMovespec> getTargets() 
  {
  	Hashtable<CircleCell,CircleMovespec> targets = new Hashtable<CircleCell,CircleMovespec>();
- 	CommonMoveStack all = GetListOfMoves();
+ 	CommonMoveStack all = GetListOfMoves(new CommonMoveStack());
  	for(int lim=all.size()-1; lim>=0; lim--)
  	{	CircleMovespec m = (CircleMovespec)all.elementAt(lim);
  		switch(m.op)

@@ -1247,7 +1247,7 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
  }
  
  CommonMoveStack  GetListOfMoves(CommonMoveStack  all,boolean erupting,boolean nonerupting)
- {	
+ {	all.clear();
 	VolcanoCell temp[] = getTempDest();
 	for(VolcanoCell c = rboard.allCells;
 		c!=null;

@@ -1642,8 +1642,8 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
 		return(false);
 	}
 
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
 
  	switch(board_state)
  	{

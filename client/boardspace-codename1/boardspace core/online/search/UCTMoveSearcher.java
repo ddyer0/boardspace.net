@@ -256,8 +256,13 @@ public class UCTMoveSearcher extends CommonDriver
 		double childLimitAt = 0.0;		// point in search at which we reached the child limit
 		double victimChildrenAt = 0.0;	// percent in search at which child cull begins
 		public UCTNode root = null;				// the uct game tree
-		boolean kill_children_now = false;	// request to a thread to clean up the children now.
-		
+		public boolean kill_children_now = false;	// request to a thread to clean up the children now.
+		public synchronized boolean kill_children_now()
+		{
+			boolean v = kill_children_now;
+			if(v) { kill_children_now=false; }
+			return v;
+		}
 		public Random rand = new Random();
 		boolean aborted = false;
 		commonMove decided = null;	// decided by reducing to one child

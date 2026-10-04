@@ -1180,7 +1180,7 @@ class BugBoard
  }
  
  CommonMoveStack  GetListOfMoves(CommonMoveStack all)
- {	
+ {	all.clear();
  	switch(board_state)
  	{
  	case Puzzle:

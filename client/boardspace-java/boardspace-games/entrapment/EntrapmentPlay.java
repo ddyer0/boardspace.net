@@ -84,7 +84,7 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
         board.RobotExecute(mm);
      }
 
-    private CommonMoveStack movelist = new ParallelCommonMoveStack();
+    private CommonMoveStack movelist = new CommonMoveStack();
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
@@ -92,7 +92,8 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
  */
     public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
     {   //Plog.log.addLog("get moves");
-    	return getMoveList(movelist,threads);
+    	// metering shows that using threads is a losing proposition
+    	return getMoveList(movelist,null /* threads */);
     	//Plog.log.addLog("Got ",movelist);
     	//return movelist;
     }
@@ -268,12 +269,13 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
             search_state.save_digest=true;	// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
             search_state.good_enough_to_quit = VALUE_OF_WIN;
-            search_state.max_threads = 0;//DEPLOY_THREADS;
+            search_state.max_threads = DEPLOY_THREADS;
             search_state.allow_good_enough = true;
 
             if (move == null)
             {
                 move = (EntrapmentMovespec) search_state.Find_Static_Best_Move(randomn,dif);
+                search_state.showResult(move,true);
             }
         }
         finally

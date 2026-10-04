@@ -159,7 +159,7 @@ public class EpaminondasPlay extends commonRobot<EpaminondasBoard> implements Ru
     }
     
 
-
+    CommonMoveStack movelist = new CommonMoveStack();
     /** return a Vector of moves to consider at this point.  It doesn't have to be
      * the complete list, but that is the usual procedure. Moves in this list will
      * be evaluated and sorted, then used as fodder for the depth limited search
@@ -167,7 +167,7 @@ public class EpaminondasPlay extends commonRobot<EpaminondasBoard> implements Ru
      */
         public CommonMoveStack  List_Of_Legal_Moves()
         {	
-            CommonMoveStack all = board.GetListOfMoves(null,999999);
+            CommonMoveStack all = board.GetListOfMoves(movelist,null,999999);
             return(all);
         }
 
@@ -183,7 +183,7 @@ public class EpaminondasPlay extends commonRobot<EpaminondasBoard> implements Ru
         	// is not necessarily the same as picking one move from a
         	// complete list of alternatives.
         	int limit = fastRandomWalk ? 1 : 999999;
-        	CommonMoveStack all = board.GetListOfMoves(rand,limit);
+        	CommonMoveStack all = board.GetListOfMoves(movelist,rand,limit);
         	// the robot move generator randomizes the starting point of move generation
         	return all.elementAt(rand.fastUpto(all.size()));
         }

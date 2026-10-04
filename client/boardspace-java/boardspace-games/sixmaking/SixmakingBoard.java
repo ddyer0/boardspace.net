@@ -1267,8 +1267,8 @@ private boolean addKingMovesFor(CommonMoveStack all,SixmakingCell from,int heigh
  		default: throw G.Error("Not expecting %s",variation); 
  	 }
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	addMoves(all,whoseTurn);
  	return(all);
  }

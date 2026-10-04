@@ -150,10 +150,11 @@ public class YPlay extends commonRobot<YBoard> implements Runnable, YConstants,
  * pruned with alpha-beta.
  */
 
-    ParallelCommonMoveStack movelist = new ParallelCommonMoveStack();
+    CommonMoveStack movelist = new CommonMoveStack();
     
     public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
-    {	CommonMoveStack ml = getMoveList(movelist,threads);
+    {	// metering shows that using threads is a losing proposition
+    	CommonMoveStack ml = getMoveList(movelist,null /* threads */);
     	/*
         if(G.debug())
         {

@@ -542,7 +542,6 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
         checkDigestSame(from_b);
-        G.Assert(myIndex==from_b.myIndex,"Myindex mismatch");
     }
 
     /** 
@@ -1355,8 +1354,8 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
 	 }
 		 
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	switch(board_state)
  	{
  	case PLAY_STATE:

@@ -1052,8 +1052,8 @@ class DashBoard extends rectBoard<DashCell> implements BoardProtocol,DashConstan
 	
  }
 
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	getListOfFlipMoves(all);
  	getListOfRiverMoves(all);
 

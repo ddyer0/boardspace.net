@@ -1693,9 +1693,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
-        long v1 = Digest();
-        long v2 = from_b.Digest();
-        Assert(v1==v2,"Digest matches");
+        checkDigestSame(from_b);
  
     }
     
@@ -8799,7 +8797,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
  	case ActivateOneRecruit:
  	case DiscardResources:
  		{	try {
- 			CommonMoveStack all = GetListOfMoves(p,gui_errors==0);
+ 			CommonMoveStack all = GetListOfMoves(new CommonMoveStack(),p,gui_errors==0);
  			while(all.size()>0)
  			{
  				EuphoriaMovespec m = (EuphoriaMovespec)all.pop();
@@ -11187,12 +11185,12 @@ EPlayer robotPlayer = null;
 	 return(m.montecarloWeight);
  }
  
- CommonMoveStack  GetListOfMoves()
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
  {	
-	 return(GetListOfMoves(players[whoseTurn],true));
+	 return(GetListOfMoves(all,players[whoseTurn],true));
  }
- CommonMoveStack  GetListOfMoves(EPlayer p,boolean err_if_none)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all,EPlayer p,boolean err_if_none)
+ {	all.clear();
   	switch(board_state)
  	{
  	default:

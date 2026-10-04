@@ -987,8 +987,8 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
 	 }
 	 return(c!=pawnStack.top() && !c.isEmpty());
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
 
  	switch(board_state)
  	{

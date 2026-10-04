@@ -170,7 +170,7 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
         
     }
 
-   CommonMoveStack movelist = new ParallelCommonMoveStack();
+   CommonMoveStack movelist = new CommonMoveStack();
     public CommonMoveStack  List_Of_Legal_Moves()
     {	// note that getBoardMoveList isn't trivial to parallelize
 	    movelist.clear();

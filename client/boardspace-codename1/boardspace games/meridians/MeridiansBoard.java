@@ -1021,7 +1021,7 @@ class MeridiansBoard
  }
 
  CommonMoveStack  GetListOfMoves(CommonMoveStack all)
- {	
+ {	all.clear();
  	switch(board_state)
  	{
  	case Gameover: break;

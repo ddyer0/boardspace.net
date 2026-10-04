@@ -1216,8 +1216,8 @@ class QuinamidBoard extends rectBoard<QuinamidCell> implements BoardProtocol,Qui
         }
  }
 
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	for(QuinamidCell c = allCells; c!=null; c=c.next)
  	{	if(c.chip==null) 
  			{ all.push(new QuinamidMovespec(MOVE_RACK_BOARD,rack[playerColors[whoseTurn]].rackLocation(),c.col,c.row,whoseTurn));

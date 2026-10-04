@@ -72,6 +72,9 @@ public class CookiePlay extends commonRobot<CookieBoard> implements Runnable,
         board.RobotExecute(mm);
     }
 
+    CommonMoveStack movelist = new CommonMoveStack();
+
+
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
@@ -79,7 +82,7 @@ public class CookiePlay extends commonRobot<CookieBoard> implements Runnable,
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {
-        return(board.GetListOfMoves());
+        return(board.GetListOfMoves(movelist));
     }
 
 
@@ -180,7 +183,7 @@ public double NormalizedScore(commonMove lastMove)
 {	int player = lastMove.player;
 	boolean win = board.WinForPlayerNow(player);
 	if(win) { return(0.8+0.2/(1+board.robotDepth)); }
-	boolean win2 = board.WinForPlayerNow(nextPlayer[player]);
+	boolean win2 = board.WinForPlayerNow(player^1);
 	if(win2) { return(- (0.8+0.2/(1+board.robotDepth))); }
 	return(0);
 }

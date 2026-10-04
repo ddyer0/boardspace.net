@@ -1084,12 +1084,16 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
         G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
 
         if (Execute(m,replayMode.Replay))
-        {
+        {	boolean illegal = false;
             if(digest)
             {	long dig = Digest();
             	num = repeatedPositions.addToRepeatedPositions(dig,m);
+            	if(num>=2) 
+            		{ setGameOver(false,true); 	// say we lose, that will discourage this
+            		  acceptPlacement();
+            		}
             }         	
-        	if ((m.op==MOVE_NULL) || (m.op == MOVE_DONE))
+        	if (illegal || (m.op==MOVE_NULL) || (m.op == MOVE_DONE))
             {
             }
             else if (DoneState())
@@ -1605,8 +1609,8 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
  	}
  	return(some);
   }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	getListOfMoves(all,whoseTurn);
  	
  	return(all);

@@ -122,10 +122,7 @@ public class TamskPlay extends commonRobot<TamskBoard> implements Runnable, Tams
         boardSearchLevel++;
     }
     
-	public void prepareForDescent(UCTMoveSearcher from)
-	{
-		// called at the top of the tree descent
-	}
+	
     public void startRandomDescent()
     {
     	// we detect that the UCT run has restarted at the top
@@ -135,14 +132,14 @@ public class TamskPlay extends commonRobot<TamskBoard> implements Runnable, Tams
     	board.robotRandomPhase = true;
     }
 
-
+    CommonMoveStack movelist = new CommonMoveStack();
     /** return a Vector of moves to consider at this point.  It doesn't have to be
      * the complete list, but that is the usual procedure. Moves in this list will
      * be evaluated and sorted, then used as fodder for the depth limited search
      * pruned with alpha-beta.
      */
         public CommonMoveStack  List_Of_Legal_Moves()
-        {	CommonMoveStack all = board.GetListOfMoves(board.masterGameTime);
+        {	CommonMoveStack all = board.GetListOfMoves(movelist,board.masterGameTime);
             return(all);
         }
 

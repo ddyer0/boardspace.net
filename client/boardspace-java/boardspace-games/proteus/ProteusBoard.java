@@ -1339,7 +1339,7 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
 			 break;
 		 case Placement:
 		 case Play:
-		 	{	CommonMoveStack all = GetListOfMoves(repeats,getSource(),pickedObject,whoseTurn);
+		 	{	CommonMoveStack all = GetListOfMoves(new CommonMoveStack(),repeats,getSource(),pickedObject,whoseTurn);
 		 		while(all.size()>0)
 		 		{
 		 			ProteusMovespec m = (ProteusMovespec)all.pop();
@@ -1376,7 +1376,7 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
  		case Play:
  		case Placement:
  			{
- 				CommonMoveStack all = GetListOfMoves(repeats);
+ 				CommonMoveStack all = GetListOfMoves(new CommonMoveStack(),repeats);
  				while(all.size()>0)
  				{	ProteusMovespec m = (ProteusMovespec)all.pop();
  					switch(m.op)
@@ -1400,9 +1400,9 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
  {
 	 return(addTilePlacementMoves(null,who) || addPiecePlacementMoves(null,who));
  }
- CommonMoveStack  GetListOfMoves( RepeatedPositions repeats,ProteusCell from,ProteusChip moving,int who)
+ CommonMoveStack  GetListOfMoves( CommonMoveStack all,RepeatedPositions repeats,ProteusCell from,ProteusChip moving,int who)
  {
-	 CommonMoveStack all = new CommonMoveStack();
+	 all.clear();
 	 switch(board_state)
 	 {
 	 default:throw G.Error("Not implemented");
@@ -1416,8 +1416,8 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
 	 }
 	 return(all);
  }
- CommonMoveStack  GetListOfMoves( RepeatedPositions repeats)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all, RepeatedPositions repeats)
+ {	all.clear();
  	switch(board_state)
  	{
  	default: throw G.Error("Not implemented");

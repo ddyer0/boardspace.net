@@ -50,6 +50,7 @@ public class ShogiChip extends chip<ShogiChip>
 		PieceType promoted = null; 
 		PieceType demoted = null;
 		String prettyName = null;
+		public static final PieceType[] allValues = values();
 		int standardValue = 0;
 		PieceType(String pretty,PieceType prom,int va)
 		{	prettyName = pretty;
@@ -88,7 +89,7 @@ public class ShogiChip extends chip<ShogiChip>
 	public ShogiChip alt_image = null;
 	private boolean isAlt=false;
 	
-    static final int NPIECETYPES = PieceType.values().length;
+    static final int NPIECETYPES = PieceType.allValues.length;
     
     // chipset & 2 encodes the player direction
     // chipset & 1 encodes the western vs kanji characters
@@ -123,7 +124,7 @@ public class ShogiChip extends chip<ShogiChip>
 		pieceIndex = pla;
 		playerIndex=pla/NPIECETYPES;
 		if(pla>=0) 
-		{ pieceType = PieceType.values()[pla%NPIECETYPES]; 
+		{ pieceType = PieceType.allValues[pla%NPIECETYPES]; 
 		  forwardOneRow = (playerIndex==0)?-1:1;
 		}
 		image = im;

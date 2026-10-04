@@ -73,6 +73,7 @@ public class GounkiPlay extends commonRobot<GounkiBoard> implements Runnable,
         board.RobotExecute(mm);
         boardSearchLevel++;
     }
+    CommonMoveStack movelist = new CommonMoveStack();
 
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
@@ -80,7 +81,7 @@ public class GounkiPlay extends commonRobot<GounkiBoard> implements Runnable,
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {   return(board.GetListOfMoves());
+    {   return(board.GetListOfMoves(movelist));
     }
     
     
@@ -120,7 +121,7 @@ public class GounkiPlay extends commonRobot<GounkiBoard> implements Runnable,
      * */
     public void StaticEval()
     {
-    	GounkiBoard evboard = (GounkiBoard)GameBoard.cloneBoard();
+    	GounkiBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
@@ -136,7 +137,7 @@ public class GounkiPlay extends commonRobot<GounkiBoard> implements Runnable,
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (GounkiBoard) gboard;
-        board = (GounkiBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         switch(strategy)
         {
         case WEAKBOT_LEVEL:

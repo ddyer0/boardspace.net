@@ -2136,7 +2136,7 @@ public boolean hasSimpleMoves()
  	return(some);
  }
  CommonMoveStack  GetListOfMoves(CommonMoveStack all,boolean offerdraw)
- {	
+ {	all.clear();
  	addMoves(all,offerdraw,whoseTurn);
  	return(all);
  }

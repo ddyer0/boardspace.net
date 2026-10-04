@@ -1629,7 +1629,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
  private Hashtable<PushfightCell,Pushfightmovespec> cachedTargets = null;
  public Hashtable<PushfightCell,Pushfightmovespec> getTargets()
  {	if(cachedTargets!=null) { return(cachedTargets); }
-    CommonMoveStack all = GetListOfMoves();
+    CommonMoveStack all = GetListOfMoves(new CommonMoveStack());
 	 Hashtable<PushfightCell,Pushfightmovespec>targets = new Hashtable<PushfightCell,Pushfightmovespec>();
 	 for(int lim=all.size()-1; lim>=0; lim--)
 	 {
@@ -1683,8 +1683,8 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
 	 cachedTargets = targets;
 	 return(targets);
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	checkPieces();
  	switch(board_state)
  		{

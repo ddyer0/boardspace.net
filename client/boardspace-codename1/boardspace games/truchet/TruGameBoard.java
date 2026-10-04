@@ -2028,8 +2028,8 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
 	 if(getListOfMergeMoves(null,0)>0) { return(true); }
 	 return(false);
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	int n = 0;
  	n=getListOfFlipMoves(all,n);
  	n=getListOfRiverMoves(all,n);

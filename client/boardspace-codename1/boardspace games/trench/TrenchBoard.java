@@ -357,6 +357,7 @@ class TrenchBoard
         // to explain why.
         if(robot==null && DEBUG)
         	{         checkDigestSame(from_b);
+
         	}
 
     }

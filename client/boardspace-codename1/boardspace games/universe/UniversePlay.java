@@ -225,7 +225,7 @@ public class UniversePlay extends commonMPRobot<UniverseBoard>
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {	movelist.clear();
+    {	
     	CommonMoveStack  moves = board.GetListOfMoves(movelist);
     	lastCohortSize = moves.size();
     	switch(board.rules)

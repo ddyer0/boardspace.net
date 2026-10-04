@@ -4457,7 +4457,7 @@ public class ContainerBoard extends RBoard<ContainerCell> implements BoardProtoc
     	default:
     		{
     		hh = new Hashtable<ContainerCell,ContainerCell>();
-    		CommonMoveStack  all = GetListOfMoves(whoseTurn,null,0,masterGoalSet);
+    		CommonMoveStack  all = GetListOfMoves(new CommonMoveStack(),whoseTurn,null,0,masterGoalSet);
 	    	{ ContainerCell prev = getDest();
 	    	  if(prev!=null) { hh.put(prev,prev); }
 	    	}
@@ -6027,13 +6027,13 @@ void  getProduceLuxuryMoves(CommonMoveStack  all,int who,ContainerCell source,Co
 
  // this is for the robot, and it insists that there be actual
  // moves.
-CommonMoveStack  GetListOfMoves(int search_depth,ContainerPlay robot)
- {	CommonMoveStack  v = GetListOfMoves(whoseTurn,robot,search_depth,robot.robotGoalSet());
+CommonMoveStack  GetListOfMoves(CommonMoveStack v,int search_depth,ContainerPlay robot)
+ {	GetListOfMoves(v,whoseTurn,robot,search_depth,robot.robotGoalSet());
  	ROBOT_BOARD = true;
 	return(v);
  }
-CommonMoveStack  GetListOfMoves(int who,ContainerPlay robot,int search_depth,ContainerGoalSet goalSet)
- {	CommonMoveStack v = new CommonMoveStack();
+CommonMoveStack  GetListOfMoves(CommonMoveStack v,int who,ContainerPlay robot,int search_depth,ContainerGoalSet goalSet)
+ {	v.clear();
  	getMoves(v,who,robot,search_depth,goalSet);
  	return(v);
  }

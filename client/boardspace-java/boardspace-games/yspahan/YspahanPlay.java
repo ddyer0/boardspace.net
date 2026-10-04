@@ -75,7 +75,7 @@ public class YspahanPlay extends commonMPRobot<YspahanBoard> implements Runnable
     {   YspahanMovespec mm = (YspahanMovespec)m;
         board.RobotExecute(mm);
     }
-
+    private CommonMoveStack movelist = new CommonMoveStack();
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
@@ -83,7 +83,7 @@ public class YspahanPlay extends commonMPRobot<YspahanBoard> implements Runnable
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {   
-    	return(board.GetListOfMoves());
+    	return(board.GetListOfMoves(movelist));
     }
     
 

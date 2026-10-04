@@ -202,7 +202,7 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
     	depth_limited = nreps>=3;
     	}
 
-    CommonMoveStack movelist =  new ParallelCommonMoveStack();
+    CommonMoveStack movelist =  new CommonMoveStack();
     
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
@@ -210,7 +210,8 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
-    {  	return getMoveList(movelist,threads);
+    {  	// metering shows that using threads is a losing proposition
+    	return getMoveList(movelist,null /* threads */);
     }
     
     // randomplay results in approximately a 5x increase in random moves per second
@@ -264,7 +265,7 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
     	return 0;
     	}
         double val0 = ScoreForPlayer(board,playerindex,false);
-        double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
+        double val1 = ScoreForPlayer(board,playerindex^1,false);
         return(val0-val1);
     }
     

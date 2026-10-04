@@ -42,7 +42,7 @@ import lib.*;
  *
  * 
  */
-public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetConstants,NumberMenuHost
+public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetConstants
 {
      /**
 	 */

@@ -1193,7 +1193,7 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
  }
  
  CommonMoveStack  GetListOfMoves(CommonMoveStack  all,boolean erupting,boolean nonerupting)
- {	
+ {	all.clear();
 	switch(board_state)
 	{
 	default:

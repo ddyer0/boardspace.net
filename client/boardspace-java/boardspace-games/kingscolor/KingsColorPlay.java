@@ -155,6 +155,7 @@ public class KingsColorPlay extends commonRobot<KingsColorBoard> implements Runn
         board.RobotExecute(mm);
         boardSearchLevel++;
     }
+    CommonMoveStack movelist = new CommonMoveStack();
 
     /** return a Vector of moves to consider at this point.  It doesn't have to be
      * the complete list, but that is the usual procedure. Moves in this list will
@@ -163,7 +164,7 @@ public class KingsColorPlay extends commonRobot<KingsColorBoard> implements Runn
      */
         public CommonMoveStack  List_Of_Legal_Moves()
         {
-            CommonMoveStack all = board.GetListOfMoves();
+            CommonMoveStack all = board.GetListOfMoves(movelist);
             if(all.size()==0)
             {
             	board.p1("No moves");

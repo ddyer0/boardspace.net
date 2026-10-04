@@ -204,10 +204,11 @@ public class PrototypePlay
          *    move generation.  Most move generators iterate over some set of possibilities, so this is usually easy.
          */
     	public static int MaxMoves = 140;
-        CommonMoveStack movelist = new ParallelCommonMoveStack(MaxMoves);
+        CommonMoveStack movelist = new CommonMoveStack(MaxMoves);
         
         public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
-        {	CommonMoveStack all = getMoveList(movelist,threads);
+        {	// it turns out that getMoveList isn't important, its slower to use threads than to not.
+        	CommonMoveStack all = getMoveList(movelist,null /* threads */);
         	/*
             if(G.debug())
             {

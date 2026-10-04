@@ -160,6 +160,7 @@ public class HavannahPlay extends commonRobot<HavannahBoard> implements Runnable
         board.RobotExecute(mm);
         boardSearchLevel++;
     }
+    CommonMoveStack movelist = new CommonMoveStack();
 
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
@@ -168,7 +169,7 @@ public class HavannahPlay extends commonRobot<HavannahBoard> implements Runnable
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {
-        return(board.GetListOfMoves());
+        return(board.GetListOfMoves(movelist));
     }
 
     /**

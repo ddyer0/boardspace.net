@@ -1126,8 +1126,8 @@ class QyshinsuBoard extends circBoard<QyshinsuCell> implements BoardProtocol,Qys
  {
 	return(getListOfMovesFor(whoseTurn,null)); 
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	getListOfMovesFor(whoseTurn,all);
 
   	return(all);

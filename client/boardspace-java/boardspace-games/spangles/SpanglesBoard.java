@@ -759,8 +759,8 @@ class SpanglesBoard extends triBoard<SpanglesCell> implements BoardProtocol,Span
         }
  }
     
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	if(chips_on_board==0)
  	{	all.addElement(new Spanglesmovespec(MOVE_DROPB,(char)('A'+ncols/2),nrows/2,whoseTurn));
  	}

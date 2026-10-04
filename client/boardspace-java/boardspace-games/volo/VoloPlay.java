@@ -144,7 +144,7 @@ public class VoloPlay extends commonRobot<VoloBoard>
         board.RobotExecute(m);
         boardSearchLevel++;
     }
-
+    private CommonMoveStack movelist = new CommonMoveStack();
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
@@ -152,7 +152,7 @@ public class VoloPlay extends commonRobot<VoloBoard>
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {
-        return(board.GetListOfMoves());
+        return(board.GetListOfMoves(movelist));
     }
  
     public commonMove Get_Random_Move(Random rand)

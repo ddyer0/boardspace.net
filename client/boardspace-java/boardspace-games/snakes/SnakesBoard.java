@@ -1081,8 +1081,8 @@ class SnakesBoard extends squareBoard<SnakesCell> implements BoardProtocol,Snake
 	 	for(SnakesCell c  = allCells; !hasGivens && (c!=null); c=c.next) { hasGivens |= c.requiredRole!=null; }
 	 	return(hasGivens);
  }
- CommonMoveStack  GetListOfMoves(Hashtable<Integer,commonMove>forbidden)
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all,Hashtable<Integer,commonMove>forbidden)
+ {	all.clear();
  	getSomeMoves(all,forbidden,hasGivens());
   	return(all);
  }

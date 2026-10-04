@@ -109,6 +109,7 @@ public interface RobotProtocol extends SimpleRobotProtocol
     public default CommonMoveStack List_Of_Legal_Moves() { throw G.Error("Must be supplied or bypassed"); }
     /** this version used for parallel alpha-beta searches */ 
     public default CommonMoveStack List_Of_Legal_Moves(Sthread[]threads) { return List_Of_Legal_Moves(); }
+    public CommonMoveStack getTempMoveList();
     
     /** static evaluate the current board position from the viewpoint of "forplayer"
      * At this point the move has already been made.

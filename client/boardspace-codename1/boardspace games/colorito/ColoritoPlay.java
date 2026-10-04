@@ -72,6 +72,7 @@ public class ColoritoPlay extends commonRobot <ColoritoBoard>implements Runnable
     {   ColoritoMovespec mm = (ColoritoMovespec)m;
         board.RobotExecute(mm,(board.robotDepth==0));
     }
+    CommonMoveStack movelist = new CommonMoveStack();
 
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
@@ -79,7 +80,7 @@ public class ColoritoPlay extends commonRobot <ColoritoBoard>implements Runnable
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {   return(board.GetListOfMoves(board.robotDepth>=2));
+    {   return(board.GetListOfMoves(movelist,board.robotDepth>=2));
     }
     
     /** return a value of the current board position for the specified player.

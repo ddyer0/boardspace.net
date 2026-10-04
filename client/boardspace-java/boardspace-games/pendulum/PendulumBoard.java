@@ -2359,8 +2359,8 @@ class PendulumBoard
 		all.push(new PendulumMovespec(MOVE_READY,who));
 	}
 
- CommonMoveStack  GetListOfMoves(int who)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all,int who)
+ {	all.clear();
  	getListOfMoves(all,who);
  	return all;
  }
@@ -2618,7 +2618,7 @@ class PendulumBoard
  public Hashtable<PendulumCell, PendulumMovespec> getTargets(int player) 
  {
  	Hashtable<PendulumCell,PendulumMovespec> targets = new Hashtable<PendulumCell,PendulumMovespec>();
- 	CommonMoveStack all = GetListOfMoves(player);
+ 	CommonMoveStack all = GetListOfMoves(new CommonMoveStack(),player);
 	// these become unpick and undrop actions
  	getUIMoves(all,player);
  	getTargets(targets,all);

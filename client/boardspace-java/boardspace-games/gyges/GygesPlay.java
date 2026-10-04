@@ -56,6 +56,7 @@ public class GygesPlay extends commonRobot<GygesBoard> implements Runnable,
     {   GygesMovespec mm = (GygesMovespec)m;
         board.RobotExecute(mm);
     }
+    CommonMoveStack movelist = new CommonMoveStack();
 
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
@@ -64,7 +65,7 @@ public class GygesPlay extends commonRobot<GygesBoard> implements Runnable,
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {   //boardCopy = (GygesBoard)board.cloneBoard();
-    	CommonMoveStack  moves = board.GetListOfMoves(false);
+    	CommonMoveStack  moves = board.GetListOfMoves(movelist,false);
     	//viewer.recordSolution(monte_search_state,moves.size());
     	return(moves);
     }
@@ -83,7 +84,7 @@ public class GygesPlay extends commonRobot<GygesBoard> implements Runnable,
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (GygesBoard) gboard;
-        board = (GygesBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         MONTEBOT = true;
         terminalNodeOptimize = true;
         switch(strategy)

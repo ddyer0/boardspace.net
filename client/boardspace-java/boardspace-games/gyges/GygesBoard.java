@@ -1374,8 +1374,8 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
 	 	}
 	 return(stack);
  }
- CommonMoveStack  GetListOfMoves(boolean savePath)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all,boolean savePath)
+ {	all.clear();
  	switch(board_state)
  	{
  	case DropTop:

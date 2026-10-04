@@ -1435,8 +1435,8 @@ public boolean addInitialJokerMoves(CommonMoveStack all,int who)
  	return(some);
  }
 
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	addMoves(all,whoseTurn);
  	return(all);
  }

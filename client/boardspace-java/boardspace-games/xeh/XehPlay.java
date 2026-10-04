@@ -176,7 +176,7 @@ class XehCommonEvaluator
 	// try and evaluate all moves, then use the best one
 	public static void makeMove(XehBoard testBoard,RobotOpponent player)
 	{
-		CommonMoveStack moves = testBoard.GetListOfMoves();
+		CommonMoveStack moves = testBoard.GetListOfMoves(new CommonMoveStack());
 		XehMovespec bestMove = null;
 		double bestValue = 0;
 		for(commonMove m : moves)
@@ -515,7 +515,7 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
         board.RobotExecute(mm);
         boardSearchLevel++;
     }
-
+    private CommonMoveStack movelist = new CommonMoveStack();
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
@@ -523,7 +523,7 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {
-        CommonMoveStack m = board.GetListOfMoves();
+        CommonMoveStack m = board.GetListOfMoves(movelist);
         if(evalNet!=null)
         {
         double values[] = null;
@@ -934,7 +934,7 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
     {
     	if(b.getState()!=XehState.Gameover)
     	{	Hashtable<XehCell,Double>evals=new Hashtable<XehCell,Double>();
-    		CommonMoveStack moves =b.GetListOfMoves();
+    		CommonMoveStack moves =b.GetListOfMoves(new CommonMoveStack());
     		for(commonMove m : moves)
     		{	if(m.op==MOVE_DROPB)
     			{

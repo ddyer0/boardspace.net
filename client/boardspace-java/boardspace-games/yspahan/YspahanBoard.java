@@ -3252,7 +3252,8 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,YspahanCons
 		}
 	}
 
-	CommonMoveStack  GetListOfMoves() {
+	CommonMoveStack  GetListOfMoves(CommonMoveStack all) {
+		all.clear();
 		throw G.Error("Not implemented");
 	}
 

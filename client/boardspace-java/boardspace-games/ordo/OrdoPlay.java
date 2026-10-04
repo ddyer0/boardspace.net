@@ -97,14 +97,14 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
     {   
         board.RobotExecute(m);
     }
-
+    CommonMoveStack movelist = new CommonMoveStack();
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {   return(board.GetListOfMoves(board.robotDepth==0));
+    {   return(board.GetListOfMoves(movelist,board.robotDepth==0));
     }
     
     
@@ -154,7 +154,7 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
      * */
     public void StaticEval()
     {
-    	OrdoBoard evboard = (OrdoBoard)GameBoard.cloneBoard();
+    	OrdoBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
@@ -170,7 +170,7 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (OrdoBoard) gboard;
-        board = (OrdoBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         terminalNodeOptimize = true;
         switch(strategy)
         {

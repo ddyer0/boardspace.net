@@ -156,6 +156,7 @@ public class DayAndNightPlay extends commonRobot<DayAndNightBoard> implements Ru
         board.RobotExecute(mm);
         boardSearchLevel++;
     }
+    CommonMoveStack movelist = new CommonMoveStack();
 
     /** return a Vector of moves to consider at this point.  It doesn't have to be
      * the complete list, but that is the usual procedure. Moves in this list will
@@ -164,7 +165,7 @@ public class DayAndNightPlay extends commonRobot<DayAndNightBoard> implements Ru
      */
         public CommonMoveStack  List_Of_Legal_Moves()
         {
-            return(board.GetListOfMoves(Generator.Robot));
+            return(board.GetListOfMoves(movelist,Generator.Robot));
         }
 
     /** return a value of the current board position for the specified player.

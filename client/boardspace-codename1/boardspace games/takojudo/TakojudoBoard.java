@@ -1120,8 +1120,8 @@ int countTentaclesFromHead(TakojudoCell c,int who)
  boolean hasLegalMoves(int who)
  {	return(getListOfMoves(null,who,true));
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	switch(board_state)
  	{
  	case QUERY_DRAW_STATE:

@@ -201,8 +201,8 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     	SQUARESIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(ncols*SQUARESIZE);
-    	int boardH = (int)(nrows*SQUARESIZE);
+    	int boardW = (ncols*SQUARESIZE);
+    	int boardH = (nrows*SQUARESIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;

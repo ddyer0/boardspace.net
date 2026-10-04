@@ -1010,8 +1010,8 @@ class MijnlieffBoard
 	 for(MijnlieffCell c : rack[who]) { if(c.topChip()!=null) { return(false); }}
 	 return(true);
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	boolean first=false;
  	switch(board_state)
  	{
@@ -1057,7 +1057,7 @@ class MijnlieffBoard
 public Hashtable<MijnlieffCell, Mijnlieffmovespec> getTargets() 
 {
 	Hashtable<MijnlieffCell, Mijnlieffmovespec> targets = new Hashtable<MijnlieffCell, Mijnlieffmovespec>();
-	CommonMoveStack all = GetListOfMoves();
+	CommonMoveStack all = GetListOfMoves(new CommonMoveStack());
 	for(int lim=all.size()-1; lim>=0; lim--)
 	{	Mijnlieffmovespec m = (Mijnlieffmovespec)all.elementAt(lim);
 		switch(m.op)

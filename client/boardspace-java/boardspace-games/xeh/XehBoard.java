@@ -1127,8 +1127,8 @@ void doSwap(replayMode replay)
  		G.Assert(empty.isEmpty(),"isn't empty");
  		return(new XehMovespec(MOVE_DROPB,empty.col,empty.row,playerColor[whoseTurn],whoseTurn));
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	if(board_state==XehState.PlayOrSwap)
  	{
  		all.addElement(new XehMovespec(SWAP,whoseTurn));

@@ -1032,8 +1032,8 @@ int getListOfMovesFrom(TriadCell from,TriadChip top,int who,TriadCell to,int dir
 	getListOfMoves(all,pl,picked);
 	return(all);
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	switch(board_state)
 	 {
  	case PLAY_STATE:

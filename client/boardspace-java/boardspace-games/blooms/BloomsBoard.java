@@ -1347,7 +1347,9 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
  }
 
  CommonMoveStack  GetListOfAnyMoves(CommonMoveStack all,int who)
- {	
+ {	    
+	all.clear();
+
  	switch(board_state)
  	{
  	default: throw G.Error("Not expecting state %s",board_state);
@@ -1397,7 +1399,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 		}
  }
  CommonMoveStack  GetListOfLegalMoves(CommonMoveStack all,int who)
- {	
+ {	all.clear();
  	boolean mustCapture = false;
  	switch(board_state)
  	{

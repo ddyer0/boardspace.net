@@ -178,8 +178,8 @@ public class QEmovespec extends commonMPMove implements QEConstants
         }
     }
     
-    public Text shortMoveText(commonCanvas v, Font font)
-    {	return(shortMoveText((QEViewer)v,font));
+    public Text shortMoveText(commonCanvas v,Font f)
+    {	return(shortMoveText((QEViewer)v,f));
     }
     /**
      * shortMoveText lets you return colorized text or mixed text and graphics.

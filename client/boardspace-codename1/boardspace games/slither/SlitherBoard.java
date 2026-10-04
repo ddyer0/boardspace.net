@@ -1379,8 +1379,8 @@ private commonMove getValidSlideMove(SlitherCell from,int firstDirection,Slither
 	 return new Slithermovespec(op,from,to,who);
  }
  
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
 
  	boolean some = getListOfMoves(all,whoseTurn);
 	if(!some) 
@@ -1476,7 +1476,7 @@ private commonMove getValidSlideMove(SlitherCell from,int firstDirection,Slither
  public Hashtable<SlitherCell, Slithermovespec> getTargets() 
  {
  	Hashtable<SlitherCell,Slithermovespec> targets = new Hashtable<SlitherCell,Slithermovespec>();
- 	CommonMoveStack all = GetListOfMoves();
+ 	CommonMoveStack all = GetListOfMoves(new CommonMoveStack());
  	for(int lim=all.size()-1; lim>=0; lim--)
  	{	Slithermovespec m = (Slithermovespec)all.elementAt(lim);
  		switch(m.op)

@@ -1018,8 +1018,8 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
         }
  }
 
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	int sizesOn = 0;
  	GobCell rackCells[] = rack[whoseTurn];
  	int map[] = getColorMap();

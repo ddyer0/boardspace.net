@@ -264,4 +264,12 @@ public interface BoardProtocol extends Digestable
 	 * true if the board has a reverse view
 	 */
 	public boolean reverseView();
+	
+	public default void checkDigestSame(BoardProtocol from_b)
+	{	long myDigest = Digest();
+		long fromDigest = from_b.Digest();
+		if(myDigest!=fromDigest)
+		{	G.Error("from_b digest mismatch");
+		}
+	}
 	}

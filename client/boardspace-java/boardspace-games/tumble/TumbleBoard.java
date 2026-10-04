@@ -917,8 +917,8 @@ class TumbleBoard extends rectBoard<TumbleCell> implements BoardProtocol,TumbleC
 	 return(dd);
  }
  
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	TumbleChip target = playerChip[whoseTurn];
  	for(TumbleCell c = allCells; c!=null; c=c.next)
  	{	if(c.topChip()==target)

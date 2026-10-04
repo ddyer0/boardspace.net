@@ -182,13 +182,13 @@ public class Barcamovespec extends commonMove
     
     /**
      * shortMoveText lets you return colorized text or mixed text and graphics.
-     * @param v
      * @see lib.Text
      * @see lib.TextGlyph 
      * @see lib.TextChunk
+     * @param v
      * @return a Text object
      */
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
     	Text str = TextChunk.create(shortMoveString());
     	if(target!=null)

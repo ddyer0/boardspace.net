@@ -1774,8 +1774,8 @@ private boolean getCapturesByEquality(CaptureStack all,RithmomachyCell src,int w
  {	return(getCaptures(null,whoseTurn));
  }
  
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	switch(board_state)
  	{
  	case Confirm:

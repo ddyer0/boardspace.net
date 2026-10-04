@@ -1052,6 +1052,21 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	   
 
 	   private int moveCycles = 0;
+	   public CommonMoveStack tempMoveList = null;
+	   public CommonMoveStack getTempMoveList()
+	   { if(tempMoveList==null) { tempMoveList = new CommonMoveStack(); }
+	     return tempMoveList; 
+	   }
+	   /**
+	    * Running move generation in parallel with the worker threads seemed like an obvious idea,
+	    * but actual metering showed it to be 10x slower than running with a single thread.   After
+	    * a lot of investigation, it turned ough that the synchronized push on the shared CommonMoveStack
+	    * was the major reason. Giving each thread its own result stack and then merging them cut the
+	    * 10x slower to 2x slower.  Still, net effect for the games to date is that it's not worth
+	    * doing, especially considering the care that has to be taken to split the move generation
+	    * among 5 processes.
+	    */
+	   public boolean parallelize_movelist = true;
 	   /**
 	    * get the move list partitioned among the threads and the master thread
 	    * This is intended to be compatible
@@ -1062,21 +1077,48 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	   public CommonMoveStack  getMoveList(CommonMoveStack all,Sthread threads[])
 	    {	all.clear();
 	    	boolean debug = all.debug = search_driver.debug_threads!=0;
-	    	if(threads==null)
-	    	{
-	    		return board.getMoveList(all,1,1);
+	    	if(!parallelize_movelist || threads==null)
+	    	{	long now = G.nanoTime();
+	    		board.getMoveList(all,1,1);
+	    		long later =  G.nanoTime();
+	    		search_driver.totalSelf += later-now;
+	    		search_driver.totalGen += later-now;
+	    		return all;
 	    	}
 	    	else
 	    	{
 	    	try {
 	    	int n = threads.length;
+	    	long now = G.nanoTime();
 	    	for(int i=1;i<=n;i++)
 	    		{
 	    		Sthread ex = threads[i-1];
-	    		ex.doSomething(new GetMoves(all,ex.getRobot().getBoard(),i,n+1));
+	    		RobotProtocol robo = ex.getRobot();
+	    		CommonMoveStack mlist = robo.getTempMoveList();
+	    		mlist.clear();
+	    		ex.doSomething(new GetMoves(mlist,robo.getBoard(),i,n+1));
 	    		}
+	    	long launch = G.nanoTime();
 	    	board.getMoveList(all,n+1,n+1);
+	    	long self = G.nanoTime();
 	    	Sthread.waitForIdle(threads);
+	    	
+	    	for(int i=1;i<=n;i++)
+    		{
+    		Sthread ex = threads[i-1];
+    		RobotProtocol robo = ex.getRobot();
+    		CommonMoveStack mlist = robo.getTempMoveList();
+    		all.pushCopy(mlist);
+    		}
+
+	    	
+	    	search_driver.totalLaunch = launch-now;
+	    	search_driver.totalSelf += self-launch;
+	    	long wait = G.nanoTime();
+	    	search_driver.totalWait += wait-self;
+	    	search_driver.totalGen += wait-now;
+	    	
+	    	
 	    	}
 	    	catch (Throwable e)
 	    	{

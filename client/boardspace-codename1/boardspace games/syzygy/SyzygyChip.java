@@ -74,6 +74,7 @@ public class SyzygyChip extends chip<SyzygyChip>
 
     static final String names[]={"yellow","green","blue","red","asteroid"};
     
+ 
     public String chipName() { return(name); }
 	// call from the viewer's preloadImages
     static SyzygyChip CANONICAL_PIECE[] = null;

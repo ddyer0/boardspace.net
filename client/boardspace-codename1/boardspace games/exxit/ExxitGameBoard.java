@@ -168,7 +168,7 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
     			G.Assert(picked==pickedObject,"should be 2");
     			unPickObject();				// temporarily undo the pick
     			dests[nadded++] = source;
-    			CommonMoveStack  all = GetListOfMoves();
+    			CommonMoveStack  all = GetListOfMoves(new CommonMoveStack());
     			for(int i=0;i<all.size();i++)
     			{	Exxitmovespec sp = (Exxitmovespec)all.elementAt(i);
     					if((sp.from_col == source.col) && (sp.from_row==source.row))
@@ -188,7 +188,7 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
     			}
     			else 
     			{
-    			CommonMoveStack  all = GetListOfMoves();
+    			CommonMoveStack  all = GetListOfMoves(new CommonMoveStack());
     			for(int i=0;i<all.size();i++)
     				{
     				Exxitmovespec sp = (Exxitmovespec)all.elementAt(i);
@@ -1717,8 +1717,8 @@ public int nExchangeMoves(int who)
 public int nDropMoves(int who)
 {	return(GetListOfDropMoves(null,who));
 }
- public CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ public CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	if(board_state==ExxitState.DROPTILE_STATE)
  		{
  		GetListOfDroptileMoves(all,whoseTurn);
@@ -1736,7 +1736,7 @@ public int nDropMoves(int who)
 	return(all);
   }
  public int nLegalMoves()
- {	CommonMoveStack  v = GetListOfMoves();
+ {	CommonMoveStack  v = GetListOfMoves(new CommonMoveStack());
  	return(v.size());
  }
  

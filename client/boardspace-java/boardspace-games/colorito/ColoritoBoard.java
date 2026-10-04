@@ -1052,8 +1052,8 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
  	return(some);
  }
  
- CommonMoveStack  GetListOfMoves(boolean includepass)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all,boolean includepass)
+ {	all.clear();
  	switch(board_state)
  	{
  	default: throw G.Error("Not expecting %s",board_state);

@@ -230,7 +230,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect,liftRect,viewsetRect);       
+    	placeRow( boardX, boardBottom-stateH*2,boardW,stateH,goalRect,liftRect,viewsetRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
         return boardW*boardH;

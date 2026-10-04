@@ -73,14 +73,14 @@ public class SixmakingPlay extends commonRobot<SixmakingBoard> implements Runnab
     {   SixmakingMovespec mm = (SixmakingMovespec)m;
         board.RobotExecute(mm);
     }
-
+    CommonMoveStack movelist = new CommonMoveStack();
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {   CommonMoveStack  moves = board.GetListOfMoves();
+    {   CommonMoveStack  moves = board.GetListOfMoves(movelist);
     	if(WINNINGMOVEOPTIMIZATION)
     	{
     		for(int lim=moves.size()-1; lim>=0; lim--)

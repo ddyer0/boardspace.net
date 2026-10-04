@@ -111,7 +111,7 @@ public class QEPlay extends commonMPRobot<QEBoard>
     {   QEmovespec mm = (QEmovespec)m;
         board.RobotExecute(mm);
     }
-
+    CommonMoveStack movelist = new CommonMoveStack();
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
@@ -119,7 +119,7 @@ public class QEPlay extends commonMPRobot<QEBoard>
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {
-        return(GetListOfMoves());
+        return(GetListOfMoves(movelist));
     }
 
     /** return a value of the current board position for the specified player.
@@ -409,8 +409,8 @@ public void PrepareToMove(int playerIndex)
 		}
 	}
   
-  CommonMoveStack  GetListOfMoves()
-  {	CommonMoveStack all = new CommonMoveStack();
+  CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+  {	all.clear();
   	QEState state = board.getState();
   	LongLongHashtable used = new LongLongHashtable();
   	int who = board.whoseTurn;

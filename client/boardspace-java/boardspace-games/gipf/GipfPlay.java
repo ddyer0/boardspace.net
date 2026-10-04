@@ -64,10 +64,10 @@ public class GipfPlay extends commonRobot<GipfBoard> implements Runnable, GipfCo
         boardSearchLevel++;
     }
 
-
+    CommonMoveStack moveList = new CommonMoveStack(); 
     public CommonMoveStack  List_Of_Legal_Moves()
-    {
-        return(board.GetListOfMoves());
+    {	
+        return(board.GetListOfMoves(moveList));
     }
 
    private double ScoreForPlayer(GipfBoard evboard,int player,boolean print)
@@ -203,7 +203,7 @@ public class GipfPlay extends commonRobot<GipfBoard> implements Runnable, GipfCo
         	return 0;
     	}
         double val0 = ScoreForPlayer(board,playerindex,false);
-        double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
+        double val1 = ScoreForPlayer(board,playerindex^1,false);
         return(val0-val1);
     }
 

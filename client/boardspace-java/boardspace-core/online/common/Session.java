@@ -486,7 +486,7 @@ public class Session implements LobbyConstants
 	  		{ setCurrentRobot(defaultNoRobot());
 	  		  return(false); 
 	  		}
-	    if((!AR.arrayContains(robots,currentRobot) || !canIUseThisRobot(currentRobot)))
+	    if((!AR.arrayContains(robots,currentRobot) | !canIUseThisRobot(currentRobot)))
 	      {
 	    	  for(Bot b : robots)
 	    	  {

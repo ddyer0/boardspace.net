@@ -113,7 +113,6 @@ public class BarcaChip extends chip<BarcaChip>
 		return(rotation);
 	}
 
-
 	static final BarcaChip[] CANONICAL_PIECE = {
 			White_Mouse,White_Lion,White_Elephant,
 			Black_Mouse,Black_Lion,Black_Elephant,

@@ -725,9 +725,8 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 			master.node_expansions += nodeExpansionsThisRun;
 			master.node_expansion_size += nodeExpansionSizeThisRun;
 			master.earlyEndgameDetections += earlyEndgameDetections;
-			if(master.kill_children_now)
+			if(master.kill_children_now())
 	        {	
-	        	master.kill_children_now = false;
 	        	int victims = master.killHopelessChildrenVisits
 	        			 		? master.root.killHopelessChildren_visits(master,master.rootVisits,
 	        			 				master.partDone,master.killHopelessChildrenShare,true)

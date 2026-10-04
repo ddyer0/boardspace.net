@@ -1282,8 +1282,8 @@ class MogulBoard extends trackBoard<MogulCell> implements BoardProtocol,MogulCon
         }
  }
 
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	MogulPlayer p = players[whoseTurn];
  	switch(board_state)
  	{

@@ -136,7 +136,8 @@ public class ContainerPlay extends commonMPRobot<ContainerBoard> implements Runn
     	ContainerBoard.playerBoard bd = board.getPlayer(evalForPlayer);
     	return(bd.possibleGoalSets[0]);
     }
-    
+    CommonMoveStack movelist = new CommonMoveStack();
+
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
@@ -144,7 +145,7 @@ public class ContainerPlay extends commonMPRobot<ContainerBoard> implements Runn
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {   
-    	return(board.GetListOfMoves(boardSearchLevel,this));
+    	return(board.GetListOfMoves(movelist,boardSearchLevel,this));
     }
     public int overbidAmount()
     {	
@@ -329,7 +330,7 @@ void showFairBids(ContainerBoard evboard)
      * */
     public void StaticEval()
     {
-    	ContainerBoard evboard = (ContainerBoard)GameBoard.cloneBoard();
+    	ContainerBoard evboard = GameBoard.cloneBoard();
     	StaticEvalPosition(evboard,evboard.whoseTurn,true);
     	showFairBids(evboard);
     }
@@ -394,7 +395,7 @@ void showFairBids(ContainerBoard evboard)
     {
         InitRobot(newParam, info, strat);
         GameBoard = (ContainerBoard) gboard;
-        board = (ContainerBoard)GameBoard.cloneBoard();
+        board = GameBoard.cloneBoard();
         switch(strat)
         {
         case WEAKBOT_LEVEL:

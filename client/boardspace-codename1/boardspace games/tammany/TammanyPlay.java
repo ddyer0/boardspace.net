@@ -210,7 +210,7 @@ public class TammanyPlay extends commonMPRobot<TammanyBoard>
     {
     	randomPhase = true;
     }
-
+    CommonMoveStack movelist = new CommonMoveStack();
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
@@ -219,7 +219,7 @@ public class TammanyPlay extends commonMPRobot<TammanyBoard>
     public CommonMoveStack  List_Of_Legal_Moves()
     {	
 		boolean needassign = evaluator!=Evaluator.None && !randomPhase;
-        CommonMoveStack all = board.GetListOfMoves();
+        CommonMoveStack all = board.GetListOfMoves(movelist);
        	if(needassign)
 		{ // assign weights to the moves.  If we're still in the UCT tree, these
 		  // are used to pre-bias the win rate of the nodes.  If we're in the random

@@ -1480,13 +1480,13 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
 	 return(null);
 				}
 
- public CommonMoveStack  GetListOfMoves()
+ public CommonMoveStack  GetListOfMoves(CommonMoveStack all)
  {
-	 return(getListOfMoves(whoseTurn));
+	 return(getListOfMoves(all,whoseTurn));
  }
- public CommonMoveStack getListOfPlausibleMoves(int who,CommonMoveStack plausible,boolean include)
+ public CommonMoveStack getListOfPlausibleMoves(CommonMoveStack all,int who,CommonMoveStack plausible,boolean include)
  {	Hashtable<TwixtCell,commonMove>used = new Hashtable<TwixtCell,commonMove>();
- 	CommonMoveStack all = new CommonMoveStack();
+ 	all.clear();
  	PieceColor color = getPlayerColor(who);
  	// add moves adjacent to the most recent moves
  	for(int lim = history.size()-1,idx = lim-2; idx<lim; idx++)
@@ -1526,8 +1526,8 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
  			
  	return(all);
  }
- public CommonMoveStack getListOfMoves(int who)
- {	CommonMoveStack all = new CommonMoveStack();
+ public CommonMoveStack getListOfMoves(CommonMoveStack all,int who)
+ {	all.clear();
  	switch(board_state)
  	{
  	case PlayOrSwap:
@@ -1564,10 +1564,6 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
     default:
 	 		case twixt:
     	xpos -= cellsize/4;
-	 	if((boardRect!=null) && (ypos>G.centerY(boardRect))) 
-		 {  if((rotation&1)!=0) { ypos +=cellsize/4; } 
-		 	else { ypos += cellsize/2; }
-		 }
 	 	break;
 	 		case twixt_18:
     	xpos -= cellsize/4;
@@ -1689,7 +1685,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
  public CommonMoveStack buildPlausibleMoveSet(int playerIndex)
  {	if(board_state==TwixtState.Play)
  	{int realWho = whoseTurn;
-	 CommonMoveStack all = getListOfMoves(playerIndex);
+	 CommonMoveStack all = getListOfMoves(new CommonMoveStack(),playerIndex);
 	 int otherPlayer = nextPlayer[playerIndex];
 	 PieceColor otherColor = getPlayerColor(otherPlayer);
 	 double startingValue = Static_Evaluate_Position2(playerIndex,false);

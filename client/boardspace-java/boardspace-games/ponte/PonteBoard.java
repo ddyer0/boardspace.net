@@ -1568,8 +1568,8 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
  	}
  }
  
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	switch(board_state)
  	{
  	default: throw G.Error("Not implemented");

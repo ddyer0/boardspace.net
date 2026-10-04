@@ -564,7 +564,7 @@ public class TwixtPlay extends commonRobot<TwixtBoard> implements Runnable, Twix
         board.RobotExecute(mm);
         boardSearchLevel++;
     }
-
+    CommonMoveStack movelist = new CommonMoveStack();
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
@@ -573,7 +573,7 @@ public class TwixtPlay extends commonRobot<TwixtBoard> implements Runnable, Twix
     public CommonMoveStack  List_Of_Legal_Moves()
     {	if(plausibleMoves!=null)
     	{
-    		return(board.getListOfPlausibleMoves(board.whoseTurn,plausibleMoves,boardSearchLevel<2));
+    		return(board.getListOfPlausibleMoves(movelist,board.whoseTurn,plausibleMoves,boardSearchLevel<2));
     	}
     	switch(Strategy)
     	{
@@ -581,11 +581,11 @@ public class TwixtPlay extends commonRobot<TwixtBoard> implements Runnable, Twix
 		case WEAKBOT_LEVEL:
     	case DUMBOT_LEVEL:
     		if(boardSearchLevel>=2) 
-    			{ return(board.getListOfPlausibleMoves(board.whoseTurn,plausibleMoves,boardSearchLevel<2));
+    			{ return(board.getListOfPlausibleMoves(movelist,board.whoseTurn,plausibleMoves,boardSearchLevel<2));
     			}
 			//$FALL-THROUGH$
 		default:
-    		return(board.GetListOfMoves());
+    		return(board.GetListOfMoves(movelist));
     	}
  
     }
@@ -1565,7 +1565,7 @@ public double trainNetwork(GenericNetwork n,double inputs[],double values[],bool
 	public void runGame_train(ViewerProtocol v,final BoardProtocol b,String from,int maxPass,boolean untilWorse)
 	{	boolean onceThrough = false;
 		GameBoard = (TwixtBoard)b;
-		board = (TwixtBoard)GameBoard.cloneBoard();
+		board = GameBoard.cloneBoard();
 	 	InitRobot(v,v.getSharedInfo(),board,null,RobotProtocol.NEUROBOT_LEVEL);
 		
 		int ncells = board.nCells();

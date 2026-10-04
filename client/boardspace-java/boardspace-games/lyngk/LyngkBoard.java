@@ -1335,7 +1335,7 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
  }
  // entry point for the robot
  CommonMoveStack  GetListOfMoves(CommonMoveStack all)
- {	
+ {	all.clear();
  	if(!getListOfMoves(all))
 		{ all.push(new LyngkMovespec(MOVE_PASS,whoseTurn)); 
 		}

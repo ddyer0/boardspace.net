@@ -1185,8 +1185,8 @@ class EpaminondasBoard
  }
  
  
- CommonMoveStack  GetListOfMoves(Random rand, int limit)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all,Random rand, int limit)
+ {	all.clear();
  	moveGenerationLimit = limit;
  	moveGenerationRandomizer = rand;
  	moveStats  = bothMoveStats[whoseTurn];
@@ -1261,7 +1261,7 @@ class EpaminondasBoard
  public Hashtable<EpaminondasCell, EpaminondasMovespec> getTargets() 
  {
  	Hashtable<EpaminondasCell,EpaminondasMovespec> targets = new Hashtable<EpaminondasCell,EpaminondasMovespec>();
- 	CommonMoveStack all = GetListOfMoves(null,99999);
+ 	CommonMoveStack all = GetListOfMoves(new CommonMoveStack(),null,99999);
  	EpaminondasCell dest = getDest();
  	if(dest!=null) { all.push(new EpaminondasMovespec(MOVE_PICKB,dest,whoseTurn)); }
  	for(int lim=all.size()-1; lim>=0; lim--)

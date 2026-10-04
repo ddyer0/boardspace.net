@@ -1404,8 +1404,8 @@ class TamskBoard
  {
 	 return(addMoves(null,who,now));
  }
- CommonMoveStack  GetListOfMoves(long now)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all,long now)
+ {	all.clear();
  	switch(board_state)
  	{
  	case Puzzle:
@@ -1478,7 +1478,7 @@ class TamskBoard
  public Hashtable<TamskCell, Tamskmovespec> getTargets(long now) 
  {
  	Hashtable<TamskCell,Tamskmovespec> targets = new Hashtable<TamskCell,Tamskmovespec>();
- 	CommonMoveStack all = GetListOfMoves(now);
+ 	CommonMoveStack all = GetListOfMoves(new CommonMoveStack(),now);
  	for(int lim=all.size()-1; lim>=0; lim--)
  	{	Tamskmovespec m = (Tamskmovespec)all.elementAt(lim);
  		if(pickedObject!=null)

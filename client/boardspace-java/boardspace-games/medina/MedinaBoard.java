@@ -1733,7 +1733,7 @@ class MedinaBoard extends rectBoard<MedinaCell> implements BoardProtocol,MedinaC
 
     private boolean canLegallyPickFromRack(int player,MedinaCell c)
     {
-    	CommonMoveStack  v = GetListOfMoves(player);
+    	CommonMoveStack  v = GetListOfMoves(new CommonMoveStack(),player);
     	int nv = v.size();
     	for(int i=0;i<nv; i++)
     	{	MedinaMovespec mm = (MedinaMovespec)v.elementAt(i);
@@ -2214,13 +2214,13 @@ class MedinaBoard extends rectBoard<MedinaCell> implements BoardProtocol,MedinaC
  }
  // this is for the robot, and it insists that there be actual
  // moves.
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  v = GetListOfMoves(whoseTurn);
+ CommonMoveStack  GetListOfMoves(CommonMoveStack v)
+ {	GetListOfMoves(v,whoseTurn);
 	G.Assert( v.size()>0,"moves generated");
 	return(v);
  }
- CommonMoveStack  GetListOfMoves(int who)
- {	CommonMoveStack v = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack v,int who)
+ {	v.clear();
  	getMoves(v,who);
  	return(v);
  }

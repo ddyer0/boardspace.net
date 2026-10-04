@@ -682,7 +682,7 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
     public Hashtable<StymieCell,Stymiemovespec> getTargets()
     {
     	Hashtable <StymieCell,Stymiemovespec> targets = new Hashtable<StymieCell,Stymiemovespec>();
-    	CommonMoveStack all = GetListOfMoves();
+    	CommonMoveStack all = GetListOfMoves(new CommonMoveStack());
     	
     	for(int lim = all.size()-1; lim>=0; lim--)
     	{
@@ -1365,8 +1365,8 @@ public void addJumpMoves(CommonMoveStack all,StymieCell pfrom,StymieCell from,St
  	}
  }
 
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	
  	switch(board_state)
  	{

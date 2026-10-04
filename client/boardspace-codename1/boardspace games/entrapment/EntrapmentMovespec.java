@@ -24,7 +24,7 @@ import lib.TextChunk;
 import lib.TextGlyph;
 import lib.Tokenizer;
 
-import java.awt.Font;
+import com.codename1.ui.Font;
 
 import lib.ExtendedHashtable;
 

@@ -71,6 +71,7 @@ public class FrogPlay extends commonMPRobot<FrogBoard> implements Runnable,
         board.RobotExecute(mm);
         boardSearchLevel++;
     }
+    CommonMoveStack movelist = new CommonMoveStack();
 
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
@@ -79,7 +80,7 @@ public class FrogPlay extends commonMPRobot<FrogBoard> implements Runnable,
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {
-        return(board.GetListOfMoves());
+        return(board.GetListOfMoves(movelist));
     }
     // seek the end of the best_move chain for multiplayer games
     public commonMove targetMoveForEvaluation(commonMove cm)
@@ -154,7 +155,7 @@ public class FrogPlay extends commonMPRobot<FrogBoard> implements Runnable,
      * */
     public void StaticEval()
     {
-            FrogBoard evboard = (GameBoard.cloneBoard());
+            FrogBoard evboard = (FrogBoard)(GameBoard.cloneBoard());
             String msg = "Eval is ";
             for(int i=0,lim=evboard.nPlayers(); i<lim; i++)
             {	msg += " "+ScoreForPlayer(evboard,i,true);

@@ -565,7 +565,7 @@ public class TwixtPlay extends commonRobot<TwixtBoard> implements Runnable, Twix
         board.RobotExecute(mm);
         boardSearchLevel++;
     }
-
+    CommonMoveStack movelist = new CommonMoveStack();
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
@@ -574,7 +574,7 @@ public class TwixtPlay extends commonRobot<TwixtBoard> implements Runnable, Twix
     public CommonMoveStack  List_Of_Legal_Moves()
     {	if(plausibleMoves!=null)
     {
-    		return(board.getListOfPlausibleMoves(board.whoseTurn,plausibleMoves,boardSearchLevel<2));
+    		return(board.getListOfPlausibleMoves(movelist,board.whoseTurn,plausibleMoves,boardSearchLevel<2));
     	}
     	switch(Strategy)
     	{
@@ -582,11 +582,11 @@ public class TwixtPlay extends commonRobot<TwixtBoard> implements Runnable, Twix
 		case WEAKBOT_LEVEL:
     	case DUMBOT_LEVEL:
     		if(boardSearchLevel>=2) 
-    			{ return(board.getListOfPlausibleMoves(board.whoseTurn,plausibleMoves,boardSearchLevel<2));
+    			{ return(board.getListOfPlausibleMoves(movelist,board.whoseTurn,plausibleMoves,boardSearchLevel<2));
     			}
 			//$FALL-THROUGH$
     	default:
-        return(board.GetListOfMoves());
+    		return(board.GetListOfMoves(movelist));
     }
 
     }
@@ -1071,7 +1071,7 @@ public commonMove Get_Random_Move(Random rand)
 	 	double selectedTotal = 0;
 	 	int selectedIndex = 0;
 	 	double total = 0;
-	 	cell<TwixtCell> allCells[] = board.getCellArray();
+	 	cell<TwixtCell> allCells[] = (cell<TwixtCell>[])board.getCellArray();
 	 	int sz = allCells.length;
 	 	for(int lim = allCells.length,idx = 0; idx<lim; idx++)
 	 	{	TwixtCell c = (TwixtCell)allCells[idx];
@@ -1678,17 +1678,18 @@ public double trainNetwork(GenericNetwork n,double inputs[],double values[],bool
     					  	
      							for(commonMove ch : children) 
     					  		{ UCTNode n = ch.uctNode();
-    					  		  if(n!=null)
+    					  		  if(n!=null && !n.isKilled())
     					  		  {
     					  		  int vis = n.getVisits();
     					  		  minv = Math.min(Math.max(0,vis),minv);
     					  		  maxv = Math.max(vis, maxv);
     					  		}}
-    						 
+     							 if(!node.isKilled())
+     							 {
     							 int vis = node.getVisits();
     							 if(vis>0)
     							 {	return((Math.max(0, vis)-minv)/(maxv-minv));
-    							 }
+    							 }}
      						 }
      						 return(0);
     					  }}

@@ -195,7 +195,7 @@ public class EuphoriaPlay extends commonMPRobot<EuphoriaBoard>
     		// of the tree can make this move no longer legal.  So the ugly choices are
     		// to wait for something to go wrong, after executing an illegal move,
     		// or pay the overhead to check first.
-    		all = board.GetListOfMoves();
+    		all = board.GetListOfMoves(new CommonMoveStack());
     		boolean ok=false;
     		for(int lim = all.size()-1; !ok && lim>=0; lim--)
     		{
@@ -220,6 +220,7 @@ public class EuphoriaPlay extends commonMPRobot<EuphoriaBoard>
 		  terminatedWithPrejudice = -1;
     	
     }
+    CommonMoveStack movelist = new CommonMoveStack();
 
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. 
@@ -227,7 +228,7 @@ public class EuphoriaPlay extends commonMPRobot<EuphoriaBoard>
     public CommonMoveStack  List_Of_Legal_Moves()
     {	
     	board.robot = this;
-    	CommonMoveStack all = board.GetListOfMoves();
+    	CommonMoveStack all = board.GetListOfMoves(movelist);
     	assignMonteCarloWeights(all); 
         return(all);
     }

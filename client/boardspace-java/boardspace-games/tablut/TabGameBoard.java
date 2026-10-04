@@ -1146,8 +1146,8 @@ void doSwap()
 	 return(true);
  }
  
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	switch(board_state)
  	{
  	case PLAY_OR_SWAP_STATE:

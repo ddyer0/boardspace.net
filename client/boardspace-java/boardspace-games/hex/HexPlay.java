@@ -179,9 +179,10 @@ public class HexPlay extends commonRobot<HexGameBoard> implements Runnable,
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
-    CommonMoveStack movelist = new ParallelCommonMoveStack();
+    CommonMoveStack movelist = new CommonMoveStack();
     public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
-    {	CommonMoveStack all = getMoveList(movelist,threads);
+    {	// metering shows that using threads is a losing proposition
+    	CommonMoveStack all = getMoveList(movelist,null /* threads */);
     	/*
         if(G.debug())
         {

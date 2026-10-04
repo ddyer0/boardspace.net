@@ -1075,7 +1075,7 @@ class Warp6Board extends squareBoard<Warp6Cell> implements BoardProtocol,Warp6Co
  }
  
  CommonMoveStack  GetListOfMoves(CommonMoveStack  all)
- {	
+ {	all.clear();
 	switch(board_state)
 	{
 	case PLACE_STATE:

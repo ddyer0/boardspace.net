@@ -72,7 +72,7 @@ public class MogulPlay extends commonMPRobot<MogulBoard> implements Runnable, Mo
     		// of the tree can make this move no longer legal.  So the ugly choices are
     		// to wait for something to go wrong, after executing an illegal move,
     		// or pay the overhead to check first.
-    		CommonMoveStack all = board.GetListOfMoves();
+    		CommonMoveStack all = board.GetListOfMoves(new CommonMoveStack());
     		boolean ok=false;
     		for(int lim = all.size()-1; !ok && lim>=0; lim--)
     		{
@@ -90,14 +90,14 @@ public class MogulPlay extends commonMPRobot<MogulBoard> implements Runnable, Mo
     	}
         board.RobotExecute(mm);
     }
-
+    CommonMoveStack movelist = new CommonMoveStack();
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {   return(board.GetListOfMoves());
+    {   return(board.GetListOfMoves(movelist));
     }
     
     

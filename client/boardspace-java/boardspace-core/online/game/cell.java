@@ -406,9 +406,13 @@ public abstract class cell<FINALTYPE
 	public long hiddenDigest() 
 	{ if(randomv==0) 
 		{ 
-		return(randomv = (getClassHash()+rackLocation.name().hashCode()*1000L+col*200+row+1)); 
+		return(randomv = defaultDigestValue());
 		}
 		return(randomv); 
+	}
+	private long defaultDigestValue()
+	{
+		return (getClassHash()+rackLocation.name().hashCode()*1000L+col*200+row+1); 
 	}
 	/**
 	 * Digest the contents of this cell and the cell's identity.  The
@@ -450,6 +454,7 @@ public abstract class cell<FINALTYPE
 		col = '@';
 		row = -1;
 		onBoard = false;
+		randomv = defaultDigestValue();
 	}
 	/**
 	 *  constructor for singleton cells with identity
@@ -466,6 +471,7 @@ public abstract class cell<FINALTYPE
 	public cell(CellId loc)
 	{	this();
 		rackLocation = loc;
+		randomv = defaultDigestValue();
 	}
 	/**
 	 *  constructor for isolated cells with an identity
@@ -665,8 +671,7 @@ public abstract class cell<FINALTYPE
      * @return the cell found in the desired direction, or null if it doesn't exist.
      */
     public FINALTYPE exitTo(int dir)
-    {	if(geometry==Geometry.Standalone) { throw G.Error("%s has no exits",this); }
-    	int len = adjacent.length;
+    {  	int len = adjacent.length;
     	int md = dir%len;				//modulo 0-n
 		FINALTYPE ap = adjacent[md<0 ? md+len : md];
      	return(ap);
@@ -765,7 +770,7 @@ public abstract class cell<FINALTYPE
      */
     public boolean hasLink(FINALTYPE to)
     {
-    	if(adjacent!=null) { for(Object l : adjacent) { if(l==to) { return(true); }} }
+    	if(adjacent!=null) { for(FINALTYPE l : adjacent) { if(l==to) { return(true); }} }
     	return(false);
     }
     /** add a unidirectional link between this cell and to 

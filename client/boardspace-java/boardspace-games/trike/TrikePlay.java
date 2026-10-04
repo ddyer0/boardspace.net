@@ -155,7 +155,7 @@ public class TrikePlay extends commonRobot<TrikeBoard> implements Runnable, Trik
         board.RobotExecute(mm);
         boardSearchLevel++;
     }
-    
+    CommonMoveStack movelist = new CommonMoveStack();
 	
     /** return a Vector of moves to consider at this point.  It doesn't have to be
      * the complete list, but that is the usual procedure. Moves in this list will
@@ -164,7 +164,7 @@ public class TrikePlay extends commonRobot<TrikeBoard> implements Runnable, Trik
      */
         public CommonMoveStack  List_Of_Legal_Moves()
         {
-            return(board.GetListOfMoves());
+            return(board.GetListOfMoves(movelist));
         }
 
         /**

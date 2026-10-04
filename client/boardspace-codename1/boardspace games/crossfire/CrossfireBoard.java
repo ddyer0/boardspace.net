@@ -931,8 +931,8 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
 	 }
 	 return(nm);
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	switch(board_state)
  	{
  	case ILLEGAL_MOVE_STATE:

@@ -122,6 +122,7 @@ public class JumbulayaPlay extends commonMPRobot<JumbulayaBoard>
  		//return board.score[whoseTurn];
  	}
 
+    CommonMoveStack movelist = new CommonMoveStack();
 
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
@@ -130,7 +131,7 @@ public class JumbulayaPlay extends commonMPRobot<JumbulayaBoard>
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {
-        return(board.GetListOfMoves());
+        return(board.GetListOfMoves(movelist));
     }
 
 static int Robots[] = { SMARTBOT_LEVEL, WEAKBOT_LEVEL, DUMBOT_LEVEL, BESTBOT_LEVEL };
@@ -215,7 +216,7 @@ public void PrepareToMove(int playerIndex)
  public commonMove DoHillClimbingMove()
  {	commonMove move = null;
  	try {	startTime = G.Date();
-        	CommonMoveStack all = board.GetListOfMoves();
+        	CommonMoveStack all = board.GetListOfMoves(new CommonMoveStack());
         	if(all.size()>0)
         	{
         		move = all.elementAt(0);

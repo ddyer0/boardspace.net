@@ -1295,8 +1295,8 @@ private boolean hasNoLegalMoves(int player)
 	return(true);	
 }
  
-CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
   	switch(board_state)
  	{
  	case CONFIRM_STATE:

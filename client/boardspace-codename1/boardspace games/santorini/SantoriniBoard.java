@@ -1664,7 +1664,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
  }
 
  CommonMoveStack  GetListOfMoves(CommonMoveStack all)
- {	
+ {	all.clear();
  	switch(board_state)
  	{
  	default: throw G.Error("Not implemented for state %s",board_state);

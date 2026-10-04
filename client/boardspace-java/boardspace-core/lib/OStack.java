@@ -146,6 +146,8 @@ public abstract class OStack<T> implements StackIterator<T>,Iterable<T>
 		public void clear() 
 		{ while(index>0) { data[--index] = null; } 
 		}
+		/* clears the stack but leaves garbage in memory */
+		public void fastClear() { index=0; }
 		/** remove and return the top element of the stack.  An error will occur if the stack is already empty.
 		 * 
 		 * @return the top <T> from the stack
@@ -452,6 +454,11 @@ public abstract class OStack<T> implements StackIterator<T>,Iterable<T>
 		return new InternalStackIterator();
 	}
 	
-
+	public void pushCopy(OStack<T>other)
+	{	int osize = other.size();
+		T odata[] = other.data;
+		increaseSize(index+osize);
+		while(osize>0) { data[index++] = odata[--osize];}
+	}
 }
 
