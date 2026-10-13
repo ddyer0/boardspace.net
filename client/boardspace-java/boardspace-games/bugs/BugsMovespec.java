@@ -316,7 +316,7 @@ public class BugsMovespec
         case MOVE_READY:
         case MOVE_SETACTIVE:
         default:
-            return G.concat(opname);
+            return opname;
         }
     }
     /**

@@ -1138,8 +1138,8 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
 			}
 	return(some);
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	if(!getListOfMoves(all,whoseTurn)) { all.push(new KhetMovespec(MOVE_RESIGN,whoseTurn)); }
   	return(all);
  }

@@ -484,7 +484,7 @@ public class ManhattanMovespec
         	return G.concat(opname , " ",from_color);
         	
         default:
-            return G.concat(opname);
+            return opname;
         }
     }
     /**

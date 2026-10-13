@@ -819,11 +819,12 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
            			+generateMoveCount+" Generate moves "+(generateMoveTime/(generateMoveCount*1000))+"uS/call "
         			+((generateMoveTime*100)/totalTime)+"% "
         			+((threadPoolSize==0)?" no threads" : " "+threadPoolSize+" threads"+" evtime "+(int)(threadEvalTime/1e6)+"mS"));
-        if(totalGen>0)
+        if(totalGen>0 && max_threads>0)
         	{G.print("gen ",totalLaunch*100/totalGen,"% self ",totalSelf*100/totalGen,"% wait ",totalWait*100/totalGen,"% ",totalGen/(generateMoveCount*1000));
         
         	}
         }
+        G.print(robot.report());
     }
     //
     // add one step in the progressive deepening search.
@@ -937,6 +938,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     {
     	threadPool = null;
     	threadPoolSize = 0;
+    	if(G.isCheerpj()) { max_threads = 0; }
     	if(max_threads>=1)
     	{
     		threadPool = new Sthread[max_threads];
@@ -1209,8 +1211,8 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         		{ bestEval = localEval; best = mm;
         		}
             if(cutting
-            	  &&  (mm.depth_limited()!=commonMove.EStatus.EVALUATED)
-           		  && (localEval>=cutoff_limit)
+            	&& (localEval>=cutoff_limit)
+            	&&  (mm.depth_limited()!=commonMove.EStatus.EVALUATED)  
           		  )
             {	// we hit a value that can cause an alpha-beta cutoff. 
           	// so skip the rest
@@ -1410,7 +1412,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     	long now = G.nanoTime();
     	createThreadPool();
         try
-        {	
+        {	robot.accumulate(0);
         	if(verbose>0)
         		{ G.print("Initial search depth: ",max_depth," time ",progressive_time_limit*60); 
         		}
@@ -1440,7 +1442,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
             while ((done != Search_Result.Done) && !aborted)
             {
                 done = Step_Simple_Search(1000);
-                if(G.isCheerpj()) { G.doDelay(100); }
+                if(G.isCheerpj()) { Thread.yield(); } 
                 if(progressive && (completed_progressive_search!=null) && (progressive_time_limit>0))
                 {	// if we have some completed search as a baseline, consider aborting
                 	double progressive_time = progressive_time_limit*60000;// minutes to milliseconds

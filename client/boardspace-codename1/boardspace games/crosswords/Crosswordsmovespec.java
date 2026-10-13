@@ -361,7 +361,7 @@ public class Crosswordsmovespec extends commonMPMove implements CrosswordsConsta
         	return G.concat(opname,Option.getOrd(to_row/2),(((to_row&1)==0)?" false" : " true"));
         default:
         case MOVE_CANCELLED:
-            return G.concat(opname);
+            return opname;
         }
     }
 

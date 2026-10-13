@@ -148,7 +148,7 @@ public class PrototypeChip extends chip<PrototypeChip> implements CommonConfig
 	 * @return size of images (in megabytes)
 	 */
 	public static double imageSize(ImageStack imstack)
-	    {	double sum = otherChips.imageSize(imstack);
+	    {	double sum = otherChips.imageSize(imstack)+stoneChips.imageSize(imstack);
 	    	return(sum);
 	    }
 	   

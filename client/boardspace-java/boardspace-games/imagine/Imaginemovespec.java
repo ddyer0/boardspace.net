@@ -330,7 +330,7 @@ public class Imaginemovespec
         case MOVE_COMMIT:
         case MOVE_SCORE:
         case MOVE_UNKNOWN:
-            return G.concat(opname);
+            return opname;
         }
     }
 

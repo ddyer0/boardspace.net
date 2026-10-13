@@ -499,7 +499,7 @@ public abstract class exCanvas extends ProxyWindow
         l.smoothMouseTracking = myFrame.addOption(s.get(SmoothMouse),smoothMouseTracking=Config.Default.getBoolean(Config.Default.smoothMouse),deferredEvents);
         l.smoothMouseTracking.setForeground(Color.blue);
         l.setConsole = myFrame.addAction("Start Console",deferredEvents);
-        if(extraactions)
+        if(extraactions || G.DEBUG)
         {
         debugMenu = new XJMenu("Debug Actions",true);
         myFrame.addToMenuBar(debugMenu);
@@ -529,7 +529,7 @@ public abstract class exCanvas extends ProxyWindow
         	l.fontSizeMenu.add(m);
         }
         
-        if(G.debug())
+        if(G.DEBUG)
         {	l.fontStyleMenu = myFrame.addChoiceMenu("Font Style",deferredEvents);
         	String[] fonts = { "Serif","SansSerif","Monospaced","TimesRoman" ,"Helvetica" , "Courier" ,"Dialog", "DialogInput"};
         	String current = FontManager.defaultFontFamily();

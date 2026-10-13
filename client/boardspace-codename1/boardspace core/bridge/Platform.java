@@ -749,7 +749,10 @@ windroid
     static public int getFrameWidth() { return(MasterForm.getFrameWidth()); }
     static public int getFrameHeight() { return(MasterForm.getFrameHeight()); }
     static final public boolean isCodename1() { return(true); }
-    
+    static final public boolean isJavaScript()
+    {
+         return "HTML5".equals(CN.getPlatformName());
+    }
     // these methods are used in Codename1 to affect painting strategy
     // they're here so exCanvas can refer to G rather than MasterForm
     static public boolean canRepaintLocally(Component p) { return(MasterForm.canRepaintLocally(p)); }
@@ -780,7 +783,8 @@ windroid
 
 
 	public static boolean getState(Checkbox cb)
-    {	return(cb.isSelected());
+    {	
+		return(cb.isSelected());
     }
     public static String getFileSeparator()
     {	return(""+FileSystemStorage.getInstance().getFileSystemSeparator());

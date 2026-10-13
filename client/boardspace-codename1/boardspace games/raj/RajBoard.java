@@ -1345,8 +1345,8 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
 	 }
 		 
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
  	switch(board_state)
  	{
  	case PLAY_STATE:

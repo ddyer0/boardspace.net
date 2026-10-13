@@ -130,6 +130,7 @@ public class Search_Node implements Constants,Opcodes
         number_of_moves=0;
         if(!rr.Game_Over_P())
         {	long now = G.nanoTime();
+        	rr.accumulate(now);
         	vmoves = rr.List_Of_Legal_Moves(search_driver.threadPool);
         	search_driver.generateMoveTime += G.nanoTime()-now;
         	search_driver.generateMoveCount++;

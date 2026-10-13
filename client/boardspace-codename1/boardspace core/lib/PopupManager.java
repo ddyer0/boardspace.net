@@ -89,6 +89,7 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
 	public bsSwingMenu(String msg,Font f)
 	{
 		popupSwingMenu = new JPopupMenu(msg,f); 
+		
 		// just expetimentally, lightweight menus have fewer mystery 
 		// crashes [ddyer 1/2023]
 		popupSwingMenu.setLightWeightPopupEnabled(lightweightMenus);

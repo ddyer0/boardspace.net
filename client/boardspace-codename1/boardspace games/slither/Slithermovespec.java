@@ -266,11 +266,11 @@ public class Slithermovespec
         case MOVE_EDIT:
         case MOVE_RESET:
         case MOVE_UNDO:
+        case MOVE_RESIGN:
         case MOVE_DONE:
-        	return G.concat(opname);
-        	
         default:
-            throw G.Error("can't handle op %s",op);
+        	return opname;
+
         }
     }
     /**

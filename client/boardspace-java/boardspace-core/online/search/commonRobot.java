@@ -17,6 +17,7 @@
 package online.search;
 
 import common.GameInfo;
+import lib.AR;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.Http;
@@ -1161,4 +1162,33 @@ gen 0% self 54% wait 43% 26
 	        return all;
 	    	}
 	    }
+	   
+	    long previousTime = 0;
+	    int sz = 50;
+	    long intervalTime[] = new long[sz];
+	    int intervalCount[]= new int[sz];
+	    public void accumulate(long now)
+	    {	if(now==0)
+	    {
+	    		AR.setValue(intervalTime,0);
+	    		AR.setValue(intervalCount,0);
+	    	}
+	    	else if(previousTime!=0)
+	    	{	int dif = (int)(now-previousTime);
+	    		if(dif>0)
+	    		{
+	    		int interval = (dif/10000000);	// tenths of a second
+	    		if(interval>=sz){ interval = sz-1; }
+	    		intervalTime[interval] += dif;
+	    		intervalCount[interval] ++;
+	    	}
+	    	}
+	    	previousTime = now;
+	    }
+	    public String report()
+	    {	StringBuilder b = new StringBuilder();
+	    	for(int i=0;i<sz;i++) { b.append(" ");b.append((int)(intervalTime[i]/1e6)); }
+	    	return b.toString();
+	    }
+	    
 }

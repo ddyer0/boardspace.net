@@ -4442,10 +4442,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	}}}
     }
 
-   public void sendMouseMessage()
-    {	
+   public boolean sendMouseMessage()
+    {	boolean some = false;
     	if(v!=null)
-    	{	boolean some = false;
+    	{	
     		String mm = null;
     		// send as many messages as the client chooses to provide
 	    	while ((mm=v.mouseMessage())!=null)
@@ -4460,6 +4460,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	    	}
         sendRobotProgress();
     	}
+    	return some;
     }
 
    private long lastRequestTime = 0;
@@ -4692,7 +4693,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	            //System.out.println(my.trueName+" " +combined);
 	            // we'll get separate echos for each of the component messages
 	            // so remember how many to keep the books straight.
-        		sendMessageEtc(combined);
+         		sendMessageEtc(combined);
          }
     }
     private Object restoringGame = "";

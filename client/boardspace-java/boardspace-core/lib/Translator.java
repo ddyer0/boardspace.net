@@ -102,11 +102,7 @@ public class Translator {
         	UrlResult result = Http.postURL( useProxy ? Http.getHostName() : ANTROPIC_HOST,
         									useProxy ? PROXY_ANTROPIC_API : ANTROPIC_API, props,
         									requestBody,null,new UrlResult());
-        	if(result.error==null)
-        	{
-        		return extractTranslation(result.text);
-        	}
-        	throw new TranslationException(result.error);
+        	return extractTranslation(result);
          	/*
          	// this is the original code that claude produced to make the http request
          	// the version actually used is semantically the same, but uses the standard
@@ -131,8 +127,6 @@ public class Translator {
             */
             
 
-        } catch (TranslationException e) {
-            throw e;
         } catch (Exception e) {
             throw new TranslationException("HTTP request failed: " + e.getMessage(), e);
         }
@@ -176,8 +170,15 @@ public class Translator {
      * Pulls the text value out of the first content block in a Claude response.
      * Handles the shape: {"content":[{"type":"text","text":"..."}], ...}
      */
-    private static String extractTranslation(String json) throws TranslationException {
+    private static String extractTranslation(UrlResult result) throws TranslationException {
         // Find "text": after the first content block
+    	if(result.error!=null)
+    	{
+        	throw new TranslationException(result.error);	
+    	}
+    	else
+    	{
+    	String json = result.text;
         int contentIdx = json.indexOf("\"content\"");
         if (contentIdx < 0)
             throw new TranslationException("Unexpected API response (no content): " + json);
@@ -219,7 +220,7 @@ public class Translator {
             }
         }
         return sb.toString();
-    }
+    }}
 
     /** Encodes a Java string as a JSON string literal (with surrounding quotes). */
     private static String jsonString(String s) {

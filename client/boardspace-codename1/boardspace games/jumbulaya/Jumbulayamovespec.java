@@ -456,7 +456,7 @@ public class Jumbulayamovespec extends commonMPMove
         case MOVE_STOPJUMBULAYA:
         case MOVE_CANCELLED:
         default:
-            return G.concat(opname);
+            return opname;
         }
     }
 

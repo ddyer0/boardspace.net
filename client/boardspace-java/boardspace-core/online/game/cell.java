@@ -406,14 +406,11 @@ public abstract class cell<FINALTYPE
 	public long hiddenDigest() 
 	{ if(randomv==0) 
 		{ 
-		return(randomv = defaultDigestValue());
+		return(getClassHash()+rackLocation.name().hashCode()*1000L+col*200+row+1); 
 		}
 		return(randomv); 
 	}
-	private long defaultDigestValue()
-	{
-		return (getClassHash()+rackLocation.name().hashCode()*1000L+col*200+row+1); 
-	}
+
 	/**
 	 * Digest the contents of this cell and the cell's identity.  The
 	 * cell's identity is normally the next random integer from Random r
@@ -454,7 +451,6 @@ public abstract class cell<FINALTYPE
 		col = '@';
 		row = -1;
 		onBoard = false;
-		randomv = defaultDigestValue();
 	}
 	/**
 	 *  constructor for singleton cells with identity
@@ -471,7 +467,6 @@ public abstract class cell<FINALTYPE
 	public cell(CellId loc)
 	{	this();
 		rackLocation = loc;
-		randomv = defaultDigestValue();
 	}
 	/**
 	 *  constructor for isolated cells with an identity

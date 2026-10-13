@@ -801,7 +801,8 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
     void lineProfile(GobCell centerCel,GobLine info,int forPlayer,int dir)
     {	GobCell cc=centerCel;
     	int mycups=0;
-    	int hiscups=0;
+    	@SuppressWarnings("unused")
+		int hiscups=0;
     	int mybigcups=0;
     	int hisbigcups=0;
     	while(cc!=null)
@@ -832,7 +833,6 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
     	
     	info.myBigCups = mybigcups;
     	info.myCups = mycups;
-    	info.hisCups = hiscups;
     	info.hisBigCups = hisbigcups;
       }
     boolean rowOfThree(int pl,GobCell cell,int dir)

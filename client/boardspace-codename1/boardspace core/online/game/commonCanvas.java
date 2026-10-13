@@ -5670,7 +5670,7 @@ public abstract class commonCanvas extends exCanvas
             myFrame.addToMenuBar(hidden.gamesMenu);
             hidden.gamesMenu.addItemListener(deferredEvents);
 
-            if(extraactions || G.debug())
+            if(extraactions || G.DEBUG)
             {
         	hidden.showText = myFrame.addAction(debugMenu,s.get("Show Raw Text"),deferredEvents);
         	hidden.replayCollection = myFrame.addAction(debugMenu,ReplayGameCollection,deferredEvents); 

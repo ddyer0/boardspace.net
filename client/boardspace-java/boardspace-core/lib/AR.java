@@ -257,7 +257,13 @@ public class AR {
 	   {
 		   for(int lim=c1.length-1; lim>=0; lim--) { c1[lim]=v; }
 	   }
-
+	   /**
+	    * set each cell of an array to a fixed value
+	    */
+	   static public void setValue(long c1[],int v)
+	   {
+		   for(int lim=c1.length-1; lim>=0; lim--) { c1[lim]=v; }
+		}
 	/**
 	    * set each cell of an array to a fixed value
 	    */

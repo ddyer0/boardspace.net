@@ -233,7 +233,7 @@ public class TweedMovespec
             return G.concat(indx,"Start P" , player);
 
         default:
-            return G.concat(opname);
+            return opname;
         }
     }
     /**

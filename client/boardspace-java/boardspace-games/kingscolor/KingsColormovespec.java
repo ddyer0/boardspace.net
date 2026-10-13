@@ -244,7 +244,7 @@ public class KingsColormovespec
 
         default:
         case MOVE_STALEMATE:
-            return G.concat(opname);
+            return opname;
         }
     }
     /*

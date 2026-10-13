@@ -364,11 +364,11 @@ public class UCTMoveSearcher extends CommonDriver
 	    	}
 	    	return(val);
 	    }
-	    public UCTThread createThread(RobotProtocol leadRobot,String name)
+	    public UCTThread createThread(ThreadPoolMonitor mon,int ind,RobotProtocol leadRobot,String name)
 	    {
 	    	return useMPThreads 
-	    			? new UCTMPThread(this,leadRobot,name)
-	    			: new UCTSPThread(this,leadRobot,name);
+	    			? new UCTMPThread(mon,ind,this,leadRobot,name)
+	    			: new UCTSPThread(mon,ind,this,leadRobot,name);
 	    }
 	    CommonMoveStack top_level_moves = null;
 	    public commonMove[] top_level_moves() { return top_level_moves.toArray(); }
@@ -400,13 +400,13 @@ public class UCTMoveSearcher extends CommonDriver
 			
 			int cores = Math.max(1,G.getAvailableProcessors());
 			int count = Math.min(cores,Math.max(1,maxThreads));
-			
+			ThreadPoolMonitor monitor = new ThreadPoolMonitor(count);
 			{
 			// allocate a thread object for ourself, even if we won't start it
-			UCTThread mythreads[] = new UCTThread[count];			
-			mythreads[0] = createThread(leadRobot,null);
+			UCTThread mythreads[] = new UCTThread[count];		
+			mythreads[0] = createThread(monitor,0,leadRobot,null);
 			for(int i=1;i<count; i++) 
-				{ UCTThread tr = mythreads[i]= createThread(leadRobot,"Thread "+i);
+				{ UCTThread tr = mythreads[i]= createThread(monitor,i,leadRobot,"Thread "+i);
 				  tr.setPriority(tr.getPriority()-1);
 				}	
 			threads = mythreads;
@@ -452,13 +452,13 @@ public class UCTMoveSearcher extends CommonDriver
 			TreeViewerProtocol viewer = leadRobot.getTreeViewer();
 			active = true;
 			// maxthreads -1 means no theads and no monitor thread
-			boolean monitor = maxThreads>=0 && (MONITOR_SINGLE_THREAD || count>=2);
+			boolean monitorThreads = maxThreads>=0 && (MONITOR_SINGLE_THREAD || count>=2);
 			
 			if(viewer!=null)
 			{
 				viewer.setTree(this);
 			}
-			if(monitor)
+			if(monitorThreads)
 			{	// start the threads if there are more than just us
 				for(UCTThread th : threads) { th.start(); }
 			}
@@ -467,7 +467,7 @@ public class UCTMoveSearcher extends CommonDriver
 			{	
 				before += commonPause();// just in case we pause
 
-				if(!monitor) 
+				if(!monitorThreads) 
 					{ UCTThread s = threads[0];
 					  s.simUsingTree();
 					  long later = G.Date();
@@ -545,7 +545,19 @@ public class UCTMoveSearcher extends CommonDriver
 					leadRobot.setProgress(partDone);
 					notify = after;
 					}
-				}			
+			if(monitor.stuck())
+				{
+				long startStall = after;
+				while(monitor.stuck())
+				{
+					G.doDelay(250);
+				}
+				long later = System.currentTimeMillis();
+				before += (later-startStall)+ThreadPoolMonitor.stuckThreshold/1000000;
+				notify =later;
+				stall = 0;
+				}
+			}
 			// continue until we stop running simulations, or run the allotted time, or are aborted
 			// and at least the target number of work units
 			// this while goes with the DO way up above
@@ -571,7 +583,7 @@ public class UCTMoveSearcher extends CommonDriver
 			if(stall<STALL_LIMIT) 
 				{ stall = 0;		// we didn't stop due to a stall, start over		
 				}
-			if(monitor)
+			if(monitorThreads)
 			{	// wait for all the threads to close up
 				before += commonPause();// just in case we pause
 				for(UCTThread th : threads) 
@@ -603,6 +615,7 @@ public class UCTMoveSearcher extends CommonDriver
 					}
 					throw G.Error("thread deadlock:\n%s",p.toString());
 				}
+				
 			}
 			
 			leadRobot.setProgress(-1);

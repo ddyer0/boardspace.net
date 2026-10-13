@@ -154,7 +154,7 @@ public class GameTimerMovespec
         case MOVE_END:
         case MOVE_RESUME:
         default:
-            return G.concat(opname);
+            return opname;
         }
     }
 }

@@ -406,10 +406,11 @@ public abstract class cell<FINALTYPE
 	public long hiddenDigest() 
 	{ if(randomv==0) 
 		{ 
-		return(randomv = (getClassHash()+rackLocation.name().hashCode()*1000L+col*200+row+1)); 
+		return(getClassHash()+rackLocation.name().hashCode()*1000L+col*200+row+1); 
 		}
 		return(randomv); 
 	}
+
 	/**
 	 * Digest the contents of this cell and the cell's identity.  The
 	 * cell's identity is normally the next random integer from Random r

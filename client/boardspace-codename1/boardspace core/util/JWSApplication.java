@@ -314,6 +314,7 @@ public class JWSApplication implements Config,OnlineConstants
 					 "\nreal InfinityTable: ",G.isRealInfinityTable(),
 					 "\nreal LastGameBoard: ",G.isRealLastGameBoard(),
 					 "\nreal mac: ",G.isRealMac(),
+					 "\njavascript: ",G.isJavaScript()," js: ",G.isJS(),
 					 "\n");
 
     		}
@@ -339,7 +340,10 @@ public class JWSApplication implements Config,OnlineConstants
 	        {	
 			  	do { 
 			  		boolean wasOff = G.offline();
-			    	DataCache.construct();
+			    	
+			  		if(G.isJavaScript()) { G.print("Data cache skipped - javascript"); }
+			    	else { DataCache.construct(); }
+			    	
 			  		if(wasOff)
 			  		{	
 			  			runOffline(serverName);

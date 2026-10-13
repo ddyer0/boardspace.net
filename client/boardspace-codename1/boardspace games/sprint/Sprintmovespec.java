@@ -349,7 +349,7 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
         case MOVE_ENDEDGAME:
         case MOVE_PULLSTART:
         case MOVE_SWITCH:
-            return G.concat(opname);
+            return opname;
         }
     }
 

@@ -101,7 +101,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 173;			// 100 represents the initial version of the game
+{	static int REVISION = 174;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -196,6 +196,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 171 fixes the first player after drafting
 										// revision 172 fixes the second player after drafting
 										// revision 173 adds debuginfo
+										// revision 174 considers workshop interaction with harvest expert
 
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
@@ -5798,7 +5799,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     			break;
     		case Choice_B:
        			//p1("harvest expert b");
-       			changeCash(pb,-1,yokeCash,replay);
+       			if(revision<174 || !pb.hasWorkshop()) { changeCash(pb,-1,yokeCash,replay); }
     			if(pb.yoke.topChip()==null)
     			{
     				pb.yoke.addChip(pb.getContent(pb.yoke));
@@ -9214,7 +9215,7 @@ private CommonMoveStack getDraftMoves()
 		 case Puzzle: break;
 		 default: 
 		 	{
-			 CommonMoveStack all = GetListOfMoves(MoveGenerator.All);
+			 CommonMoveStack all = GetListOfMoves(new CommonMoveStack(),MoveGenerator.All);
 			 includeBasedOn(all,val);
 		 	}
 		 }}
@@ -10102,7 +10103,9 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 				break;
 			case 18: // harvest expert
 				addChoice(all,ViticultureId.Choice_A,generator);
-				if(pb.cash>=1) { addChoice(all,ViticultureId.Choice_B,generator); }
+				int cost = (revision>=174 && pb.hasWorkshop())?0:1;
+				if(pb.cash>=cost && (revision<174 || pb.yoke.topChip()==null))
+					{ addChoice(all,ViticultureId.Choice_B,generator); }
 				break;
 			case 20:	// jack of all trades
 				{
@@ -11019,8 +11022,8 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 	 return false;
  }
 
- CommonMoveStack  GetListOfMoves(MoveGenerator generator)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all,MoveGenerator generator)
+ {	all.clear();
  	PlayerBoard pb = getCurrentPlayerBoard();
  	
  	return getListOfMoves(generator,all,pb);

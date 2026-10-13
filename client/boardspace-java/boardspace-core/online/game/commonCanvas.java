@@ -5676,7 +5676,7 @@ public abstract class commonCanvas extends exCanvas
                 myFrame.addToMenuBar(hidden.gamesMenu);
                 hidden.gamesMenu.addItemListener(deferredEvents);
                 
-            if(extraactions || G.debug())
+            if(extraactions || G.DEBUG)
             {
         	hidden.showText = myFrame.addAction(debugMenu,s.get("Show Raw Text"),deferredEvents);
         	hidden.replayCollection = myFrame.addAction(debugMenu,ReplayGameCollection,deferredEvents); 
@@ -7849,7 +7849,7 @@ public abstract class commonCanvas extends exCanvas
     		int mod = Math.min(w,h)/2;
     		if(mod>0)
     			{
-    			int step = (int)(flashState%mod);
+    			int step = (flashState%mod);
     			flashState++;
     			GC.frameRect(gc,((step&1)==0)?Color.blue:Color.red,left-step,top-step,w+step*2,h+step*2);
     			}

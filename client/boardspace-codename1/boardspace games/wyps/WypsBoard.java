@@ -2298,8 +2298,8 @@ public int checkDictionaryWords(DictionaryHash subDictionary,WypsCell rack[],lon
 		 }
 	 }
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	all.clear();
     recordProgress(0);
     validate();
     switch(board_state)

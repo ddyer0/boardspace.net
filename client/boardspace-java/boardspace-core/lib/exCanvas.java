@@ -171,8 +171,8 @@ public abstract class exCanvas extends Canvas
     	if(box!=null)
     	{
     	// getWidth/getHeight are the window size, which are same as the zoomed size / zoom
-		int x = (int)(G.centerX(box)-getWidth()/2);
-		int y = (int)(G.centerY(box)-getHeight()/2);
+		int x = (G.centerX(box)-getWidth()/2);
+		int y = (G.centerY(box)-getHeight()/2);
   		setSX(x);
 		setSY(y);
     	}
@@ -187,7 +187,7 @@ public abstract class exCanvas extends Canvas
 	{ 	int oldX = mouse.getSX();
 	   	int w = getWidth();
 	   	double z = getGlobalZoom();
-	   	int margin = (int)(w/4);			// the /4 allows 25% overpan
+	   	int margin = (w/4);			// the /4 allows 25% overpan
      	int maxW = (int)(w*z-margin);	
      	int newsx = (z<MINIMUM_ZOOM? 0 :(int)Math.min(maxW,Math.max(margin-w,x)));
      	mouse.setSX(newsx);
@@ -205,7 +205,7 @@ public abstract class exCanvas extends Canvas
 	{	int oldY = mouse.getSY();
 		int h = getHeight();
 		double z = getGlobalZoom();
-		int margin = (int)(h/4);
+		int margin = (h/4);
 		int maxH = (int)(h*z-margin);
 		int newsy = (z<MINIMUM_ZOOM) ? 0 : (int)Math.min(maxH,Math.max(margin-h,y));
 		mouse.setSY(newsy);
@@ -505,7 +505,7 @@ public abstract class exCanvas extends Canvas
         l.smoothMouseTracking = myFrame.addOption(s.get(SmoothMouse),smoothMouseTracking=Config.Default.getBoolean(Config.Default.smoothMouse),deferredEvents);
         l.smoothMouseTracking.setForeground(Color.blue);
         l.setConsole = myFrame.addAction("Start Console",deferredEvents);
-        if(extraactions)
+        if(extraactions || G.DEBUG)
         {
         debugMenu = new XJMenu("Debug Actions",true);
         myFrame.addToMenuBar(debugMenu);
@@ -535,7 +535,7 @@ public abstract class exCanvas extends Canvas
         	l.fontSizeMenu.add(m);
         }
         
-        if(G.debug())
+        if(G.DEBUG)
         {	l.fontStyleMenu = myFrame.addChoiceMenu("Font Style",deferredEvents);
         	String[] fonts = { "Serif","SansSerif","Monospaced","TimesRoman" ,"Helvetica" , "Courier" ,"Dialog", "DialogInput"};
         	String current = FontManager.defaultFontFamily();
@@ -576,7 +576,7 @@ public abstract class exCanvas extends Canvas
    }
     
     private boolean selectFontSize(Object target)
-    {	JMenu m = (JMenu)l.fontSizeMenu;
+    {	JMenu m = l.fontSizeMenu;
     	JMenuItem sel = null;
     	if(m!=null)
     	{
@@ -607,7 +607,7 @@ public abstract class exCanvas extends Canvas
     }
     
     private boolean selectFontStyle(Object target)
-    {	JMenu m = (JMenu)l.fontStyleMenu;
+    {	JMenu m = l.fontStyleMenu;
 		boolean some = false;
     	if(m!=null)
     	{
@@ -1851,7 +1851,7 @@ graphics when using a touch screen.
         {	if(loadedImages!=null)
         	{
         	loadedImages.sort(false);
-        	Drawable ims[] = (Drawable[])loadedImages.toArray();
+        	Drawable ims[] = loadedImages.toArray();
         	DrawableImage.showGrid(gc, null, hp,ims, new Rectangle(0,100,getWidth(),getHeight()-100));
         	}
         }

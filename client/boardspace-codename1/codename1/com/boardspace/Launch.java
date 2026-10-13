@@ -188,7 +188,7 @@ class BoardspaceLauncher implements Runnable,stuff
  
 	}
 	public void doit()
-	{	Http.setHostName(connectHost);
+	{	Http.setHostName(G.isJavaScript() ? developHost : connectHost);
 		try {
 			Log.setReportingLevel(Log.REPORTING_DEBUG);
 			MasterForm form = MasterForm.getMasterForm();

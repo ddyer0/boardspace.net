@@ -220,6 +220,6 @@ public class ViticultureCell extends stackCell<ViticultureCell,ViticultureChip>
 		fixedDisplay = true;
 		addChip(victoryPoint_1);
 	}
-
+	
 
 }

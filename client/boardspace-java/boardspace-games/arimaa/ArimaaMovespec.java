@@ -321,7 +321,7 @@ public class ArimaaMovespec extends commonMove implements ArimaaConstants
             return G.concat(indx,"Start P" , player);
 
         default:
-        	return G.concat(opname);
+        	return opname;
         }
     }
 

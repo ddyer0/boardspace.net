@@ -327,7 +327,7 @@ public class Iromovespec
         	return G.concat(opname,to_col," ",to_row," ",from_row);
         	
         default:
-            return G.concat(opname);
+            return opname;
         }
     }
     /**

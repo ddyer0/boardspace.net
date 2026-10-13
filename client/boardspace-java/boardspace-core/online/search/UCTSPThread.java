@@ -68,11 +68,15 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 	private int nodeExpansionsThisRun = 0;
 	private int nodeExpansionSizeThisRun = 0;
 	private int terminalOptimizationsThisRun = 0;
+	ThreadPoolMonitor monitor;
+	int monitorIndex;
+	
 	// constructor
-	UCTSPThread(UCTMoveSearcher m,RobotProtocol ro,String threadName)
+	UCTSPThread(ThreadPoolMonitor mon,int ind,UCTMoveSearcher m,RobotProtocol ro,String threadName)
 	{	super((threadName==null) ? "master" : threadName);
 		robot = (threadName==null) ? ro : ro.copyPlayer(threadName);
-		
+		monitor = mon;
+		monitorIndex = ind;
 		master = m;
 		a1Priority = (threadName==null)?0:-1;		// make the original thread the initial lead
 		rand = new Random(m.rand.nextLong());
@@ -581,6 +585,12 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 		// if pausing, account for the time lost
 		pausedTime += robot.commonPause();
 
+		monitor.setActive(monitorIndex);
+		while(monitor.stuck())
+		  {
+			  G.doDelay(100);
+			  monitor.setActive(monitorIndex);
+		  }
 
 		/* EXPANSION (adds all possible moves to tree).  We can't expand if the game is over,
 		 * and it's a waste to expand if this node will only be visited once.  We can't really

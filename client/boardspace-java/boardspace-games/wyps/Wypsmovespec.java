@@ -352,7 +352,7 @@ public class Wypsmovespec extends commonMove implements WypsConstants
         default:
         case MOVE_CANCELLED:
         case MOVE_SWAP:
-            return G.concat(opname);
+            return opname;
         }
     }
 

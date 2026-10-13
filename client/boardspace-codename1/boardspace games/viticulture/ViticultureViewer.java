@@ -3847,7 +3847,7 @@ private void drawPlayerBoard(Graphics gc,
 				ViticultureChip top = field.topChip();
 				ViticultureId wineId = top.type.getWineId();
 				int min = ViticultureChip.minimumWineValue(wineId);
-				ViticultureCell matchingCell = gb.getCell(wineId,pb.colCode,top.order-min);
+				ViticultureCell matchingCell = mainBoard.getCell(wineId,pb.colCode,top.order-min);
 				if(drawStack(gc,state,null,field,highlight,highlightAll, step,fxp,fieldY,0,0,0.2,null))
 				{
 					highlight.hitCode = ViticultureId.WineDisplay;
@@ -5858,8 +5858,12 @@ private void drawPlayerBoard(Graphics gc,
         	else { PerformAndTransmit("Select "+hitCode.name()+" "+hitObject.col+" "+hitObject.row+" "+hp.hit_index); }
         	break;
         case WineDisplay:
+        	{
         	ViticultureChip top = hitObject.topChip();
-        	PerformAndTransmit("Discard "+top.type.name()+" "+pb.colCode+" "+(top.order-1)+" 0");
+        	ViticultureId wineId = top.type.getWineId();
+			int min = ViticultureChip.minimumWineValue(wineId);
+        	PerformAndTransmit("Discard "+top.type.name()+" "+pb.colCode+" "+(top.order-min)+" 0");
+        	}
         	break;
         case Eye:
         	{

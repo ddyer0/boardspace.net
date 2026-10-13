@@ -832,7 +832,11 @@ class BugBoard
     private void doDone(BugMovespec m,replayMode replay)
     {	BugCell dest = getDest();
         acceptPlacement();
-        if(dest!=null)
+        if(board_state==BugState.Resign) {
+        	setState(BugState.Gameover);
+        	win[whoseTurn^1] = true;
+        }
+        else if(dest!=null)
         {
         	doDoneNewWay(dest,m,replay);
         }

@@ -39,6 +39,7 @@ class GetMoves implements Task
 		public void doit()
 		{
 			board.getMoveList(all,off,inc);
+			
 		}
 }
 
@@ -632,22 +633,16 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
                     	BoardProtocol b = getBoard();
                     	if(b!=null) 
                     		{
-                    		int moven = b.moveNumber();
-                    		long dig = b.Digest();
                     		
                     		// make a copy and verify it before we start
                     		BoardProtocol clone = b.cloneBoard();
-                    		b.sameboard(clone);
-                    		G.Assert(dig==clone.Digest(),"digest matches before");
                     		
                         	commonMove m = DoFullMove();
                         	// these are basic consistency checks on the robots
                         	if(checking_digest())
-                        		{int newmoven = b.moveNumber();
-                        		G.Assert(moven==newmoven,"move number preserved");
+                    		{
                         		b.sameboard(clone);
-                        		long newdig = b.Digest();
-                        		G.Assert(dig==newdig,"digest preserved");
+                    		b.checkDigestSame(clone);
                         		}
                         	setResult(m);
                     		}
@@ -1075,7 +1070,26 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	    * @return
 	    */
 	   public CommonMoveStack  getMoveList(CommonMoveStack all,Sthread threads[])
-	    {	all.clear();
+	    {	
+		   /*
+		    * after extensive metering, I've concluded that trying to parallelize move generation
+		    * is a negative sum game.  The work interval is too short to overcome some inherent
+		    * communication overhead.  
+		    * 
+Nodes: 26701 Evals: 100152 Killers: 86 (100%) Alpha: 329(312) Skipped Evals: 866583(48%) Time: 4386.0.0.0
+EvalAndSort 13346 evals 317.0396972875768uS/call 96% 13346 Generate moves 10uS/call 3%  no threads
+gen 0% self 100% wait 0% 9
+
+Nodes: 25875 Evals: 159033 Killers: 103 (100%) Alpha: 341(322) Skipped Evals: 813080(48%) Time: 3492.0.0.0
+EvalAndSort 12933 evals 255.75990876053507uS/call 94% 12933 Generate moves 11uS/call 4%  1 threads evtime 3271mS
+gen 0% self 62% wait 36% 9
+
+
+Nodes: 25465 Evals: 247474 Killers: 28 (100%) Alpha: 273(255) Skipped Evals: 824381(48%) Time: 2459.0.0.0
+EvalAndSort 12728 evals 158.4517441860465uS/call 81% 12728 Generate moves 30uS/call 15%  4 threads evtime 7036mS
+gen 0% self 54% wait 43% 26
+*/
+		    all.clear();
 	    	boolean debug = all.debug = search_driver.debug_threads!=0;
 	    	if(!parallelize_movelist || threads==null)
 	    	{	long now = G.nanoTime();
@@ -1088,6 +1102,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	    	else
 	    	{
 	    	try {
+		    Sthread.waitForIdle(threads);
 	    	int n = threads.length;
 	    	long now = G.nanoTime();
 	    	for(int i=1;i<=n;i++)
@@ -1102,7 +1117,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	    	board.getMoveList(all,n+1,n+1);
 	    	long self = G.nanoTime();
 	    	Sthread.waitForIdle(threads);
-	    	
+	    	long wait = G.nanoTime();
 	    	for(int i=1;i<=n;i++)
     		{
     		Sthread ex = threads[i-1];
@@ -1111,10 +1126,8 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
     		all.pushCopy(mlist);
     		}
 
-	    	
 	    	search_driver.totalLaunch = launch-now;
 	    	search_driver.totalSelf += self-launch;
-	    	long wait = G.nanoTime();
 	    	search_driver.totalWait += wait-self;
 	    	search_driver.totalGen += wait-now;
 	    	
@@ -1136,4 +1149,33 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	        return all;
 	    	}
 	    }
+	   
+	    long previousTime = 0;
+	    int sz = 50;
+	    long intervalTime[] = new long[sz];
+	    int intervalCount[]= new int[sz];
+	    public void accumulate(long now)
+	    {	if(now==0)
+	    	{
+	    		AR.setValue(intervalTime,0);
+	    		AR.setValue(intervalCount,0);
+	    	}
+	    	else if(previousTime!=0)
+	    	{	int dif = (int)(now-previousTime);
+	    		if(dif>0)
+	    		{
+	    		int interval = (dif/10000000);	// tenths of a second
+	    		if(interval>=sz){ interval = sz-1; }
+	    		intervalTime[interval] += dif;
+	    		intervalCount[interval] ++;
+	    		}
+	    	}
+	    	previousTime = now;
+	    }
+	    public String report()
+	    {	StringBuilder b = new StringBuilder();
+	    	for(int i=0;i<sz;i++) { b.append(" ");b.append((int)(intervalTime[i]/1e6)); }
+	    	return b.toString();
+	    }
+	    
 }

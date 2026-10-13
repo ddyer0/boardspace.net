@@ -263,7 +263,8 @@ public interface RobotProtocol extends SimpleRobotProtocol
 	public void set_depth_limited(commonMove currentMove, EStatus depthLimitedGameover);
 	public void setEvaluation(commonMove currentMoveOriginal, double newval);
 	public commonMove Random_Good_Move(Search_Driver search_Driver, int n, double dif);
-	
+	public String report();
+	public void accumulate(long now);
 	
 	
 	// *** TEMPORARILY RESTORED ***

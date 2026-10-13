@@ -479,7 +479,7 @@ public class BlackDeathMovespec extends commonMPMove implements BlackDeathConsta
         case MOVE_USE_PERFECTROLL:
         case MOVE_ESCAPE:
         default:
-            return (G.concat(opname));
+            return (opname);
         }
     }
     /**

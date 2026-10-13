@@ -24,4 +24,5 @@ package lib;
 public interface CellId {
 	static final String IdNotFoundError = "Id %s not found";	// not a translated string
 	public String name();
+	public int ordinal();
 }

@@ -85,7 +85,7 @@ public class Mutant implements Serializable,Comparable<Mutant>
 	}
 	double getWinRate()
 	{ double tg=nGames+nDraws; 
-	  return(nWins/(double)nGames-nDraws/(double)(tg*10)); }
+	  return(nWins/nGames-nDraws/(tg*10)); }
 	
 	public String parameterString()
 	{	StringBuilder b = new StringBuilder();

@@ -219,7 +219,7 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
             return G.concat(ind,"Start P",player);
  
         default:
-            return G.concat(opname);
+            return opname;
         }
     }
 

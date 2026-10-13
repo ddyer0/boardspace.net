@@ -244,7 +244,7 @@ public class Mijnlieffmovespec
         	return G.concat(opname,source.name()," ",to_col," ",to_row);
         	
         default:
-            return G.concat(opname);
+            return opname;
         }
     }
  

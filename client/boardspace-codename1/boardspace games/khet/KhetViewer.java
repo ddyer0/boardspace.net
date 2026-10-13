@@ -1001,7 +1001,6 @@ private void playSounds(commonMove m)
   		  break;
   	  }
   	 super.drawNumber(gc,source,dest,cellSize,x,y,font,color, str);
- 	
     }
 }
 

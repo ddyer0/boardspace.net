@@ -196,10 +196,10 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
     	G.Assert(perm==null || idx==perm.length,"Perm length mismatch");
      	for(int i=0;i<idx;i++)
     	{	
-    		YCell from = (YCell)cellArray[i];
+    		YCell from = cellArray[i];
  	  		int nSpec[] = neighbors[i];
 	   		for(int connectTo : nSpec)
-    		{	from.addLink((YCell)cellArray[connectTo]);
+    		{	from.addLink(cellArray[connectTo]);
     		}
     	}
      	// mark the edge properties of the cells

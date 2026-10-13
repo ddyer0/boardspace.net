@@ -24,7 +24,7 @@ import java.util.*;
 import lib.*;
 import lib.Random;
 import online.game.*;
-
+// check cost to build @110  @240
 
 /**
  * This class doesn't do any graphics or know about anything graphical, 
@@ -100,7 +100,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 173;			// 100 represents the initial version of the game
+{	static int REVISION = 174;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -195,6 +195,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 171 fixes the first player after drafting
 										// revision 172 fixes the second player after drafting
 										// revision 173 adds debuginfo
+										// revision 174 considers workshop interaction with harvest expert
 
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
@@ -1024,7 +1025,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     public ViticultureChip lastDroppedObject = null;	// for image adjustment logic
     private ViticultureCell lastDroppedWorker = null;
     private int lastDroppedWorkerIndex = 0;
-    
+        
     private StateStack stateStack = new StateStack();
 	private ViticultureCell newcell(ViticultureId loc,ChipType type,String tip)
     {	ViticultureCell c = newcell(loc,'@',0);
@@ -5797,7 +5798,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     			break;
     		case Choice_B:
        			//p1("harvest expert b");
-       			changeCash(pb,-1,yokeCash,replay);
+       			if(revision<174 || !pb.hasWorkshop()) { changeCash(pb,-1,yokeCash,replay); }
     			if(pb.yoke.topChip()==null)
     			{
     				pb.yoke.addChip(pb.getContent(pb.yoke));
@@ -8724,7 +8725,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         		ViticultureCell c = getCell(m.dest,m.to_col,m.to_row);
         		if(pb.selectedCells.contains(c)) { pb.selectedCells.remove(c, true); }
         		else { pb.selectedCells.clear(); pb.selectedCells.push(c); }
-        		setState((pb.selectedCells.size()==1) ? ViticultureState.Confirm : resetState);
+          		setState((pb.selectedCells.size()==1) ? ViticultureState.Confirm : resetState);
         	}
         	break;
         case MOVE_DROPB:
@@ -10101,7 +10102,9 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 				break;
 			case 18: // harvest expert
 				addChoice(all,ViticultureId.Choice_A,generator);
-				if(pb.cash>=1) { addChoice(all,ViticultureId.Choice_B,generator); }
+				int cost = (revision>=174 && pb.hasWorkshop())?0:1;
+				if(pb.cash>=cost && (revision<174 || pb.yoke.topChip()==null))
+					{ addChoice(all,ViticultureId.Choice_B,generator); }
 				break;
 			case 20:	// jack of all trades
 				{

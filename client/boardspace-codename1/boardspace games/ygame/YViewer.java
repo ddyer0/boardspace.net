@@ -300,7 +300,7 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	YChip.getChip(obj).draw(g,this,(int)CELLSIZE, xp, yp, null);
+    	YChip.getChip(obj).draw(g,this,CELLSIZE, xp, yp, null);
     }
 
 
