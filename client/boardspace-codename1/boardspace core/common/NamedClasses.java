@@ -45,6 +45,7 @@ public class NamedClasses {
     	// the rest of languages do not currently need a special class.  English class is used with appropriage translations
     
     	// game classes
+    	classes.put("amazons.AmazonsViewer",amazons.AmazonsViewer.class);
     	classes.put("gomoku.GomokuViewer",gomoku.GomokuViewer.class);
        	classes.put("slither.SlitherViewer",slither.SlitherViewer.class);
       	classes.put("bugs.BugsViewer",bugs.BugsViewer.class);

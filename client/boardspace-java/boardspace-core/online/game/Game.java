@@ -2307,7 +2307,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
         for (int i = 0; i < m; i++)
         {	
-        	choices.getItem(i).addItemListener(deferredEvents);
+        	javax.swing.JMenuItem mm = choices.getItem(i);
+        	if(mm!=null) { mm.addItemListener(deferredEvents); }
         }
 
         return (choices);
@@ -3975,17 +3976,19 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
        }
 
     }
-
+    private boolean useJointReview()
+    {
+    	return ((jointReview != null) && jointReview.getState())
+    			|| reviewOnly 
+    			|| GameOver();
+    }
     // this is where synchronization of the board across multiple players occurs.
     //
     private void DoJointReview()
     {	if(reviewOnly || !my.isSpectator())
     	{
         boolean oldval = useJointReview;
-        useJointReview = ((jointReview != null) && jointReview.getState())
-        				|| reviewOnly 
-        				|| GameOver()
-        ; //capture the current state
+        useJointReview = useJointReview(); //capture the current state
 
         if (useJointReview && (v!=null))
         {	
@@ -4657,6 +4660,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             while (!event.isEmpty())
 	            {	
 	                String ss = event.remove(0);
+	                if(ss.startsWith("+S ") && !useJointReview()) {
+	                	// this filters out the scroll moves when not in joint review
+	                }
+	                else {
 	                // be careful about the padding.  Each subcommand should end with a space, so "combined" always ends with a space
 	                if(ss.charAt(0)=='@')
 	                {
@@ -4679,7 +4686,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	                		" "+NetConn.SEND_GROUP
 	                		+ KEYWORD_VIEWER+" "+ss+" ";
 	                combined += msg.length()+msg;
-	                }
+	                }}
 	            }
             	RecordingStrategy mode = v.gameRecordingMode();
             	if(mode!=RecordingStrategy.None)

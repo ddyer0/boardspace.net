@@ -79,7 +79,7 @@ public class ExtendedHashtable extends TreeMap<String,Object>
         
      private synchronized Object getInternal(String key)
         {
-            return (super.get(key));
+            return (key==null ? null : super.get(key));
         }
      
 

@@ -1337,7 +1337,7 @@ synchronized(allGames) {
 	}
 	
 	{
-	put(new GameInfo(221,ES.test,133,"AZ",TerritoryGames,"Amazons","Amazons",
+	put(new GameInfo(221,ES.game,133,"AZ",TerritoryGames,"Amazons","Amazons",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			"amazons.AmazonsViewer","/amazons/english/rules.html","about_amazons.html",

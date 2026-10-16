@@ -150,6 +150,7 @@ import warp6.Warp6Constants;
 
 import static util.PasswordCollector.LoginStrings;
 
+import amazons.AmazonsConstants;
 import arimaa.ArimaaConstants;
 import barca.BarcaConstants;
 import blackdeath.BlackDeathConstants;
@@ -204,6 +205,9 @@ public class masterStrings extends InternationalStrings
         setContext("Game Timer");
         GameTimerConstants.putStrings();
 
+        setContext("amazons");
+        AmazonsConstants.putStrings();
+        
         setContext("bug");
         BugConstants.putStrings();
 

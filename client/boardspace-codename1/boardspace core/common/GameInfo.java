@@ -201,7 +201,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 			 if(robots[i]==robotn)
 			 {
 				 double robostandard =  robotSpeed[i]; 
-				 return((speed/robostandard)>0.75  );
+				 return((speed/robostandard)>0.25  );
 			 }
 		 }
 		 
@@ -1017,20 +1017,20 @@ synchronized(allGames) {
 	// racing games
 	{ GameInfo mm = put(new GameInfo(310,ES.game,39,"AA",RacingGames,"Arimaa","Arimaa",
 			OneBotPlus,
-			new double[]{1,0.01},
+			new double[]{0.41,0.01},
 			"arimaa.ArimaaViewer","/arimaa/english/Arimaa%20Game%20Rules.htm","about_arimaa.html",
 			"/arimaa/english/arimaa-video.html",
 			false, GoldOverSilver));
 	  mm.groupSortKey = "00070";
 	  mm = put(new GameInfo(311,ES.game,39,"AA",RacingGames,"Arimaa","Arimaa_Blitz",
 				OneBotPlus,
-				new double[]{1,0.01},
+				new double[]{0.41,0.01},
 				"arimaa.ArimaaViewer","/arimaa/english/Arimaa%20Game%20Rules.htm","about_arimaa.html",
 				"/arimaa/english/arimaa-video.html",
 				false, GoldOverSilver));
 	  mm = put(new GameInfo(312,ES.game,39,"AA",RacingGames,"Arimaa","Arimaa_Grand",
 				OneBotPlus,
-				new double[]{1,0.01},
+				new double[]{0.41,0.01},
 				"arimaa.ArimaaViewer","/arimaa/english/Arimaa%20Game%20Rules.htm","about_arimaa.html",
 				"/arimaa/english/arimaa-video.html",
 				false, GoldOverSilver));
@@ -1341,6 +1341,15 @@ synchronized(allGames) {
 
 	}
 	
+	{
+	put(new GameInfo(221,ES.game,133,"AZ",TerritoryGames,"Amazons","Amazons",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			"amazons.AmazonsViewer","/amazons/english/rules.html","about_amazons.html",
+			null,false, WhiteOverBlack));
+	}
+	
+
 	{
 	String tviewer = "twixt.TwixtViewer";
 	String trules = "/twixt/english/rules.html";

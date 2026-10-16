@@ -732,8 +732,15 @@ public abstract class commonCanvas extends exCanvas
     			{ op = st; 
     			  st = "";
     			}
-    		
-    		if("+T".equals(op)) 
+    		if("+S".equals(op))
+    		{
+    			int space2 = st.indexOf(' ');
+  			    String payload = st.substring(0,space2);
+  			    st = st.substring(space2+1);
+  			    doScroll(G.IntToken(payload),"remote");
+  			    st = null;
+    		}
+    		else if("+T".equals(op)) 
     			{ int space2 = st.indexOf(' ');
     			  String payload = st.substring(0,space2);
     			  st = st.substring(space2+1);
@@ -747,7 +754,11 @@ public abstract class commonCanvas extends exCanvas
     				l.currentMoveTime = G.IntToken(payload); 
     			}
     		else if(performMessage(futureTimeControl,op,st)) { st = null ; }
-    		else { G.print("Unexpected message ",op); }
+    		else { G.print("Unexpected message ",op); 
+    			int space2 = st.indexOf(' ');
+			    String payload = space2>=0 ? st.substring(space2) : st;
+			    if(payload.length()<=4) { st = null; } else { st = payload; }
+    		}
     		
     		if("".equals(st)) { st = null; }
     	}
@@ -4276,12 +4287,22 @@ public abstract class commonCanvas extends exCanvas
    // scroll by action by this player.  we should have control
    public boolean doScrollTo(int whence)
    {	
-	   return doScroll(whence,"local");
+	   boolean v = doScroll(whence,"local");
+	   // this adds "scroll" messages that are sent in real time, rather than when the game run loop
+	   // gets around to it.  I think this will eliminate the last instances of mis-synchronization
+	   // when doing joint review.   These events are unconditionally added here, but filtered out
+	   // in the game loop when no actively in review mode.  The boolean enable is a temporary 
+	   // hack so the feature can be turned on when I think enough of the clients are ready for it.
+	   //
+	   if(G.getBoolean("enablescroll",false)) { addEvent("+S "+History.viewStep); }
+	   return v;
+	   
    }
    // scroll by another player.  We should NOT have control here
    public boolean doRemoteScrollTo(int whence,Tokenizer myST)
    {
 	   boolean v = doScroll(whence,"remote");
+
 	   if(myST!=null && myST.hasMoreTokens())
 	   {
 		   String op = myST.nextToken();
@@ -6364,7 +6385,7 @@ public abstract class commonCanvas extends exCanvas
      	boolean some = reviewing ? false : l.handleDeferredMessages(); // do the list if we're live, or do nothing if we're in review
     	
     	boolean has = hasDeferredMessages();
-    	if((str!=null) && has)	
+    	if((str!=null) && !str.startsWith("+S") && has)
         {
          	if(reviewing)
          	{
