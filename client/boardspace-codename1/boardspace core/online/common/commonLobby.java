@@ -956,13 +956,13 @@ private boolean handleChat(int playerID,String commandStr,Tokenizer localST)
  		   || ChatInterface.KEYWORD_LOBBY_CHAT.equalsIgnoreCase(commandStr)
  		   || ChatInterface.KEYWORD_PSCHAT.equalsIgnoreCase(commandStr)) 
  	  
-   {  String localTempStr = " ";
+   {  StringBuilder localTempStr = new StringBuilder();
+       boolean first = true;
        while (localST.hasMoreTokens()) {
      	String toke = localST.nextToken();
-         localTempStr = localTempStr + " " + toke;
-         
+         if(first) { first=false; } else { localTempStr.append(" "); }
+         localTempStr.append(toke);
        }
-       localTempStr = localTempStr + " ";
        User user= getUser(playerID);
        if(user!=null) 
            { 
@@ -971,7 +971,7 @@ private boolean handleChat(int playerID,String commandStr,Tokenizer localST)
          		   && !user.ignored 
          		   && !user.mutedMe 
          		   && !users.primaryUser().automute)
-             { theChat.postMessage(playerID,InternationalStrings.getLanguage(),user.getInfo(G.LANGUAGE),commandStr,localTempStr);
+             { theChat.postMessage(playerID,InternationalStrings.getLanguage(),user.getInfo(G.LANGUAGE),commandStr,localTempStr.toString());
                user.messages++;	// count the messages we've actually seen
              }
              user.setChatTime(); 

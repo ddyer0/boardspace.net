@@ -487,7 +487,7 @@ public class Session implements LobbyConstants
 	  		{ setCurrentRobot(defaultNoRobot());
 	  		  return(false); 
 	  		}
-	    if((!AR.arrayContains(robots,currentRobot) || !canIUseThisRobot(currentRobot)))
+	    if((!AR.arrayContains(robots,currentRobot) | !canIUseThisRobot(currentRobot)))
 	      {
 	    	  for(Bot b : robots)
 	    	  {
@@ -668,10 +668,7 @@ public class Session implements LobbyConstants
 	    boolean canAddRobot =  (playersInSession < maxPlayers)
 	    						&& (mode != Mode.Tournament_Mode)
 	    						&& (submode != JoinMode.Tournament_Mode)
-	    						&& (mode != Mode.Master_Mode)
-	    						// temporary kludge where Codename1 has broken bots
-	    						//&& (!G.isIOS() || G.DEBUG)
-	    						;
+	    						&& (mode != Mode.Master_Mode);
 	    return(canAddRobot);
     }
     /**

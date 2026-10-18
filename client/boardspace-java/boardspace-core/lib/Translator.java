@@ -258,13 +258,16 @@ public class Translator {
     {
     	try {
     		lastLanguage = "";
+    		message = message.trim();
     		String result = translate(to,message);
     		int ind = result.indexOf(':');
     		if(ind>0)
     		{
     			String lang = result.substring(0,ind);
     			if(to.equalsIgnoreCase(lang)) { result = null; }
-    			else { result = result.substring(ind+1); }
+    			else { result = result.substring(ind+1).trim(); 
+    			 if(message.equalsIgnoreCase(result)) { result = null; }
+    			}
     			lastLanguage = lang;
     			if("unknown".equalsIgnoreCase(lang)) { result = ""; }
     		}

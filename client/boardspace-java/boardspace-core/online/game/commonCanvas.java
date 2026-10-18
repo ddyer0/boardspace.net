@@ -4300,7 +4300,10 @@ public abstract class commonCanvas extends exCanvas
 	   // in the game loop when no actively in review mode.  The boolean enable is a temporary 
 	   // hack so the feature can be turned on when I think enough of the clients are ready for it.
 	   //
-	   if(G.getBoolean("enablescroll",false)) { addEvent("+S "+History.viewStep); }
+	   if(G.getBoolean("enablescroll",false)) 
+	   	{ addEvent("+S "+History.viewStep);
+	   	
+	   	}
 	   return v;
 	   
    }
@@ -4898,8 +4901,29 @@ public abstract class commonCanvas extends exCanvas
        	else if (Execute(m,replay))
         {
         	repaint(20);					 // states will have changed.
+        	
+        	{
         	// str may be altered by AddToHistory, too, so get the string that must be transmitted first.
         	String str = m.moveString();	// note that "moveString" may be altered by the "execute"
+     	
+        	// 10/18/2026 moves this clause to be first, so it preceeds the AddToHistory below
+            if (transmit && (allowed_to_edit || canUseDone()))
+            {	if(m.elapsedTime()<=0)
+            	{
+            	// this may not have been done yet if the game is messing with "replaymode" 
+            	// for whatever reason.
+            	commonPlayer p = getPlayerOrTemp(m.player);
+            	m.setElapsedTime((int)p.elapsedTime);
+            	}
+            	str = "+T "+m.elapsedTime()+" "+str; 	// add the move time stamp
+                addEvent(str);
+            }}
+
+        	{
+        	// a subtle point - AddToHistory might trigger ResyncBoard, which might call Scroll
+        	// which might add a +S nnn to the commands list.  In that case, the transmit part
+        	// ought to have preceeded this, so the receivers will see events in the right order
+        	//
             boolean added = AddToHistory(m);
             // this is the active part of the "Start Evaluator" feature
             if (extraactions && (getActivePlayer().robotPlayer != null))
@@ -4924,19 +4948,11 @@ public abstract class commonCanvas extends exCanvas
             			  // use the new digest (hive, game over by repetition)
             			  m.setDigest(newdig);
             			} 
-            	}
+            	}}
+            
             if(replay==replayMode.Live) { verifyGameRecord(); }
-            if (transmit && (allowed_to_edit || canUseDone()))
-            {	if(m.elapsedTime()<=0)
-            	{
-            	// this may not have been done yet if the game is messing with "replaymode" 
-            	// for whatever reason.
-            	commonPlayer p = getPlayerOrTemp(m.player);
-            	m.setElapsedTime((int)p.elapsedTime);
-            	}
-            	str = "+T "+m.elapsedTime()+" "+str; 	// add the move time stamp
-                addEvent(str);
-            }
+            
+            
             if((replay==replayMode.Live) && playerChanging()) { playTurnChangeSounds(); }
             performAndTransmitAfter(m,transmit,replay);
             return (true);
@@ -5427,11 +5443,12 @@ public abstract class commonCanvas extends exCanvas
     public boolean resynchronizeBoard(commonMove deletedMove)
     {
     	int step = History.viewStep;
-    	long dig1 = getBoard().Digest();
+    	BoardProtocol bb = getBoard();
+    	long dig1 = bb.Digest();
     	rawHistory.addElement(new dummyMove("vcr:@"+step+" edit rescroll"));
     	doWayBack(replayMode.Replay);
-    	doScrollTo(step);
-    	long dig2 = getBoard().Digest();
+    	doScroll(step,"local");		// bypass the +S logic
+    	long dig2 = bb.Digest();
 	    generalRefresh();
 	    return dig2!=dig1;
     }

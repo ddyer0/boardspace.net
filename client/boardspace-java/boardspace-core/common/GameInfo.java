@@ -30,6 +30,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	static final String TilePatternGames = "Pattern Games";
 	static final String AncientGames = "Ancient Games";
 	static final String NInARowGames = "N-in-a-row Games";
+	static final String ManeuverGames = "Maneuver Games";
 	static final String EuroGames = "Euro Games";
 	static final String RacingGames = "Racing Games";
 	static final String ConnectionGames = "Connection Games";
@@ -101,7 +102,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		StackingGames,
 		TerritoryGames,
 		WordGames,
-		MultiPlayerGames,	// constructed automatically
+		ManeuverGames,
 		OtherGames,
 		Hive,
 	};
@@ -1033,7 +1034,7 @@ synchronized(allGames) {
 	}
 	
 	{
-	put(new GameInfo(54,ES.game,86,"BC",RacingGames,"Barca","Barca",
+	put(new GameInfo(54,ES.game,86,"BC",ManeuverGames,"Barca","Barca",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			"barca.BarcaViewer","/barca/english/rules.html","about_barca.html",
@@ -1142,16 +1143,16 @@ synchronized(allGames) {
 		String vrules = "/veletas/english/Veletas-rules.pdf";
 		String vview = "veletas.VeletasViewer";
 		double vtime[] = new double[]{1.0,0.01};
-		GameInfo g = put(new GameInfo(633,ES.game,79,"VE",TerritoryGames,"Veletas","Veletas-10",
+		GameInfo g = put(new GameInfo(633,ES.game,79,"VE",ManeuverGames,"Veletas","Veletas-10",
 			OneBotPlus,vtime,
 			vview,vrules,"about_veletas.html",
 			null,false, BlackOverWhite));
 		g.groupSortKey = "00089";
-		put(new GameInfo(634,ES.game,79,"VE",TerritoryGames,"Veletas","Veletas-9",
+		put(new GameInfo(634,ES.game,79,"VE",ManeuverGames,"Veletas","Veletas-9",
 				OneBotPlus,vtime,
 				vview,vrules,"about_veletas.html",
 				null,false, BlackOverWhite));
-		put(new GameInfo(635,ES.game,79,"VE",TerritoryGames,"Veletas","Veletas-7",
+		put(new GameInfo(635,ES.game,79,"VE",ManeuverGames,"Veletas","Veletas-7",
 				OneBotPlus,vtime,
 				vview,vrules,"about_veletas.html",
 				null,false, BlackOverWhite));
@@ -1337,9 +1338,9 @@ synchronized(allGames) {
 	}
 	
 	{
-	put(new GameInfo(221,ES.game,133,"AZ",TerritoryGames,"Amazons","Amazons",
-			OneBotPlus,
-			new double[]{1.0,0.01},
+	put(new GameInfo(221,ES.game,133,"AZ",ManeuverGames,"Amazons","Amazons",
+			TwoBotsPlus,
+			new double[]{1.0,1.0,0.01},
 			"amazons.AmazonsViewer","/amazons/english/rules.html","about_amazons.html",
 			null,false, WhiteOverBlack));
 	}
@@ -1498,24 +1499,24 @@ synchronized(allGames) {
 	String trikeViewer = "trike.TrikeViewer";  
 	String trikeAb = "about_trike.html";
 	String trikeVideo = null;
-	put(new GameInfo(790,ES.game,114,"TK",OtherGames,"Trike","trike-7",
+	put(new GameInfo(790,ES.game,114,"TK",ManeuverGames,"Trike","trike-7",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			trikeViewer,trikeRules,trikeAb,
 			trikeVideo,false, WhiteOverBlack));
-	put(new GameInfo(795,ES.game,114,"TK",OtherGames,"Trike","trike-9",
-			OneBotPlus,
-			new double[]{1.0,0.01},
-			trikeViewer,trikeRules,trikeAb,
-			trikeVideo,false, WhiteOverBlack));
-	
-	put(new GameInfo(796,ES.game,114,"TK",OtherGames,"Trike","trike-11",
+	put(new GameInfo(795,ES.game,114,"TK",ManeuverGames,"Trike","trike-9",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			trikeViewer,trikeRules,trikeAb,
 			trikeVideo,false, WhiteOverBlack));
 	
-	put(new GameInfo(797,ES.game,114,"TK",OtherGames,"Trike","trike-13",
+	put(new GameInfo(796,ES.game,114,"TK",ManeuverGames,"Trike","trike-11",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			trikeViewer,trikeRules,trikeAb,
+			trikeVideo,false, WhiteOverBlack));
+	
+	put(new GameInfo(797,ES.game,114,"TK",ManeuverGames,"Trike","trike-13",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			trikeViewer,trikeRules,trikeAb,
@@ -2256,24 +2257,24 @@ synchronized(allGames) {
 	}
 // tile pattern games
 	{
-	put(new GameInfo(513,ES.game,48,"CD",TilePatternGames,"CookieDisco","Cookie-Disco",
+	put(new GameInfo(513,ES.game,48,"CD",ManeuverGames,"CookieDisco","Cookie-Disco",
 			TwoBotsPlus,
 			new double[]{0.2,1.0,0.01},
 				"cookie.CookieViewer","/cookie/english/COOKIE%20DISCO.pdf","about_cookie-disco.html",
 				null,true, RedOverGreen));
 
-	put(new GameInfo(514,ES.game,48,"CD",TilePatternGames,"CookieDisco","Cookie-Disco-crawl",
+	put(new GameInfo(514,ES.game,48,"CD",ManeuverGames,"CookieDisco","Cookie-Disco-crawl",
 			TwoBotsPlus,
 			new double[]{0.2,1.0,0.01},
 				"cookie.CookieViewer","https://boardspace.net/cookie/english/COOKIE%20DISCO%20-%20THE%20CRAWL%20COOKIE.pdf","about_cookie-disco.html",
 				null,true, RedOverGreen));
-	put(new GameInfo(515,ES.game,58,"SY",TilePatternGames,"CookieDisco","Syzygy",
+	put(new GameInfo(515,ES.game,58,"SY",ManeuverGames,"CookieDisco","Syzygy",
 			TwoBotsPlus,
 			new double[]{0.37,1.0,0.01},
 			"syzygy.SyzygyViewer","/syzygy/english/SYZYGY%20(engels%20online)1.pdf","about_syzygy.html",
 			null,true, null));
 
-	put(new GameInfo(515,ES.game,58,"SY",NInARowGames,"Syzygy","Syzygy",
+	put(new GameInfo(515,ES.game,58,"SY",ManeuverGames,"Syzygy","Syzygy",
 			TwoBotsPlus,
 			new double[]{0.37,1.0,0.01},
 			"syzygy.SyzygyViewer","/syzygy/english/SYZYGY%20(engels%20online)1.pdf","about_syzygy.html",
@@ -2679,12 +2680,13 @@ synchronized(allGames) {
 
 	}
 	{
-	put(new GameInfo(790,ES.game,61,"TJ",OtherGames,"TakoJudo","TakoJudo",
+	put(new GameInfo(790,ES.game,61,"TJ",ManeuverGames,"TakoJudo","TakoJudo",
 			OneBotPlus,
 			new double[]{0.36,0.01},
 			"takojudo.TakojudoViewer","/english/about_takojudo.html","about_takojudo.html",
 			null,true, BlueOverRed));
 	}
+	
 	{ GameInfo g = put(new GameInfo(666,ES.game,28,"MU",OtherGames,"Mutton","Mutton",
 			OneBot,
 			new double[]{0.14},
