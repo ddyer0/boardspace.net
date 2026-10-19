@@ -1558,24 +1558,6 @@ class MuttonGameBoard extends BaseBoard implements BoardProtocol, MuttonConstant
 		relocationValid = true;
 	}
 
-
-	/**
-	 * This method is called when a draw by repetition is detected by other
-	 * parts of the game infrastructure.  The game should enter a "draw
-	 * pending" state and await confirmation from the user (by clicking on
-	 * done) that a draw has happened.
-	 * If this mechanism is triggered unexpectedly, it is probably because move
-	 * editing in xxxGameViewer.editHistory() is not correctly removing
-	 * tentative moves by the user, or the Digest() method is not returning
-	 * unique results.
-	 * The Viewer also ought to have a "repRect" and call DrawRepRect to warn
-	 * the user that repetitions have been seen.
-	 *
-	 * Mutton cannot have repetitions of moves (since at least one sheep is
-	 * killed each turn), and therefore doesn't need this method.
-	 */
-	public void SetDrawState() { throw G.Error("SetDrawState() not expected"); }
-
 	
 /**************************************************************************
   The following methods are used by the robot players.

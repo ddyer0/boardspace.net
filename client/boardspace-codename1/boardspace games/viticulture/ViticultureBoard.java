@@ -1012,8 +1012,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	}
 
  
-	// this is required even though it is meaningless here
-	public void SetDrawState() {throw G.Error("not expected"); };	
 	CellStack animationStack = new CellStack();
 
     // intermediate states in the process of an unconfirmed move should

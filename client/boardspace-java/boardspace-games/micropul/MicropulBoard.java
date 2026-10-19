@@ -69,8 +69,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
     //
 	public CellStack animationStack = new CellStack();
 	
-	public void SetDrawState() {throw G.Error("Draw not expected"); };	
-    private int chips_on_board = 0;			// number of chips currently on the board
+   private int chips_on_board = 0;			// number of chips currently on the board
     public int extraTurns = 0;				// extra turns for the current player
     // intermediate states in the process of an unconfirmed move should
     // be represented explicitly, so unwinding is easy and reliable.

@@ -74,8 +74,6 @@ public class VolcanoHBoard extends hexBoard<VolcanoCell> implements VolcanoConst
 	public long Digest() {
 		return 0;
 	}
-	public void SetDrawState() {
-	}
 	public void sameboard(BoardProtocol other) {
 		
 	}

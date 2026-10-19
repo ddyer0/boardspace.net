@@ -4906,7 +4906,7 @@ public abstract class commonCanvas extends exCanvas
         	// str may be altered by AddToHistory, too, so get the string that must be transmitted first.
         	String str = m.moveString();	// note that "moveString" may be altered by the "execute"
      	
-        	// 10/18/2026 moves this clause to be first, so it preceeds the AddToHistory below
+        	// 10/18/2026 moves this clause to be first, so it precedes the AddToHistory below
             if (transmit && (allowed_to_edit || canUseDone()))
             {	if(m.elapsedTime()<=0)
             	{

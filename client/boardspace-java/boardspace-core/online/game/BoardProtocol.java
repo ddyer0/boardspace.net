@@ -68,7 +68,10 @@ public interface BoardProtocol extends Digestable
 	 * <p>Unexpected calls to this method frequently indicate that a viewer's {@link online.game.commonCanvas#EditHistory}
 	 * has not edited out repeated do-undo sequences by an indecisive player.
 	 */
-	public void SetDrawState();	// set the board into the "it's a tie game" state
+	public default void SetDrawState()	// set the board into the "it's a tie game" state
+	{
+		G.Error("draws are not expected");
+	}
 	/**
 	 * return true if the game is at an end-of-game state.  Normally, this is 
 	 * implemented as game_state==GAMEOVER_STATE.  This is used to trigger

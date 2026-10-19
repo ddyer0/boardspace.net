@@ -83,7 +83,6 @@ class MedinaBoard extends rectBoard<MedinaCell> implements BoardProtocol,MedinaC
 	public Variation variation = Variation.Medina_V1;
     public int boardColumns = DEFAULT_COLUMNS;	// size of the board
     public int boardRows = DEFAULT_ROWS;
-    public void SetDrawState() { throw G.Error("shouldn't be possible");  }
 	private MedinaState unresign;
 	private boolean resigned = false;
  	private MedinaState board_state;

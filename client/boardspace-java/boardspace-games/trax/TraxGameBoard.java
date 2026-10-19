@@ -58,9 +58,6 @@ class TraxGameBoard  extends BaseBoard implements BoardProtocol,TraxConstants
 	@SuppressWarnings("unchecked")
 	Vector<lineinfo> lines[] = new Vector[2];
 	
-
-			
-    public void SetDrawState() { }	// this is required even though it is meaningless for trax 
 	// the peculiar coordinate system for trax, the left,top tile is A1, which shifts as
 	// new tiles are added in col "@" or row 0
 	final int colToX(char col)

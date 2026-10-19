@@ -56,7 +56,6 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
 	
     public int boardColumns;	// size of the board
     public int boardRows;
-    public void SetDrawState() {G.Error("Not expected"); }
     public int score[] = null;
     public ModxCell rack[] = null;	// the pool of chips for each player.  
     public ModxCell flat[] = null;	// the pool of flats for each player

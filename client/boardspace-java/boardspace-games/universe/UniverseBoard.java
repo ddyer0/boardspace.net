@@ -104,7 +104,6 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     private int sweep_size = 0;
     private boolean sweep_adjacent = false;		// used in polysolver to mark that the adjacency requirement is met 
     private int preferredOrientation = 0;
-    public void SetDrawState() { throw G.Error("Not expected"); }
     public CellStack flippedCells = new CellStack();
     public IStack undoStack = new IStack();
     

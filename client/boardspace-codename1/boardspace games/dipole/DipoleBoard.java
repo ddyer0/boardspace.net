@@ -74,7 +74,6 @@ class DipoleBoard extends rectBoard<DipoleCell> implements BoardProtocol,DipoleC
 	public DipoleCell darkCells[] = null;
     public int boardSize = DEFAULT_BOARDSIZE;	// size of the board
     private boolean symmetric_start = false;
-    public void SetDrawState() { throw G.Error("this shoulnd't happen"); }
     public DipoleCell rack[] = null;
     public DipoleCell Waste_Cell = null;
     public DipoleChip playerChip[]=new DipoleChip[2];

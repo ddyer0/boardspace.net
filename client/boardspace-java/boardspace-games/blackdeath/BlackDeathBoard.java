@@ -499,7 +499,6 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
 // dithering by the user, or the "Digest()" method is not returning unique results
 // other parts of this mechanism: the Viewer ought to have a "repRect" and call
 // DrawRepRect to warn the user that repetitions have been seen.
-	public void SetDrawState() {throw G.Error("not expected"); };	
 	CellStack animationStack = new CellStack();
 
 	// intermediate states in the process of an unconfirmed move should

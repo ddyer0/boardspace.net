@@ -50,7 +50,6 @@ class CarnacBoard extends squareBoard<CarnacCell> implements BoardProtocol,Carna
 	public variation rules = null;
     public int boardColumns = 0;	// size of the board
     public int boardRows = 0;
-    public void SetDrawState() { throw G.Error("Not expected"); }
     public FaceColor playerColor[] = new FaceColor[2];
     public CarnacCell pool[] = null;			// samples of the four canonical chips
     public int poolSize;						// number of chips remaining in the pool

@@ -106,7 +106,6 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
     //
     // private variables
     //
-    public void SetDrawState() { throw G.Error("shouldn't happen"); }
     
     // intermediate states in the process of an unconfirmed move should
     // be represented explicitly, so unwinding is easy and reliable.

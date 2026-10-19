@@ -712,10 +712,6 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,YspahanCons
 														// gameover doesn't
 														// cause a problem
 
-	public void SetDrawState() {
-		throw G.Error("Shouldn't happen");
-	}
-
 	Rectangle dispRect = new Rectangle(0, 0, 1, 1);
 	RcBoard coords = new RcBoard(board_width, board_height);
 

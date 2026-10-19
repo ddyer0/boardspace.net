@@ -184,7 +184,6 @@ class MogulBoard extends trackBoard<MogulCell> implements BoardProtocol,MogulCon
 	public int startPlayer = -1;
 	private int defaultWhoseTurn = FIRST_PLAYER_INDEX;
 	private int cardSaleValue = -1;
-	public void SetDrawState() { throw G.Error("shouldn't happen"); }
 
 	public CellStack animationStack = new CellStack();
 

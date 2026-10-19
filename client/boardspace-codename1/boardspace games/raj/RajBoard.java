@@ -56,7 +56,6 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
 			{ AR.setValue(win,false); 	// make sure "win" is cleared
 			}
 	}
-	public void SetDrawState() {throw G.Error("not expected"); };	
 	
 	//
 	// these are the seed locations for the players to drop cards, except in 4 player games

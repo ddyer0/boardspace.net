@@ -64,7 +64,6 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
 	}
 	public int boardColumns = DEFAULT_COLUMNS;	// size of the board
     public int boardRows = DEFAULT_ROWS;
-    public void SetDrawState() { throw G.Error("not expected"); }	// draws shouldn't be possible
     public SantoriniCell cube_rack[] = new SantoriniCell[2];	// cube pieces
     public SantoriniCell cylinder_rack[] = new SantoriniCell[2];	// cylinder pieces
     public SantoriniCell playerRack[][] = { cube_rack,cylinder_rack};

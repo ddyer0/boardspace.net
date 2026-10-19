@@ -64,7 +64,6 @@ class SpanglesBoard extends triBoard<SpanglesCell> implements BoardProtocol,Span
 			{ AR.setValue(win,false); 	// make sure "win" is cleared
 			}
 	}
-	public void SetDrawState() {throw G.Error("not expected"); };	// impossible in spangles
     //
     // private variables
     //

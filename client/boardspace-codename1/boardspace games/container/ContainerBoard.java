@@ -1357,10 +1357,7 @@ public class ContainerBoard extends RBoard<ContainerCell> implements BoardProtoc
 	public ContainerCell warehouseStorage;			// unsold warehouses
 	boolean nextIntCompatibility = false;
     public String gameType() { return(gametype+" "+(players_in_game+(nextIntCompatibility?100:0))+" "+randomKey); }
-    public void SetDrawState()
-    	{ 	// shouln't happen, but harmless
-    	}
-   //
+    //
     // private variables
     //
     

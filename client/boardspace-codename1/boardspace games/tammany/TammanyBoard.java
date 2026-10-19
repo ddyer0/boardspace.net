@@ -295,7 +295,6 @@ import static tammany.TammanyMovespec.*;
  	TammanyState board_state = TammanyState.Puzzle;	
  	private TammanyState unresign = null;	// remembers the orignal state when "resign" is hit
  	public TammanyState getState() { return(board_state); }
- 	public void SetDrawState() {throw G.Error("not expected"); };	
  	public void setState(TammanyState st) 
 	 { 	unresign = (st==TammanyState.Resign)?board_state:null;
 		 board_state = st;

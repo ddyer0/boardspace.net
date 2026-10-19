@@ -81,7 +81,6 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
     private char placedToCol = 'x'; // the column where dropped
     private int placedToRow = 0; // the row where dropped
 
-    public void SetDrawState() { throw G.Error("not implemented"); } 
     //
     // return true if balls[rack][ball] should be selectable, meaning
     // we can pick up a ball or drop a ball there.  movingBallColor is 

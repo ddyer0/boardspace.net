@@ -57,10 +57,6 @@ public long Digest() {
 	return 0;
 }
 
-public void SetDrawState() {
-	
-}
-
 public void sameboard(BoardProtocol other) {
 	
 	

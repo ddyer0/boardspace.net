@@ -70,8 +70,6 @@ public class VolcanoRBoard extends rectBoard<VolcanoCell> implements VolcanoCons
 	public long Digest() {
 		return 0;
 	}
-	public void SetDrawState() {
-	}
 	public void sameboard(BoardProtocol other) {
 		
 	}

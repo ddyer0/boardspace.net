@@ -57,7 +57,6 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
 	public int getMaxRevisionLevel() { return(REVISION); }
     public int boardColumns;	// size of the board
     public int boardRows;
-    public void SetDrawState() { G.Error("Not expected"); }
     public VeletasCell whiteChips = null;
     public VeletasCell blackChips = null;
     public VeletasCell rack[] = null;	// the pool of chips for each player.  

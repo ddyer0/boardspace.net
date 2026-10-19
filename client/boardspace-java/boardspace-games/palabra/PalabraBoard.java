@@ -63,7 +63,6 @@ class PalabraBoard extends squareBoard<PalabraCell> implements BoardProtocol,Pal
 			{ AR.setValue(win,false); 	// make sure "win" is cleared
 			}
 	}
-	public void SetDrawState() {throw G.Error("not expected"); };	
 	//
 	// these are the seed locations for the players to drop cards, except in 4 player games
 	// the fourth player takes the fifth location.  The robots always drop their cards on

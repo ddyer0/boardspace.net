@@ -153,7 +153,6 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
     boolean visibleInHiddenUI[] = null;
     public boolean showMovements[] = null;
     public boolean showHiddenMovements[] = null;
-    public void SetDrawState() { throw G.Error("Not expected"); }
     private Variation variation = Variation.Standard;
 	public BreakingAwayCell cycles[][] = null;		// this is the main root of cycle state
     public int scoreForPlayer[]= null;
