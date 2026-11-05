@@ -96,7 +96,7 @@ public class SlitherPlay extends commonRobot<SlitherBoard> implements Runnable, 
     private boolean localRandomBot = false;
     public int slitherPercent = 90;
     private int filterSpan = 3;
-    private int baseMoveRate = 2500000;
+    private int baseMoveRate = 180000;
     public boolean canEverRandomize = true;
      /**
      *  Constructor, strategy corresponds to the robot skill level displayed in the lobby.
@@ -178,7 +178,7 @@ public class SlitherPlay extends commonRobot<SlitherBoard> implements Runnable, 
      */
         public CommonMoveStack  List_Of_Legal_Moves()
         {
-            return(board.GetListOfMoves(movelist));
+            return(board.GetListOfMoves(movelist,false));
         }
 
         CellStack focus = new CellStack();
@@ -229,7 +229,6 @@ public class SlitherPlay extends commonRobot<SlitherBoard> implements Runnable, 
     private double ScoreForPlayer(SlitherBoard evboard,int player,boolean print)
     {	
 		double val = 0.0;
-		G.Error("Score for player not implemented");
      	return(val);
     }
 
@@ -498,7 +497,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.final_depth = 9999;		// note needed for pushfight which is always finite
         monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
         monte_search_state.randomize_uct_children = true;     
-        monte_search_state.maxThreads = -1;//DEPLOY_THREADS;
+        monte_search_state.maxThreads = DEPLOY_THREADS;
         int limit =  WEAKBOT ? baseMoveRate/10 : baseMoveRate;
         int maxlimit = limit*4;
         

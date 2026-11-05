@@ -88,16 +88,6 @@ class MijnlieffBoard
 	}
 	public MijnlieffCell[] getPlayerRack(int pl) { return(rack[pl]); }
 	
-
-// this is required even if it is meaningless for this game, but possibly important
-// in other games.  When a draw by repetition is detected, this function is called.
-// the game should have a "draw pending" state and enter it now, pending confirmation
-// by the user clicking on done.   If this mechanism is triggered unexpectedly, it
-// is probably because the move editing in "editHistory" is not removing last-move
-// dithering by the user, or the "Digest()" method is not returning unique results
-// other parts of this mechanism: the Viewer ought to have a "repRect" and call
-// DrawRepRect to warn the user that repetitions have been seen.
-	public void SetDrawState() {throw G.Error("not expected"); };	
 	CellStack animationStack = new CellStack();
 
     // intermediate states in the process of an unconfirmed move should
@@ -124,16 +114,6 @@ class MijnlieffBoard
     private MijnlieffCell rack[][] = new MijnlieffCell[][] {lightRack,darkRack};
     private MijnlieffCell dummyRack[] = new MijnlieffCell[] { new MijnlieffCell(MijnlieffId.None)};
     
-    // save strings to be shown in the game log
-    StringStack gameEvents = new StringStack();
-    InternationalStrings s = G.getTranslations();
-    
- 	void logGameEvent(String str,String... args)
- 	{	//if(!robotBoard)
- 		{String trans = s.get(str,args);
- 		 gameEvents.push(trans);
- 		}
- 	}
  	private int countInDirection(MijnlieffCell from,MColor color,int direction)
  	{	int count = 0;
  		while(from!=null)
@@ -772,9 +752,6 @@ class MijnlieffBoard
         default:
         	cantExecute(m);
         }
-        if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
-
-        //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
         return (true);
     }
 

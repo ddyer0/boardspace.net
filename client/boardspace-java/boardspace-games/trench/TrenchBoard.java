@@ -145,16 +145,6 @@ class TrenchBoard
     {
     	return captured(playerChip[who]);
     }
-    // save strings to be shown in the game log
-    StringStack gameEvents = new StringStack();
-    InternationalStrings s = G.getTranslations();
-    
- 	void logGameEvent(String str,String... args)
- 	{	//if(!robotBoard)
- 		{String trans = s.get(str,args);
- 		 gameEvents.push(trans);
- 		}
- 	}
 
     private CellStack occupiedCells[] = { new CellStack(),new CellStack()};
     
@@ -907,11 +897,6 @@ class TrenchBoard
         default:
         	cantExecute(m);
         }
-        if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
-
-        //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
-        //G.print("X "+m+" for "+whoseTurn+" "+board_state+" "+Digest());
-        
         return (true);
     }
 

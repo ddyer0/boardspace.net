@@ -112,17 +112,6 @@ class IroBoard
     private CellStack droppedDestStack = new CellStack();
     private StateStack stateStack = new StateStack();
     
-    // save strings to be shown in the game log
-    StringStack gameEvents = new StringStack();
-    private InternationalStrings s = G.getTranslations();
-    
- 	void logGameEvent(String str,String... args)
- 	{	//if(!robotBoard)
- 		{String trans = s.get(str,args);
- 		 gameEvents.push(trans);
- 		}
- 	}
-
     private IroState resetState = IroState.Puzzle; 
     public DrawableImage<?> lastDroppedObject = null;	// for image adjustment logic
 
@@ -999,9 +988,6 @@ class IroBoard
         default:
         	cantExecute(m);
         }
-        if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
-
-        //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
         return (true);
     }
 
@@ -1696,7 +1682,7 @@ public double simpleScore(int player,double position_weight,double wood_weight)
 	// value in 0-1 which indicates value of position
 	CellStack occ = occupiedCells[player];
 	int nleft = occ.size();
-	double wood = (double)(nleft*wood_weight)/(nCols*2);// 0-0.5 for the wood
+	double wood = (nleft*wood_weight)/(nCols*2);// 0-0.5 for the wood
 	//G.Assert(wood<=wood_weight,"wood bug");
 	switch(board_state)
 	{

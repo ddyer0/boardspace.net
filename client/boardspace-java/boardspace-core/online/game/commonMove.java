@@ -802,6 +802,8 @@ public abstract class commonMove
         		    + (gameover()?"T":"")
         			+ ((u==null)?"":u.toString()));
     }
+    
+    // this is the null result for games which don't record game events as separate from moves
 	public String[] gameEvents() {
 		return null;
 	}

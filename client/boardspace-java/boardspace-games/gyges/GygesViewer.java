@@ -370,7 +370,6 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
         if(cell==src) { StockArt.SmallO.draw(gc,this,adjustedSize/2,xpos,ypos,null); }
         boolean hitCell = cell.drawStack(gc,this,hit,adjustedSize,xpos,ypos,0,0.1,null);
     	boolean show = eyeRect.isOnNow();
-
         if(show && sources.get(cell)!=null)
         {
         	StockArt.SmallO.draw(gc,this,SQUARESIZE/2,xpos,ypos,null);
@@ -651,50 +650,13 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     {	
  
         handleExecute(b,mm,replay);
-        startBoardAnimations(replay);
-        
+        startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.ChainedToLast);
         if(replay.animate) { playSounds(mm); }
  
         return (true);
     }
      
-     void startBoardAnimations(replayMode replay)
-     {	try {
-     	double start = 0.0;
-        if(replay.animate)
-     	{	GygesCell endpoint = b.animationStack.top();
-     		if(endpoint!=null)
-     		{
-     		GygesChip top = b.pickedObject;
-     		if(top==null) { top = endpoint.topChip(); }
-     		if(top!=null)
-     		{
-     		for(int i=0,lim=b.animationStack.size(); i<lim; i+=2)
-     		{
-     		GygesCell src = b.animationStack.elementAt(i);
-     		GygesCell dest = b.animationStack.elementAt(i+1);
-  			double speed = masterAnimationSpeed*((src.onBoard && (lim<=2)) ? 1.0 : 0.5);
-      		startAnimation(src,dest,top,start,speed,((i+2)<lim) || (b.getState()==GygesState.Continue));
-     		start += speed;
-     		}}
-     		if(b.dropping && (b.dropSource!=null)&&(b.pickedObject!=null))
-     			{
-     			startAnimation(b.dropSource,b.dropSource,b.pickedObject,0,start,false);
-     			}
-     		}
-     	}}
-     	finally { 
-        	b.animationStack.clear();
-     	}
-     } 
 
-     void startAnimation(GygesCell from,GygesCell to,GygesChip top,double start,double speed,boolean overlap)
-     {	SimpleSprite newSprite = super.startAnimation(from,to,top,SQUARESIZE,start,speed);
-     	if(newSprite!=null)
-     	{	
-     		newSprite.overlapped = overlap;
-   		}
-     }
 /**
  * parse a move specifier on behalf of the current player.  This is called by the 
  * "game" object when it receives a move from the other player.  Note that it may

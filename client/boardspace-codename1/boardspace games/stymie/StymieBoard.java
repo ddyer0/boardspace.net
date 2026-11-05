@@ -122,18 +122,9 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
     private StymieCell playerCell[]=new StymieCell[] {GoldChips,SilverChips};
     private StymieCell playerCaptives[]=new StymieCell[] {GoldCaptives,SilverCaptives};
    
-    // save strings to be shown in the game log
-    StringStack gameEvents = new StringStack();
-    InternationalStrings s = G.getTranslations();
     private CellStack robotCells = new CellStack();
 	private StateStack robotState = new StateStack();
 	
- 	void logGameEvent(String str,String... args)
- 	{	//if(!robotBoard)
- 		{String trans = s.get(str,args);
- 		 gameEvents.push(trans);
- 		}
- 	}
 
  	private StymieState resetState = StymieState.Puzzle; 
  	private boolean setupDone = false;
@@ -1039,9 +1030,6 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
         default:
         	cantExecute(m);
         }
-        if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
-
-        //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
         return (true);
     }
 

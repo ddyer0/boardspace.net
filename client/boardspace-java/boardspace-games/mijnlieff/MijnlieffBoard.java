@@ -114,16 +114,6 @@ class MijnlieffBoard
     private MijnlieffCell rack[][] = new MijnlieffCell[][] {lightRack,darkRack};
     private MijnlieffCell dummyRack[] = new MijnlieffCell[] { new MijnlieffCell(MijnlieffId.None)};
     
-    // save strings to be shown in the game log
-    StringStack gameEvents = new StringStack();
-    InternationalStrings s = G.getTranslations();
-    
- 	void logGameEvent(String str,String... args)
- 	{	//if(!robotBoard)
- 		{String trans = s.get(str,args);
- 		 gameEvents.push(trans);
- 		}
- 	}
  	private int countInDirection(MijnlieffCell from,MColor color,int direction)
  	{	int count = 0;
  		while(from!=null)
@@ -762,9 +752,6 @@ class MijnlieffBoard
         default:
         	cantExecute(m);
         }
-        if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
-
-        //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
         return (true);
     }
 

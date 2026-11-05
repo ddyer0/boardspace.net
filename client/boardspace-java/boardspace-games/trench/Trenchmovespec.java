@@ -63,11 +63,7 @@ public class Trenchmovespec
     
     TrenchChip chip;
     int captures = 0;
-    
-    // these provide an interface to log annotations that will be seen in the game log
-    String gameEvents[] = null;
-    public String[] gameEvents() { return(gameEvents); }
-
+ 
     public Trenchmovespec()
     {
     } // default constructor

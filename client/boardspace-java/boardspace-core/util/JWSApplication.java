@@ -179,7 +179,7 @@ public class JWSApplication implements Config,Runnable,OnlineConstants
             	  }
             	  else if(G.turnBased())
             	  {
-            	   CanvasProtocol viewer = (CanvasProtocol)G.MakeInstance("online.common.TurnBasedViewer");
+            	   CanvasProtocol viewer = (CanvasProtocol)G.MakeInstance(online.common.TurnBasedViewer.class);
             	   // init first, then add to the frame, to avoid races in lockAndLoadImages
             	   viewer.init(sharedInfo,fr);
             	   myL.setCanvas(viewer);           		  

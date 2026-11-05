@@ -56,9 +56,6 @@ public class KingsColormovespec
     
     KingsColorChip chip;
     
-    // these provide an interface to log annotations that will be seen in the game log
-    String gameEvents[] = null;
-    public String[] gameEvents() { return(gameEvents); }
 
     public KingsColormovespec()
     {

@@ -37,7 +37,10 @@ public class GC {
 	{
 		return(gc!=null ? gc.getClip() : null);
 	}
-
+	public void setClipToScreen(Graphics gc,int l,int t,int w,int h)
+	{
+		if(gc!=null) { gc.setClipToScreen(l,t,w,h); }
+	}
 	/** 
 	 * 
 	 * @param gc the current gc or null

@@ -112,17 +112,6 @@ class IroBoard
     private CellStack droppedDestStack = new CellStack();
     private StateStack stateStack = new StateStack();
     
-    // save strings to be shown in the game log
-    StringStack gameEvents = new StringStack();
-    private InternationalStrings s = G.getTranslations();
-    
- 	void logGameEvent(String str,String... args)
- 	{	//if(!robotBoard)
- 		{String trans = s.get(str,args);
- 		 gameEvents.push(trans);
- 		}
- 	}
-
     private IroState resetState = IroState.Puzzle; 
     public DrawableImage<?> lastDroppedObject = null;	// for image adjustment logic
 
@@ -999,9 +988,6 @@ class IroBoard
         default:
         	cantExecute(m);
         }
-        if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
-
-        //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
         return (true);
     }
 

@@ -14,6 +14,7 @@ import online.game.commonMove;
  * 
  * The speed benefits of running multiple threads are approximately
  * 		TIMES SPEED
+ * 
  * 1	1.0
  * 2	1.7
  * 3	2.5
@@ -823,11 +824,12 @@ class UCTMPThread extends Thread implements Opcodes,UCTThread
 	public void run() {
 		stop = false;
 		stopped = false;
+		boolean cheer = G.isCheerpj()||G.isJS();
 		try {
 		while(!stop)
 		{
 			simUsingTree();
-			if(G.isCheerpj()) { Thread.yield(); }
+			if(cheer) { Thread.yield(); }
 		}
 		}
 		catch (Throwable err)

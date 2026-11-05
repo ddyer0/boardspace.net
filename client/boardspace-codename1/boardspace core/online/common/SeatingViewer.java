@@ -175,10 +175,6 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
         	InternationalStrings.put(SeatingViewer.SeatingStringPairs);
         }
         startserver = myFrame.addAction((VNCService.isVNCServer()||RpcService.isRpcServer()) ? "stop server" : "start server",deferredEvents);
-        if(G.isCheerpj()) 
-        {
-        	testswitch = myFrame.addAction("test switch",deferredEvents);
-        }
         String name = UDPService.getPlaytableName();
         namefield.setText(name);
         namefield.singleLine = true;
@@ -197,7 +193,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
         
         UDPService.stop();
         
-        if(G.isTable() && !G.isCheerpj())
+        if(G.isTable() && !(G.isCheerpj()||G.isJS()))
         {
         UDPService.start(true);	// listen for tables
         if(REMOTEVNC) { VNCService.runVNCServer(true); }

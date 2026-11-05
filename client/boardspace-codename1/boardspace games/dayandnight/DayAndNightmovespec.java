@@ -57,9 +57,6 @@ public class DayAndNightmovespec
     
     DayAndNightChip chip;
     
-    // these provide an interface to log annotations that will be seen in the game log
-    String gameEvents[] = null;
-    public String[] gameEvents() { return(gameEvents); }
 
     public DayAndNightmovespec()
     {
@@ -202,7 +199,7 @@ public class DayAndNightmovespec
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
         switch (op)
         {

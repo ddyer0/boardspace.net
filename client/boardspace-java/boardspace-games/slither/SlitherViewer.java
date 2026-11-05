@@ -140,6 +140,8 @@ public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements 
     private Rectangle chipRects[] = addZoneRect("chip",2);
  	private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,
 			HighlightColor, rackBackGroundColor,rackIdleColor);
+ 	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
+			HighlightColor, rackBackGroundColor,rackIdleColor);
 
 	
 /**
@@ -320,7 +322,7 @@ public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements 
     	// done button, and also we can make the edit/undo button square so it can rotate
     	// to face the player.  Placing the done/edit after the vcr sometimes gives better
     	// results, because it can be placed horizontally or vertically
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneButton,editRect);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneButton,editRect,swapButton);
        	//layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 
     	Rectangle main = layout.getMainRectangle();
@@ -654,9 +656,12 @@ public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements 
   
  
         // draw the avatars
+        String movement = gb.variation.isSlide ? SlideMove : SlitherMove;
+        String description = s.get0or1(state.description(),s.get(movement));
+        
         standardGameMessage(gc,messageRotation,
         					// note that gameOverMessage() is also put into the game record
-            				state==SlitherState.Gameover?gameOverMessage(gb):s.get(state.description()),
+            				state==SlitherState.Gameover?gameOverMessage(gb):description,
             				state!=SlitherState.Puzzle,
             				gb.whoseTurn,
             				stateRect);
@@ -665,6 +670,16 @@ public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements 
             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
         eyeRect.activateOnMouse = true;
         eyeRect.draw(gc,selectPos);
+        
+        boolean conf = (state==SlitherState.ConfirmSwap) ;
+ 		if( conf
+ 			|| (state==SlitherState.PlayOrSwap))
+  			{// make the "swap" button appear if we're in the correct state
+ 			swapButton.highlightWhenIsOn = true;
+         	swapButton.setIsOn(conf);
+         	swapButton.show(gc, buttonSelect);
+ 			}
+
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
 

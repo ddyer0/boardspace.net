@@ -16,6 +16,8 @@
  */
 package util;
 
+import com.codename1.ui.Display;
+
 import bridge.*;
 import bridge.ThreadDeath;
 import common.GameInfo;
@@ -81,23 +83,32 @@ public class JWSApplication implements Config,OnlineConstants
     static final String OFFLINE = "offline";
     static final String FRAMEWIDTH = "framewidth";    
     static final String FRAMEHEIGHT = "frameheight";
+    public static void checkHosts()
+    {
+        String serverName = G.getString(SERVERNAME,null);
+        if(G.isJS())
+        {
+        	G.getJSVars();
+        	serverName = G.js_host;
+        	Http.setDefaultProtocol(G.js_protocol);
+        }
+        if (serverName == null)
+        {
+            URL codebase = G.getCodeBase();
+            serverName = codebase.getHost();
+        }
+        
+        Http.setHostName(serverName);	
+    }
 	private static void init()
     {
        //System.out.println("init");
         try
         {
             //do a definitive test in G.Composite instead
-            //if(isJDK_GEQ(1,4)) { G.jdk_supports_getpixels=true; }
-            String serverName = G.getString(SERVERNAME,null);
-
-            if (serverName == null)
-            {
-                URL codebase = G.getCodeBase();
-                serverName = codebase.getHost();
-            }
+        	checkHosts();
             
-            Http.setHostName(serverName);
-            serverName = Http.getHostName(); 	// setHostName blesses and normalizes the name
+            String serverName = Http.getHostName(); 	// setHostName blesses and normalizes the name
 
             if(G.offline())
             {	// get a list of supported games for offline viewing
@@ -141,15 +152,19 @@ public class JWSApplication implements Config,OnlineConstants
         PlaytableServer server = isVNC ? PlaytableStack.getSelectedServer() : null;
     	boolean offlineLauncher = !isVNC && offline && !isViewer && offlineTableLauncher;
         boolean isTable = offline && !offlineLauncher && G.isTable() ;
-        String classname = G.getString(MAINCLASS,
-        					isViewer
-        					? "G:game.Game" 
-        					: isVNC|isTable|offlineLauncher
-        						? "lib.commonPanel"
-        					: G.getString(DefaultGameClass,"online.common.commonLobby"));
-        G.print("StartLframe "+classname);
+        Class<?> cla = G.classForName(G.getString(MAINCLASS,""),true);
+        
+        if(cla==null)
+        	{	cla = isViewer
+        				? online.game.Game.class 
+        				: isVNC|isTable|offlineLauncher
+        					? lib.commonPanel.class
+        					: G.classForName(G.getString(DefaultGameClass,""),true);
+        	}
+        if(cla==null) { cla = online.common.commonLobby.class; }        
+        G.print("StartLframe "+cla.getName());
         G.setIdString(""+G.getCodeBase());
-        commonPanel myL = (commonPanel) G.MakeInstance(classname);
+        commonPanel myL = (commonPanel) G.MakeInstance(cla);
         G.print("Myl "+myL);
         if (myL != null)
         {
@@ -169,20 +184,21 @@ public class JWSApplication implements Config,OnlineConstants
             
             if(isVNC|isTable|offlineLauncher)
             	{ 
-            	String vc = G.getString(VIEWERCLASS,
-              		  isVNC ? "vnc.AuxViewer" : "online.common.SeatingViewer");
+            	  Class<?> vc = G.classForName(G.getString(VIEWERCLASS,""),true);
+            	  if(vc==null) { vc = isVNC ? vnc.AuxViewer.class :  online.common.SeatingViewer.class; }
+
             	  if(isVNC && server.isRpc())
             	  {	// starting a rpc style viewer, the window will change but we want to establish a connection
             		RpcReceiver.start(server,sharedInfo,myL,fr);
             	  }
             	  else if(G.turnBased())
             	  {
-            	   CanvasProtocol viewer = (CanvasProtocol)G.MakeInstance("online.common.TurnBasedViewer");
+            	   CanvasProtocol viewer = (CanvasProtocol)G.MakeInstance(online.common.TurnBasedViewer.class);
             	   // init first, then add to the frame, to avoid races in lockAndLoadImages
             	   viewer.init(sharedInfo,fr);
             	   myL.setCanvas(viewer);           		  
             	  }
-            	  else if(!"none".equals(vc))
+            	  else if(vc!=null)
             	  {
                       
                       CanvasProtocol viewer = (CanvasProtocol)G.MakeInstance(vc);
@@ -237,7 +253,7 @@ public class JWSApplication implements Config,OnlineConstants
 			ExtendedHashtable savedGlobals = G.getGlobals().copy();
 			
 			// remove this for cheerpj debugging, it doesn't work and doesn't cause a trap
-			if(!G.isCheerpj()) { UDPService.start(false);	} // listen for tables
+			if(!(G.isCheerpj()||G.isJS())) { UDPService.start(false);	} // listen for tables
 		  	G.doDelay(1000);
 			UDPService.stop();
 			Login login = new Login();
@@ -307,18 +323,23 @@ public class JWSApplication implements Config,OnlineConstants
 			G.print("w ",G.getScreenWidth()," h ",G.getScreenHeight()," dpi ",G.getRealScreenDPI()," ppi ",G.getPPI()," scale ",G.getDisplayScale());
 			G.print(G.screendpiDetails);
 			if(G.debug()) 
-    		{ 
+    		{ 	boolean isJS = G.isJS();
     			G.print("\nOS: ",G.getOSInfo(),
     				 "\nPlaytable ",G.isTable(),
 					 "\nreal playtable: ",G.isRealPlaytable(),
 					 "\nreal InfinityTable: ",G.isRealInfinityTable(),
 					 "\nreal LastGameBoard: ",G.isRealLastGameBoard(),
 					 "\nreal mac: ",G.isRealMac(),
-					 "\njavascript: ",G.isJavaScript()," js: ",G.isJS(),
+					 "\njavascript: ",G.isJavaScript()," js: ",isJS,
+					 isJS ? G.getJSinfo() : "",
 					 "\n");
 
     		}
 			G.setDrawers(false);	// for lastgameboard
+            if(G.isJS())
+            {	G.print("setting proxy for javascript");
+            	Display.getInstance().setProperty("javascript.useProxyForSameDomain", "true");	
+            }
 
 			G.getOSInfo();
 			G.print("Ask fontsize "+FontManager.defaultFontSize," get ",SystemFont.getFontSize(SystemFont.getGlobalDefaultFont()));

@@ -36,8 +36,10 @@ public class WebSocket implements SocketProxy
   public native  int connect(String host,int socket);
   public WebSocket(String host,int port)
   {	 
+	  boolean wss = lib.Http.getDefaultProtocol().equals("https:");
+	  String finalurl = (wss ? "wss://" : "ws://")+host;
 	  G.print("create websocket for ",host,":",port);
-	  socket = connect(host,port);
+	  socket = connect(finalurl,port);
 	  while(!isConnected(socket)) { G.print("waiting for connection"); G.doDelay(500); }
 	  G.print("connected websocket ",host,port);
   }

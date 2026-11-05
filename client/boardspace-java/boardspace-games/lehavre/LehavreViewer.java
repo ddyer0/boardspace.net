@@ -264,7 +264,7 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 	 * incoming messages from the boardspace substrate are converted to LeHavre messages
 	 * and passed to the controller.
 	 */
-	public boolean ParseMessage(String st, int player,int channel) 
+	public commonPlayer ParseMessage(String st, int player,int channel) 
 	{	
 		if(st!=null) { addIncomingEvent(st); }		// queue with other events
 		Vector<String>events = incomingEvents;		// get all events
@@ -273,7 +273,7 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 			{for(int i=0,lim=events.size(); i<lim; i++)	// process in order
 				{ receive((Message)readString(events.elementAt(i))); }
 			}
-		return true;
+		return myPlayer;
 	}	
 	public boolean ParseEcho(String str) { return(true); }
 	/**

@@ -108,17 +108,6 @@ class TrikeBoard
     private TrikeCell droppedDest = null;
     TrikeCell pawnHome = null;
     
-    // save strings to be shown in the game log
-    StringStack gameEvents = new StringStack();
-    InternationalStrings s = G.getTranslations();
-    
- 	void logGameEvent(String str,String... args)
- 	{	//if(!robotBoard)
- 		{String trans = s.get(str,args);
- 		 gameEvents.push(trans);
- 		}
- 	}
-
     private TrikeState resetState = TrikeState.Puzzle; 
     public TrikeChip lastDroppedObject = null;	// for image adjustment logic
 
@@ -786,7 +775,6 @@ void doSwap(replayMode replay)
         default:
         	cantExecute(m);
         }
-        if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
 
         //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
         return (true);

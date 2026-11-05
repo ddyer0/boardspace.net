@@ -91,6 +91,7 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
 	public YId getPlayerColor(int p) { return(playerColor[p]); }
 	public YCell getPlayerCell(int p) { return(playerCell[p]); }
 	public YChip getCurrentPlayerChip() { return(playerChip[whoseTurn]); }
+
 	CellStack animationStack = new CellStack();
     private int chips_on_board = 0;			// number of chips currently on the board
 
@@ -105,16 +106,6 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
     private CellStack droppedDestStack = new CellStack();
     private StateStack stateStack = new StateStack();
     
-    // save strings to be shown in the game log
-    StringStack gameEvents = new StringStack();
-    InternationalStrings s = G.getTranslations();
-    
- 	void logGameEvent(String str,String... args)
- 	{	//if(!robotBoard)
- 		{String trans = s.get(str,args);
- 		 gameEvents.push(trans);
- 		}
- 	}
 
     private CellStack emptyCells=new CellStack();
     private CellStack occupiedCells[] = {new CellStack(), new CellStack()};
@@ -819,9 +810,6 @@ void doSwap(replayMode replay)
         default:
         	cantExecute(m);
         }
-        if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
-
-        //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
         return (true);
     }
 

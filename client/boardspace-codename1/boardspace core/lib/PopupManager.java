@@ -66,7 +66,7 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
 	public boolean useSimpleMenu = false;
 	public boolean useSimpleMenu()
 	   { 
-		  return menuErrors>0 || useSimpleMenu || G.isUnix() || (G.isCheerpj() && G.isTouchInterface());
+		  return menuErrors>0 || useSimpleMenu || G.isUnix() || ((G.isCheerpj()||G.isJS()) && G.isTouchInterface());
 	   }
 	// constructor
 	private static boolean lightweightMenus = !G.isCodename1();

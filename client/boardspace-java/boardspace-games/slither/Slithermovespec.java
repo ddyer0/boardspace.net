@@ -61,10 +61,6 @@ public class Slithermovespec
     int from_row;
     SlitherChip chip;
     
-    // these provide an interface to log annotations that will be seen in the game log
-    String gameEvents[] = null;
-    public String[] gameEvents() { return(gameEvents); }
-
     public Slithermovespec()
     {
     } // default constructor
@@ -195,7 +191,7 @@ public class Slithermovespec
     }
 
     private Text icon(commonCanvas v,Object... msg)
-    {	double chipScale[] = {1,1.5,-0.2,-0.5};
+    {	double chipScale[] = {1,1.2,-0.05	,-0.35};
     	Text m = TextChunk.create(G.concat(msg));
     	if(chip!=null)
     	{
@@ -216,18 +212,28 @@ public class Slithermovespec
         switch (op)
         {
         case MOVE_PICKB:
-            return icon(v,to_col , to_row);
+            return TextChunk.create(""+to_col+to_row);
 
 		case MOVE_PLACE_THEN_FIX:
 		case MOVE_DROPB:
-            return icon(v,to_col ,to_row);
-
+		{
+			commonMove nex = next;
+			boolean more = (nex==null || nex.op==MOVE_DONE); 
+			if(more) {   return icon( v ,to_col ,to_row); }
+			else { return TextChunk.create(""+to_col+to_row); }
+		}
         case MOVE_DROP:
         case MOVE_PICK:
             return icon(v,SlitherId.allValues[to_row]);
         case MOVE_SLIDE_THEN_FIX:
         case MOVE_FROM_TO:
-        	return icon(v,from_col,from_row,"-",to_col,to_row);
+        	{
+       		commonMove nex = next;
+        	boolean more = (nex==null || nex.op==MOVE_DONE); 
+        	String txt = G.concat(from_col,from_row,"-",to_col,to_row);
+			if(more) {   return icon(v,txt); }
+			else { return TextChunk.create(txt);}
+        	}
         case MOVE_DONE:
             return TextChunk.create("");
 

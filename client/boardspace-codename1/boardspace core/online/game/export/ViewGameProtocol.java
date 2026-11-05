@@ -106,12 +106,12 @@ public interface ViewGameProtocol
     */
     public void setUserMessage(Color c,String m);
     /** parse and execute a message which originated in a getEvents string.
-    Return true if the message was successfully parsed in the game main sequence,
+    Return the player if the message was successfully parsed in the game main sequence,
     false if some error or if a review variation 
      * @param st  a move string to be parsed
      * @param player the player to parse for, ie the current player
      */
-    public boolean ParseMessage(String st, int player,int channel);
+    public commonPlayer ParseMessage(String st, int player,int channel);
     
     /** parse a text move specification
      * 

@@ -81,9 +81,6 @@ public class Tamskmovespec
     long gameTime = -1;
     boolean rejected = false;	// any move might be rejected due to time violations
     
-    // these provide an interface to log annotations that will be seen in the game log
-    String gameEvents[] = null;
-    public String[] gameEvents() { return(gameEvents); }
 
     public Tamskmovespec()
     {

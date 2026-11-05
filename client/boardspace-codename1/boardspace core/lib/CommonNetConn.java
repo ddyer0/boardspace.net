@@ -219,8 +219,8 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
     /** make a connection, return true if we were successful */
     public final boolean makeConn()
     {
-        int[] ports = { machinePort };
-        SocketProxy sock = getSocketConnection(machineName, ports);
+       int [] ports = { machinePort };
+       SocketProxy sock = getSocketConnection(machineName, ports);
 
         //System.out.println("Sock: "+sock);
         if (sock == null)
@@ -448,7 +448,9 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
     	//  else { temp.close(); }
     	//}
         if(myS==null)
-        	{ myS = CommonNetConn.makeSocketConnection(server,sock); 
+        	{ 
+        	Plog.log.addLog("makeSocketConnection ",server,":",sock);
+        	myS = CommonNetConn.makeSocketConnection(server,sock); 
         	}
         
         //setting NoDelay seemed to work, but had no discernable effect
@@ -722,19 +724,17 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
     }
 	public static SocketProxy makeSocketConnection(String server,int port) throws IOException
 	{	Plog.log.addLog("Open socket ",server,":",port);
-		boolean wss = lib.Http.getDefaultProtocol().equals("https:");
-		boolean cheer = G.isCheerpj();
+		boolean cheer = G.isCheerpj() || G.isJS();
 		// if we're using cheerpj, we need to use websockets rather than real sockets,
 		// and if we're using https connections, we need to use wss.  This requires
 		// using either the the "websockify" proxy, or the latest version of Boardspaceserver
 		// which includes ws and wss support. 
-		//System.out.println("cheer "+cheer+" wss "+wss);
 		SocketProxy p = cheer
-							? new WebSocket((wss ? "wss://":"") + server,port)
+							? new WebSocket(server,port)
 							: (USE_NATIVE_SOCKETS && !G.isIOS()
 									? new ClientSocket(server, port)
 									: new Socket(server,port));
-		G.print("opened socket ",p);
+		Plog.log.addLog("opened socket ",p);
 		return(p);
 	}
 }

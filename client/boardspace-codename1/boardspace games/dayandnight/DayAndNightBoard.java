@@ -94,6 +94,7 @@ class DayAndNightBoard
 	public DayAndNightId getPlayerColor(int p) { return(playerColor[p]); }
 	public DayAndNightCell getPlayerCell(int p) { return(playerCell[p]); }
 	public DayAndNightChip getCurrentPlayerChip() { return(playerChip[whoseTurn]); }
+
 	CellStack animationStack = new CellStack();
     private int chips_on_board = 0;			// number of chips currently on the board
 
@@ -115,18 +116,6 @@ class DayAndNightBoard
     private boolean robotBoard = false;
     private int robotStrategy = -1;
     
-    
-    // save strings to be shown in the game log
-    StringStack gameEvents = new StringStack();
-    InternationalStrings s = G.getTranslations();
-    
- 	void logGameEvent(String str,String... args)
- 	{	//if(!robotBoard)
- 		{String trans = s.get(str,args);
- 		 gameEvents.push(trans);
- 		}
- 	}
-
     private CellStack darkCells=new CellStack();
     private CellStack occupiedCells = new CellStack();
     
@@ -788,9 +777,6 @@ class DayAndNightBoard
         default:
         	cantExecute(m);
         }
-        if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
-
-        //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
         return (true);
     }
 

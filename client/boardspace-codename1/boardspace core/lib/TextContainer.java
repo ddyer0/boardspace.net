@@ -1087,7 +1087,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		{
 		case 8:
 		case 127:
-			if(G.isCheerpj()) { doDel(false); }
+			if(G.isCheerpj()||G.isJS()) { doDel(false); }
 			break;
 		case 222:
 			// this is fuckin mysterious - single quotes are not otherwise found.

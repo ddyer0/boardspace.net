@@ -938,7 +938,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     {
     	threadPool = null;
     	threadPoolSize = 0;
-    	if(G.isCheerpj()) { max_threads = 0; }
+    	if(G.isCheerpj()||G.isJS()) { max_threads = 0; }
     	if(max_threads>=1)
     	{
     		threadPool = new Sthread[max_threads];
@@ -1348,7 +1348,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         Search_Result result = Search_Result.Done;
         long now = G.Date();
         long later = now;
-        boolean cheer = G.isCheerpj();
+        boolean cheer = G.isCheerpj()||G.isJS();
         if (!finished)
         {
             Search_Result done = Search_Result.Active;
@@ -1438,11 +1438,11 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
             root_node.PrepareNode(); // preload the first level, so the single choice optimization will work
 
             top_level_moves = root_node.cmoves();
-
+            boolean cheer = G.isCheerpj()||G.isJS();
             while ((done != Search_Result.Done) && !aborted)
             {
                 done = Step_Simple_Search(1000);
-                if(G.isCheerpj()) { Thread.yield(); } 
+                if(cheer) { Thread.yield(); } 
                 if(progressive && (completed_progressive_search!=null) && (progressive_time_limit>0))
                 {	// if we have some completed search as a baseline, consider aborting
                 	double progressive_time = progressive_time_limit*60000;// minutes to milliseconds

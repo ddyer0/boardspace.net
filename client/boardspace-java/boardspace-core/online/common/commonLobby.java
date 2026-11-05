@@ -54,7 +54,7 @@ import lib.commonPanel;
 import lib.exCanvas;
 import online.common.Session.JoinMode;
 import online.game.sgf.export.sgf_names;
-
+// TODO: fix lagging "seconds" in timed game setup 
 /** general notes about the lobby class.
 
 Drawing:

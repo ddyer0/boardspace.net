@@ -375,16 +375,6 @@ class TamskBoard
     	default: throw G.Error("Timer %s not found",id);
     	}
     }
-    // save strings to be shown in the game log
-    StringStack gameEvents = new StringStack();
-    InternationalStrings s = G.getTranslations();
-    
- 	void logGameEvent(String str,String... args)
- 	{	//if(!robotBoard)
- 		{String trans = s.get(str,args);
- 		 gameEvents.push(trans);
- 		}
- 	}
 
     private TamskState resetState = TamskState.Puzzle; 
     public DrawableImage<?> lastDroppedObject = null;	// for image adjustment logic
@@ -1188,10 +1178,6 @@ class TamskBoard
         default:
         	cantExecute(m);
         }
-        if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
-
-        //G.print("X "+m+" "+Digest());
-        //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
         return (true);
     }
 

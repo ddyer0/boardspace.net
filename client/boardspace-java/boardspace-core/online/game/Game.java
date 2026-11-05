@@ -1630,7 +1630,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 // passing -1 instead of the current player boardIndex means the appropriate
                 // number will be used based on whose move it is.  In normal play this will
                 // be the same, but in replay or review, it may be anyone.
-                boolean parsed = wait || v.ParseMessage(rest, -1,playerID);
+                boolean parsed = wait || v.ParseMessage(rest, -1,playerID)!=null;
                 // here we've received a move from another player, presumable one that
                 // he recorded, so we don't need to record it, only remember the current state.
                 if(!my.isSpectator())
@@ -1660,16 +1660,18 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 	// we added the same that the other player had deleted, we thought it was already there.
                 	//
                 	doSendState();
-                    player.UpdateLastInputTime();
+                	player.UpdateLastInputTime();
                     myNetConn.LogMessage("stop robot wait ",player," ",Thread.currentThread());
                     player.setRobotWait(null,"Stop waiting (done)");
                     SetWhoseTurn();
 
                     if (GameOver())
-                    {
+                    {	// this triggers endgame when we notice it,
+                    	// it was caused by some other player.
                         FinishUp(!my.isSpectator() && ismyrobot);
                     }
-                }}
+                }
+            	}
             }
             else if (KEYWORD_TRACKMOUSE.equals(commandStr))
             {	if (showMice)
@@ -1791,7 +1793,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
                     v.setJointReviewStep(where, myST);
                 }
-                else
+                else if(!useJointReview())
                 {	
                     if (!sentReviewHint)
                     {
@@ -1882,6 +1884,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
         return (false);
     }
+    
     private void processAsk(Tokenizer myST,int to)
     {
     	String question = myST.nextToken();
@@ -3638,11 +3641,14 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	return msg.toString();
     }
     
+    boolean finishedUp = false;
+    
     private void FinishUp(boolean forme)
     { //myNetConn.LogMessage("finish " + forme + " " + my.id);
     	v.stopRobots();
-    	
-    	
+    	if(!finishedUp)
+    	{
+    	finishedUp = true;
     	boolean gameOverSeen = v.isScored();
         if (!gameOverSeen && !reviewOnly)
         {	v.setScored(true);
@@ -3661,7 +3667,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             {
             theChat.postMessage(ChatInterface.GAMECHANNEL, null,null,ChatInterface.KEYWORD_CHAT,msg);
             }
-        }
+        }}
     }
 
     private void doNOTMYTURN(String cmd,Tokenizer localST,String fullMsg)
@@ -3980,7 +3986,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     {
     	return ((jointReview != null) && jointReview.getState())
     			|| reviewOnly 
-    			|| GameOver();
+    			|| (GameOver() && !my.isSpectator());
     }
     // this is where synchronization of the board across multiple players occurs.
     //
@@ -3995,8 +4001,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             int where = v.getReviewPosition();
             String name = v.getNodeName(where-1);
             sentReviewHint = false;
-            if (oldval == false)
-            {	//just coming on, send a request for scroll position
+            if ((oldval == false) && (jointReview != null) && jointReview.getState())
+            {	//just coming on ny toggling the checkbox, send a request for scroll position
             	String scrollMessage = NetConn.SEND_GROUP+KEYWORD_SCROLL+" "+GET_CURRENT_POSITION;
             	sendMessage(scrollMessage);
 
@@ -4040,9 +4046,17 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
     	}
 
-    	boolean some = (v!=null) && v.ParseMessage(null, -1,-1);
-    	if(some) 
-    		{ if(v.getReviewPosition()<0) 
+    	commonPlayer playerWhoMoved = (v!=null) ? v.ParseMessage(null, -1,-1) : null;
+    	if(playerWhoMoved!=null) 
+    		{ 	// this picks up moves that were received and deferred, either because
+    			// we were reviewing at the time, or because the mouse was still being
+    			// tracked at the time.
+    			if (GameOver())
+    	        {	// this triggers the "otherplayer" endgame actions, not including
+    				// scoring unless the mover was a robot and we're running the bot
+    	            FinishUp(!my.isSpectator() && my.robotPlayer==playerWhoMoved);
+    	        }
+     	    if(v.getReviewPosition()<0) 
     				{ serverRecordString(RecordingStrategy.All);
     				}
        		  doTouch();
@@ -4136,6 +4150,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	                        SoundManager.playASoundClip(gameOverSoundName,450);
 	                        SoundManager.playASoundClip(gameOverSoundName,500);     
 	                        }
+
                         if(!my.isSpectator())
                         {
                             gameOverEditable();
@@ -4523,7 +4538,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             	{
 	            case All:
 	            case Single:
-	            case None:            	
+	            case None:       
+	            	// this is the normal place to initiate the endgame.  The current player
+	            	// has just moved, and the gameover state has been reached.  The other
+	            	// true triggers the scoring 
+	            	// players will receive the last move and also start the final process
+	            	// 
 	            	FinishUp(true);
 	            	break;
 	            case Fixed:

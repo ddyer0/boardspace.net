@@ -53,9 +53,6 @@ public class Ymovespec
     int to_row; // for from-to moves, the destination row
     YChip chip;
     
-    // these provide an interface to log annotations that will be seen in the game log
-    String gameEvents[] = null;
-    public String[] gameEvents() { return(gameEvents); }
 
     public Ymovespec()
     {

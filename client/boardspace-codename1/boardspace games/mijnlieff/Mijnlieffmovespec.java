@@ -55,9 +55,6 @@ public class Mijnlieffmovespec
     int to_row; // for from-to moves, the destination row
     MijnlieffChip chip;
     
-    // these provide an interface to log annotations that will be seen in the game log
-    String gameEvents[] = null;
-    public String[] gameEvents() { return(gameEvents); }
 
     public Mijnlieffmovespec()
     {

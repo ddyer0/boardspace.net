@@ -60,7 +60,9 @@ public enum SlitherState implements BoardState,SlitherConstants
 	Pass(StateRole.Play,PassState,true,true),
 	Gameover(StateRole.GameOver,GameOverStateDescription,false,false),
 	Confirm(StateRole.Confirm,ConfirmStateDescription,true,true),
-	PlayOrSlide(StateRole.Play,PlayOrSlideState,false,false),
+	PlayOrSlide(StateRole.Play,PlayOrSlitherState,false,false),
+	ConfirmSwap(StateRole.Confirm,ConfirmSwapDescription,true,false),
+	PlayOrSwap(StateRole.Other,PlayOrSwapState,false,false),
 	SlideFix(StateRole.Play,SlideFixState,false,false),
 	SlideBeforeDrop(StateRole.Play,SlideOrDoneState,true,true),
 	SlideAfterDrop(StateRole.Play,SlideOrDoneState,true,true),
@@ -76,7 +78,9 @@ public enum SlitherState implements BoardState,SlitherConstants
 	boolean doneState;
 	boolean digestState;
 	String description;
-	public String description() { return(description); }
+	public String description() 
+		{ return(description); 
+		}
 	StateRole role;
 	public StateRole getRole() { return role; }
 
@@ -87,16 +91,22 @@ public enum SlitherState implements BoardState,SlitherConstants
 
  enum SlitherVariation
     {
-    	slither("slither-9",9),
-    	slither_11("slither-11",11),
-	 	slither_13("slither-13",13),
-	 	slither_19("slither-19",19);
+    	slither("slither-9",9,false),
+    	slither_11("slither-11",11,false),
+	 	slither_13("slither-13",13,false),
+	 	slither_19("slither-19",19,false),
+    	slide("slide-9",9,true),
+    	slide_11("slide-11",11,true),
+	 	slide_13("slide-13",13,true),
+	 	slide_19("slide-19",19,true);
     	String name ;
     	int size;
+    	boolean isSlide;
     	// constructor
-    	SlitherVariation(String n,int siz) 
+    	SlitherVariation(String n,int siz,boolean sl) 
     	{ name = n; 
     	  size = siz;
+    	  isSlide = sl;
     	}
     	// match the variation from an input string
     	static SlitherVariation findVariation(String n)
@@ -108,9 +118,11 @@ public enum SlitherState implements BoardState,SlitherConstants
     }
 
 	static final String VictoryCondition = "connect opposite sides with a chain of stones";
+	static final String SlitherMove = "move a stone one space";
+	static final String SlideMove = "slide a stone along a line";
 	static final String PlayState = "Place a stone on any legal cell";
-	static final String PlayOrSlideState = "Place a stone on an empty cell, Or slide a stone one space";
-	static final String SlideOrDoneState = "You may slide a stone, or click on \"Done\"";
+	static final String PlayOrSlitherState = "Place a stone on an empty cell, or #1";	
+	static final String SlideOrDoneState = "You may #1, or click on \"Done\"";
 	static final String InvalidState = "Not a valid board state";
 	static final String PlayFixState = "You must play a stone to form a legal position";
 	static final String SlideFixState = "You must slide a stone to form a legal position";
@@ -122,7 +134,9 @@ public enum SlitherState implements BoardState,SlitherConstants
 		{  "Slither",
 			PlayState,
 			PassState,
-			PlayOrSlideState,
+			SlitherMove,
+			SlideMove,
+			PlayOrSlitherState,
 			SlideOrDoneState,
 			PlayFixState,
 			SlideFixState,
@@ -134,10 +148,16 @@ public enum SlitherState implements BoardState,SlitherConstants
 		String GameStringPairs[][] = 
 		{   {"Slither_family","Slither"},
 			{"Slither_variation","Slither"},
+			
 			{"Slither-9_variation","Slither 9x board"},
 			{"Slither-11_variation","Slither 11x board"},
 			{"Slither-13_variation","Slither 13x board"},
 			{"Slither-19_variation","Slither 19x board"},
+			
+			{"Slide-9_variation","Slide 9x board"},
+			{"Slide-11_variation","Slide 11x board"},
+			{"Slide-13_variation","Slide 13x board"},
+			{"Slide-19_variation","Slide 19x board"},
 		};
 		InternationalStrings.put(GameStrings);
 		InternationalStrings.put(GameStringPairs);

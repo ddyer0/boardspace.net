@@ -302,36 +302,22 @@ public final class XXTEA implements CommonConfig{
     	return(null);
     }
     public static SaltInterface theSalt = null;
-    public static boolean saltInterfaceLoaded = false;
-    public static void loadSalt()
-    {
-    	if(!saltInterfaceLoaded)
-    	{
-    		saltInterfaceLoaded = true;
-    		try {
-    			theSalt = (SaltInterface)G.MakeInstance("common.Salt");
-    		} 
-    		catch (Throwable e) {}
-    	}
-    }
-    public static String getSalt()
-    {	loadSalt();
-    	return theSalt==null ? "" : theSalt.getSalt(); 	
+
+    public static SaltInterface getSalt()
+    {	if(theSalt==null) { theSalt = (SaltInterface)G.MakeInstance(common.Salt.class); }
+    	return theSalt; 	
     }
     public static int checksumVersion()
     {
-    	loadSalt();
-    	return theSalt==null ? 0 : theSalt.checksumVersion();
+    	return getSalt().checksumVersion();
     }
     public static void loadChecksum(String n)
     {
-    	loadSalt();
-    	if(theSalt!=null) { theSalt.loadChecksum( n); }
+    	getSalt().loadChecksum( n); 
     }
     public static String getTeaKey()
     {
-    	loadSalt();
-    	return ((theSalt!=null) ? theSalt.getTeaKey() : "dummy encryption key");
+    	return getSalt().getTeaKey();
     }
     /**
      * package the urlstr in the manner expected by {@link validate}, with 

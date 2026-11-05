@@ -90,7 +90,8 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	}
 
 	public void addC(com.codename1.ui.Component cc)
-	{	super.addC(cc);
+	{
+		super.addC(cc);
 		if(cc instanceof TopFrameProtocol) 
 			{ 
 			  addTab((TopFrameProtocol)cc); 
@@ -134,7 +135,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 										windowActivated(cc);
 										repaint();
 								}});
-	}
+		}
 	}
 	public void masterFrameShow()
 	{	

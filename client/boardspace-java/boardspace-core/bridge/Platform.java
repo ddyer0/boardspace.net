@@ -409,7 +409,12 @@ public static Object MakeInstance(Class<?> cl)
 	  if(isGameboard()) { return(120); }
 	  if(isPlaytable()) { return(72); }	// playtable lies
 	  // some devices have insane DPI, like 400, but believing them makes the boxes too small
-	  return (Math.min(300, Math.max(96,getRealScreenDPI())));
+	  //return (Math.min(300, Math.max(96,getRealScreenDPI())));
+	  
+	  // 
+	  // the current theory is that java compensates so we only need to report the standard.
+	  //
+	  return standardDisplayDensity();	
 	}
     static public String getScreenSize()
     {

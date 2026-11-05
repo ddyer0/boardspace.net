@@ -39,7 +39,6 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	static final String CapturingGames = "Capturing Games";
 	static final String TerritoryGames = "Territory Games";
 	static final String WordGames ="Word Games";
-	static final String MultiPlayerGames = "For 3 or more players";
 	static final String Hive = "Hive";
 	static final String OtherGames = "the other Games";
 	public static final String PolyominoGames = "Polyomino Games";
@@ -102,7 +101,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		StackingGames,
 		TerritoryGames,
 		WordGames,
-		ManeuverGames,	// constructed automatically
+		ManeuverGames,
 		OtherGames,
 		Hive,
 	};
@@ -138,7 +137,8 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	public String variationName;	// the exact name this item appears under
 	public Bot[] robots = null;		// how many levels of robot for this game
 	public double robotSpeed[];		// relative speed of each robot, 1.0 is standard
-	public String viewerClass;		// the class to instantiate as a viewer/window
+	
+	public String viewerClass;		// the name of class to instantiate as a viewer/window
 	public String groupSortKey;
 	/** note that maxPlayers here must agree with the max_players field of the variation database table */
 	public int maxPlayers=2;
@@ -1330,6 +1330,16 @@ synchronized(allGames) {
 				gomokuClass,gomokuRules,gomokuAbout,
 				gomokuVideo,false, BlackOverWhite));
 		put(new GameInfo(267,ES.game,132,"PE",NInARowGames,"Gomoku","Pente",
+				TwoBotsPlus,
+				gomokuTimes,
+				gomokuClass,gomokuRules,gomokuAbout,
+				gomokuVideo,false, BlackOverWhite));
+		put(new GameInfo(266,ES.game,133,"GU",NInARowGames,"Gomoku","Gomoku-15",
+				TwoBotsPlus,
+				gomokuTimes,
+				gomokuClass,gomokuRules,gomokuAbout,
+				gomokuVideo,false, BlackOverWhite));
+		put(new GameInfo(267,ES.game,134,"PE",NInARowGames,"Gomoku","Pente-15",
 				TwoBotsPlus,
 				gomokuTimes,
 				gomokuClass,gomokuRules,gomokuAbout,

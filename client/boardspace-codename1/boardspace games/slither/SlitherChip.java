@@ -73,23 +73,16 @@ public class SlitherChip extends chip<SlitherChip> implements CommonConfig,Slith
 	{ return(id.name()); 
 	}
 	
-	public boolean isAnnotation() { return(!((this==black)||(this==white))); }
 
 	static public SlitherChip board_19 = new SlitherChip("woodgrain-nomask",new double[]{0.5,0.5,1.0});
 	static public SlitherChip board_13 = board_19;
 	static public SlitherChip board_11 = board_19;
 	static public SlitherChip board_9 = board_19;
 
-	static public SlitherChip ghostBlack = new SlitherChip("ghost-black-stone",new double[]{0.612,0.475,1.725},null);
-	static public SlitherChip ghostWhite = new SlitherChip("ghost-white-stone",new double[]{0.637,0.487,1.775},null);
-
 
 	static public SlitherChip black = new SlitherChip("slate",new double[]{0.512,0.510,1.275},SlitherId.Black);
 	static public SlitherChip black_slate_1 = new SlitherChip("slate-1",new double[]{0.553,0.410,1.664},null);
 	static public SlitherChip black_slate_2 = new SlitherChip("slate-2",new double[]{0.573,0.420,1.63},null);
-	//static public SlitherChip white_stone_1 = new SlitherChip("shell-1",new double[]{0.503,0.496,1.347},GoId.White_Chip_Pool);
-	//static public SlitherChip white_stone_2 = new SlitherChip("shell-2",new double[]{0.503,0.496,1.347},GoId.White_Chip_Pool);
-	//static public SlitherChip white_stone_3 = new SlitherChip("shell-3",new double[]{0.503,0.496,1.347},GoId.White_Chip_Pool);
 
 	static public SlitherChip white = new SlitherChip("shell-4",new double[]{0.503,0.496,1.347},SlitherId.White);
 	static public SlitherChip white_stone_5 =  new SlitherChip("shell-5",new double[]{0.549,0.432,1.393},null);
@@ -100,26 +93,10 @@ public class SlitherChip extends chip<SlitherChip> implements CommonConfig,Slith
 		white.alternates = new SlitherChip[] { white,white_stone_5,white_stone_6,white_stone_7,white_stone_8};
 	}
 
-/*
-// improved white stones. These really pop! but maybe a bit too much
-	
-	static public SlitherChip white = new SlitherChip("oshell-2",new double[]{0.47,0.47,1.02},GoId.White_Chip_Pool);
-	static public SlitherChip white_stone_5 =  new SlitherChip("oshell-5",new double[]{0.503,0.48,1.07},null);
-	static public SlitherChip white_stone_6 =  new SlitherChip("oshell-6",new double[]{0.509,0.47,1.07},null);
-	static public SlitherChip white_stone_7 =  new SlitherChip("oshell-1",new double[]{0.46,0.48,1.12},null);
-	static public SlitherChip white_stone_8 =  new SlitherChip("oshell-3",new double[]{0.49,0.487,1.04},null);
-	static public SlitherChip white_stone_9 =  new SlitherChip("oshell-4",new double[]{0.503,0.496,1.04},null);
-	static {
-		white.alternates = new SlitherChip[] { white,white_stone_5,white_stone_6,white_stone_7,white_stone_8,white_stone_9};
-	}
-*/
 	static {
 		black.alternates = new SlitherChip[]{ black,black_slate_2,black_slate_1};
 	}
-	static public SlitherChip ghostChips[] = {
-			ghostBlack,
-			ghostWhite,
-	};
+
     static public SlitherChip chips[] = { black,white };
             
 	public static SlitherChip getChip(int color)
@@ -129,14 +106,7 @@ public class SlitherChip extends chip<SlitherChip> implements CommonConfig,Slith
 
 	public static SlitherChip backgroundTile = new SlitherChip( "background-tile-nomask",null);
 	public static SlitherChip backgroundReviewTile = new SlitherChip( "background-review-tile-nomask",null);
-	public static SlitherChip hoshi = new SlitherChip( "hoshi",new double[]{0.612,0.475,1.725},null);
 	
-	public static SlitherChip triangle = new SlitherChip(StockArt.Triangle);
-	public static SlitherChip square = new SlitherChip(StockArt.Square);
-	public static SlitherChip left = new SlitherChip(StockArt.SolidLeftArrow);
-	public static SlitherChip right = new SlitherChip(StockArt.SolidRightArrow);
-	public static SlitherChip down = new SlitherChip(StockArt.SolidDownArrow);
-	public static SlitherChip up = new SlitherChip(StockArt.SolidUpArrow);
 	public static SlitherChip Icon = new SlitherChip("go-icon-nomask",new double[]{0.5,0.5,1.0});
 	
      

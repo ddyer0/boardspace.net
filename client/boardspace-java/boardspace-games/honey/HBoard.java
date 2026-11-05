@@ -57,15 +57,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 	private HoneyState unresign = null;	// remembers the orignal state when "resign" is hit
 	public int robotVocabulary = 999999;		//	size of the robot's vocabulary
 	public HoneyState getState() { return(board_state); }
-    StringStack gameEvents = new StringStack();
-    InternationalStrings s = G.getTranslations();
-   	
- 	void logGameEvent(String str,String... args)
- 	{	//if(!robotBoard)
- 		{String trans = s.get(str,args);
- 		 gameEvents.push(trans);
- 		}
- 	}
 
     /**
      * this is the preferred method when using the modern "enum" style of game state
@@ -459,8 +450,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
        default:
         	cantExecute(m);
         }
-
-        if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
         //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
         return (true);
     }

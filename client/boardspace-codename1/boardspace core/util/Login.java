@@ -182,7 +182,7 @@ public class Login implements SimpleObserver,Config,OnlineConstants
 				+Http.escape(name)
 				+"&" + G.LANGUAGE+"="+Http.escape(lang)
 				+ (test ? "&test=true" : "")
-				+ (G.isCheerpj() ? "&cheerpj=true" : "")
+				+ ((G.isCheerpj()||G.isJS()) ? "&cheerpj=true" : "")
 				// guestname is passed through the login process so it is presented on the 
 				// logged in side.  The escaping here ends up encoding the name with \u0000 if necessary
 				+ (guest ? "&"+KEYWORD_GUESTNAME+"="+Http.escape(guestName) : "&cookie=1")

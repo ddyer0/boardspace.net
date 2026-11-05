@@ -1089,6 +1089,7 @@ public class PasswordCollector extends JPanel
     	password = null;
     	name = null;
     	language = null;
+    	JWSApplication.checkHosts();
     	reloadAppletParameters();
        	isGuest = false;
     	if(language==null) { initLanguage(); }

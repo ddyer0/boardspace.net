@@ -826,11 +826,12 @@ windroid
     // lastgameboard screen=1920x1842 diag=22.1 (actually 22) ppi=120 deviceDPI=120 
     // ipad screen=2048x1536 diag=12.8 (actual 9.5) ppi=200 deviceDPI=200 scale =2.083333 
     public static boolean isTable()
-    {	    	return(G.getBoolean(G.PLAYTABLE,false)
+    {	    	return(!G.isJS() &&
+    				(G.getBoolean(G.PLAYTABLE,false)
     							|| ((screenDiagonal()>17.1) && !isRealMac())
     							|| isRealPlaytable() 
     							|| isRealInfinityTable()
-    							|| isRealLastGameBoard());
+    							|| isRealLastGameBoard()));
     }
       
     public static int tableWidth() {
@@ -1123,4 +1124,20 @@ public static ActionEvent actionEvent(Object mi)
 {	
 	return new bridge.ActionEvent(mi,0,"unknown");
 }
+public static String js_origin;
+public static String js_host;
+public static String js_port;
+public static String js_protocol;
+public static void getJSVars()
+	{
+	js_origin = CN.getProperty("browser.window.location.origin", null);   // e.g. https://example.com:8080
+	js_host   = CN.getProperty("browser.window.location.hostname", null); // example.com
+	js_port   = CN.getProperty("browser.window.location.port", null);
+	js_protocol  = CN.getProperty("browser.window.location.protocol", null);
+	}
+public static String getJSinfo()
+{	getJSVars();
+	return G.concat("\n\nhost ",js_host,"\norigin ",js_origin,"\nport ",js_port,"\nprotocol ",js_protocol);
+}
+
 }

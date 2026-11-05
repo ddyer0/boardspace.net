@@ -24,7 +24,8 @@ import java.util.*;
 import lib.*;
 import lib.Random;
 import online.game.*;
-// check cost to build @110  @240
+
+// check recording order during orange card draft
 
 /**
  * This class doesn't do any graphics or know about anything graphical, 

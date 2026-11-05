@@ -159,12 +159,6 @@ public class BugsBoard
     StringStack gameEvents = new StringStack();
     InternationalStrings s = G.getTranslations();
     
- 	void logGameEvent(String str,String... args)
- 	{	//if(!robotBoard)
- 		{String trans = s.get(str,args);
- 		 gameEvents.push(trans);
- 		}
- 	}
  	void logRawGameEvent(String s)
  	{
  		gameEvents.push(s);

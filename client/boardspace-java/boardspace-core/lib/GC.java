@@ -1003,7 +1003,7 @@ public class GC {
 	public static Rectangle setClip(Graphics gc,int left,int top,int w,int h)
 	{	Rectangle r = getClipBounds(gc);
 		// IOS behaves badly with negative width or height
-		if(gc!=null) { gc.setClip(left,top,w,h); }
+		if(gc!=null) { gc.setClip(left,top,Math.max(0, w),Math.max(0, h)); }
 		return(r);
 	}
 

@@ -828,11 +828,12 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 	public void run() {
 		stop = false;
 		stopped = false;
+		boolean cheer = G.isCheerpj()||G.isJS(); 
 		try {
 		while(!stop)
 		{
 			simUsingTree();
-			if(G.isCheerpj()) { Thread.yield(); }
+			if(cheer) { Thread.yield(); }
 		}
 		}
 		catch (Throwable err)

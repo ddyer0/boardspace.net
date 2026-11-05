@@ -15,7 +15,8 @@
     If not, see https://www.gnu.org/licenses/. 
  */
 package online.game;
-
+// TODO: invesitgate mysterious "please select joint review"
+// TODO: investigate guest joining after disconnection during review
 
 import jzlib.ZipEntry;
 import jzlib.ZipInputStream;
@@ -231,9 +232,9 @@ public abstract class commonCanvas extends exCanvas
 
 	    private Vector<DeferredMessage> deferredMessages = new Vector<DeferredMessage>();
 	    // handle stored messages, either immediately or when exiting review mode.
-	    private boolean handleDeferredMessages()
+	    private commonPlayer handleDeferredMessages()
 	    {	
-	    	boolean some = false;
+	    	commonPlayer some = null;
 	    	
 	     	while(hasDeferredMessages())
 	    	{	DeferredMessage st = deferredMessages.elementAt(0);
@@ -244,26 +245,36 @@ public abstract class commonCanvas extends exCanvas
 	    		case Move:
 	    			// a game move, nominally from another client,
 	    			// which could be from a RPC screen performing an ordinary game operation
+	    			int transmitter = st.channel;
+	    			commonPlayer pl = commonPlayer.findPlayerByChannel(players,transmitter);
+	    			
 	    			if(smoothMouseTracking)
-	    			{	int transmitter = st.channel;
+	    			{	
 	    				// if there is mouse animation still proceeding for this client, delay the interpretation
 	    				// of the incoming activity until it finishes.  This makes the dropped pieces not appear
 	    				// until after the animation of that piece toward the destination finishes.
-	    				commonPlayer pl = commonPlayer.findPlayerByChannel(players,transmitter);
-	    				if(pl==null) { pl = commonPlayer.findPlayerByChannel(spectators,transmitter); }
-	    				if(smoothMouseTracking && pl!=null && ((pl.animating || pl.unseenMouseActivity)))
+	    				
+	    				commonPlayer activePlayer = (pl==null) 
+	    						? commonPlayer.findPlayerByChannel(spectators,transmitter)
+	    						: pl; 
+	    				if(smoothMouseTracking && activePlayer!=null && ((activePlayer.animating || activePlayer.unseenMouseActivity)))
 	    				{	// put it back until it settles
 	    					deferredMessages.insertElementAt(st,0);
-	    					if(pl.unseenMouseActivity) { repaint(); }
+	    					if(activePlayer.unseenMouseActivity) { repaint(); }
 	    					return(some);
 	    				}
-	    				
 	    			}
-	    			some |= performMessage(st.str,st.player);
+	    			if(performMessage(st.str,st.player))
+	    			{
+	    				some = pl;
+	    			}
 	    			break;
 	    		case Command:
 	    			// a request for a service from a RPC screen,
-	    			some |= performMessage(st.key,st.notify,st.str,st.player);
+	    			if(performMessage(st.key,st.notify,st.str,st.player))
+	    			{
+	    				some = getPlayer(st.player);
+	    			}
 	    			break;
 	    		default: G.Error("deferred message type %s not expected", st.type);
 	    		}
@@ -4547,6 +4558,7 @@ public abstract class commonCanvas extends exCanvas
     public enum MovementStyle 
     	{ 
     	  Chained,		/** chained movement of a single piece or a stack of pieces */
+    	  ChainedToLast,	/** chained "ping pong" movement, intermediate steps stay visible, used for gyges */
     	  Simultaneous, /** everything moves at the same time */
     	  SimultaneousAfterOne,	/** first move is alone, them all together */
     	  Stack,		/** everything moves at the same time, as a stack */
@@ -4570,7 +4582,8 @@ public abstract class commonCanvas extends exCanvas
         if(sz>0)
         {
     	try {
-    	boolean chained = (groupMovement==MovementStyle.Chained);
+    	boolean chainedToLast = (groupMovement==MovementStyle.ChainedToLast);
+    	boolean chained = (groupMovement==MovementStyle.Chained) || chainedToLast;
     	boolean stack = (groupMovement==MovementStyle.Stack)||(groupMovement==MovementStyle.StackFromStart);
     	boolean sequential = (groupMovement==MovementStyle.Sequential)||(groupMovement==MovementStyle.SequentialFromStart);
     	boolean fromStart = (groupMovement==MovementStyle.SequentialFromStart)||(groupMovement==MovementStyle.StackFromStart);
@@ -4614,7 +4627,15 @@ public abstract class commonCanvas extends exCanvas
     			SimpleSprite anim = startAnimation(from,to,moving,animationSize,start,0,d);	// start it
     			if(anim!=null)	// be defensive
     			{
-    			if(chained) { anim.isAlwaysActive = true; }
+    			
+    			if(chainedToLast)
+    			{
+    				if(idx+2<lim) 
+    					{ anim.overlapped=true; }
+    				else { anim.isAlwaysActive = true;}
+    			}
+    			else if(chained) { anim.isAlwaysActive = true; }
+    			
 				lastTime = anim.getDuration();
 				}}}
     		lastDest = to;  
@@ -6382,7 +6403,7 @@ public abstract class commonCanvas extends exCanvas
     /**
      * parse an incoming "viewer" message from another player.
      */
-    public boolean ParseMessage(String str, int player,int channel)
+    public commonPlayer ParseMessage(String str, int player,int channel)
     {	// this is a little convoluted because we want to defer execution
     	// if the user has scrolled back during a game.  The old logic parsed
     	// the message then added it to the history, so the replay at the
@@ -6405,7 +6426,7 @@ public abstract class commonCanvas extends exCanvas
     	
     	boolean playing = !mutable_game_record;
      	boolean reviewing = playing && reviewMode();
-     	boolean some = reviewing ? false : l.handleDeferredMessages(); // do the list if we're live, or do nothing if we're in review
+     	commonPlayer playerWhoMoved = reviewing ? null : l.handleDeferredMessages(); // do the list if we're live, or do nothing if we're in review
     	
     	boolean has = hasDeferredMessages();
     	if((str!=null) && !str.startsWith("+S") && has)
@@ -6421,7 +6442,7 @@ public abstract class commonCanvas extends exCanvas
          }
     	else { l.deferWarningSent = false; }
     	
-        return(some);
+        return(playerWhoMoved);
     }
     public boolean ParseEcho(String str)
     {
