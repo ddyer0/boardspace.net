@@ -4,7 +4,7 @@ use CGI::Carp qw( fatalsToBrowser );
 use strict;
 
 require "../include.pl";
-require "gs_db.pl";
+require "./gs_db.pl";
 
 
 #

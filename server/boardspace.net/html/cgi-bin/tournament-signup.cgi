@@ -2151,21 +2151,21 @@ sub sendMatchNotify()
 				. " where matchparticipant.matchid = $qmid " ;
 	my $sth = &query($dbh,$q);
 	my $nr = &numRows($sth);
-	my $lan = $lib'language;
+	my $lan = $lib::language;
 	#print "Q: $nr $q<p>";
 	while($nr-- > 0)
 	{
 	my ($player_name,$e_mail,$language,$discord) = &nextArrayRow($sth);
 	my $link = "https://$ENV{'HTTP_HOST'}$ENV{'SCRIPT_NAME'}?matchid=$matchid&fromname=$player_name&operation=editmatch\n";
-	my $tmsg = &trans("There is new activity in your tournament match at boardspace.net\nSee #1",$link);
+	my $tmsg = &trans("There is new activity in your tournament match at boardspace.net  See #1",$link);
 	if($msg)
 	{ $tmsg = $tmsg . "\n\n" . $msg . "\n";
 	}
 	#try to send the message translated to the appropriate language
  
-	if(!($lib'language eq $language)) { &readtrans_db($dbh,$language); }
+	if(!($lib::language eq $language)) { &readtrans_db($dbh,$language); }
 	&send_notification($player_name,&trans("Boardspace.net tournament activity"),$::from_email,$e_mail,$discord,$link,$tmsg);
- 	if(!($lib'language eq $lan)) { &readtrans_db($dbh,$lan); }
+ 	if(!($lib::language eq $lan)) { &readtrans_db($dbh,$lan); }
 	}
    }
 }

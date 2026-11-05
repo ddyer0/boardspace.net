@@ -1,7 +1,0 @@
-
-USAGE: addlist list player
-
-Adds 'player' to the list 'list'.
-
-SEE ALSO: showlist sublist
-

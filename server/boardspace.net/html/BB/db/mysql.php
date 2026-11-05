@@ -1,335 +1,370 @@
 <?php
 /***************************************************************************
  *                                 mysql.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id: mysql.php,v 1.1 2006/12/01 09:49:45 ddyer Exp $
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+  *   phpBB 2 database layer, ported from the removed mysql_* extension to
+   *   mysqli for PHP 8.  Drop-in replacement for db/mysql.php (same sql_db
+    *   interface and SQL_LAYER).
+     ***************************************************************************/
 
 if(!defined("SQL_LAYER"))
 {
 
 define("SQL_LAYER","mysql");
 
+// phpBB expects false returns and sql_error(), not exceptions (the PHP 8.1+ default)
+mysqli_report(MYSQLI_REPORT_OFF);
+
 class sql_db
 {
+	public $db_connect_id = false;
+	       public $query_result = null;
+	       	      public $row = array();
+		      	     public $rowset = array();
+			     	    public $num_queries = 0;
 
-	var $db_connect_id;
-	var $query_result;
-	var $row = array();
-	var $rowset = array();
-	var $num_queries = 0;
+				    public $persistency;
+				    	   public $user;
+					   	  public $password;
+						  	 public $server;
+							 	public $dbname;
+								       public $connect_error = '';
+								       	      public $connect_errno = 0;
 
-	//
-	// Constructor
-	//
-	function sql_db($sqlserver, $sqluser, $sqlpassword, $database, $persistency = true)
-	{
+									      //
+										// Constructor.  Must be __construct: PHP 8 no longer treats a method
+										   // named after the class as a constructor.
+										      //
+											function __construct($sqlserver, $sqluser, $sqlpassword, $database, $persistency = true)
+												 {
+														$this->persistency = $persistency;
+																     $this->user = $sqluser;
+																     		   $this->password = $sqlpassword;
+																		   		     $this->server = $sqlserver;
+																				     		     $this->dbname = $database;
 
-		$this->persistency = $persistency;
-		$this->user = $sqluser;
-		$this->password = $sqlpassword;
-		$this->server = $sqlserver;
-		$this->dbname = $database;
+																						     		   // old mysql_connect accepted "host:port" and "host:/path/to/socket"
+																								      	  $host = $sqlserver;
+																									  	  $port = null;
+																										  	  $socket = null;
+																											  	    $colon = strrpos($sqlserver, ':');
+																												    	     if( $colon !== false )
+																													     	 	{
+																																		$host = substr($sqlserver, 0, $colon);
+																																		      			   $rest = substr($sqlserver, $colon + 1);
+																																					   	   		      if( $rest !== '' && $rest[0] == '/' )
+																																								      	  	    {
+																																														$socket = $rest;
+																																																}
+																																																			else if( ctype_digit($rest) )
+																																																			     	 		    {
+																																																										$port = (int) $rest;
+																																																										      	      }
+																																																													}
+																																																															if( $this->persistency )
+																																																															    		       {
+																																																																				$host = 'p:' . $host;
+																																																																				      	}
 
-		if($this->persistency)
-		{
-			$this->db_connect_id = @mysql_pconnect($this->server, $this->user, $this->password);
-		}
-		else
-		{
-			$this->db_connect_id = @mysql_connect($this->server, $this->user, $this->password);
-		}
-		if($this->db_connect_id)
-		{
-			if($database != "")
-			{
-				$this->dbname = $database;
-				$dbselect = @mysql_select_db($this->dbname);
-				if(!$dbselect)
-				{
-					@mysql_close($this->db_connect_id);
-					$this->db_connect_id = $dbselect;
-				}
-			}
-			return $this->db_connect_id;
-		}
-		else
-		{
-			return false;
-		}
-	}
+																																																																						$link = @mysqli_connect($host, $sqluser, $sqlpassword,
+																																																																						      			       ($database != "") ? $database : null, $port, $socket);
 
-	//
-	// Other base methods
-	//
-	function sql_close()
-	{
-		if($this->db_connect_id)
-		{
-			if($this->query_result)
-			{
-				@mysql_free_result($this->query_result);
-			}
-			$result = @mysql_close($this->db_connect_id);
-			return $result;
-		}
-		else
-		{
-			return false;
-		}
-	}
+																																																																									       		  if( $link )
+																																																																											      	    {
+																																																																															$this->db_connect_id = $link;
 
-	//
-	// Base query method
-	//
-	function sql_query($query = "", $transaction = FALSE)
-	{
-		// Remove any pre-existing queries
-		unset($this->query_result);
-		if($query != "")
-		{
-			$this->num_queries++;
+																																																																																	       // If non-ASCII text comes out garbled, set this to match your tables:
+																																																																																	       	     	       // @mysqli_set_charset($link, 'latin1');
 
-			$this->query_result = @mysql_query($query, $this->db_connect_id);
-		}
-		if($this->query_result)
-		{
-			unset($this->row[$this->query_result]);
-			unset($this->rowset[$this->query_result]);
-			return $this->query_result;
-		}
-		else
-		{
-			return ( $transaction == END_TRANSACTION ) ? true : false;
-		}
-	}
+																																																																																			       	  			     // phpBB 2 predates strict SQL modes; restore the old lenient behaviour
+																																																																																							     	      	@$link->query("SET SESSION sql_mode=''");
+																																																																																											   	   }
+																																																																																														else
+																																																																																																{
+																																																																																																			$this->db_connect_id = false;
+																																																																																																						$this->connect_error = mysqli_connect_error();
+																																																																																																									$this->connect_errno = mysqli_connect_errno();
+																																																																																																											       }
+																																																																																																												}
 
-	//
-	// Other query methods
-	//
-	function sql_numrows($query_id = 0)
-	{
-		if(!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-		if($query_id)
-		{
-			$result = @mysql_num_rows($query_id);
-			return $result;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	function sql_affectedrows()
-	{
-		if($this->db_connect_id)
-		{
-			$result = @mysql_affected_rows($this->db_connect_id);
-			return $result;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	function sql_numfields($query_id = 0)
-	{
-		if(!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-		if($query_id)
-		{
-			$result = @mysql_num_fields($query_id);
-			return $result;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	function sql_fieldname($offset, $query_id = 0)
-	{
-		if(!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-		if($query_id)
-		{
-			$result = @mysql_field_name($query_id, $offset);
-			return $result;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	function sql_fieldtype($offset, $query_id = 0)
-	{
-		if(!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-		if($query_id)
-		{
-			$result = @mysql_field_type($query_id, $offset);
-			return $result;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	function sql_fetchrow($query_id = 0)
-	{
-		if(!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-		if($query_id)
-		{
-			$this->row[$query_id] = @mysql_fetch_array($query_id);
-			return $this->row[$query_id];
-		}
-		else
-		{
-			return false;
-		}
-	}
-	function sql_fetchrowset($query_id = 0)
-	{
-		if(!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-		if($query_id)
-		{
-			unset($this->rowset[$query_id]);
-			unset($this->row[$query_id]);
-			while($this->rowset[$query_id] = @mysql_fetch_array($query_id))
-			{
-				$result[] = $this->rowset[$query_id];
-			}
-			return $result;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	function sql_fetchfield($field, $rownum = -1, $query_id = 0)
-	{
-		if(!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-		if($query_id)
-		{
-			if($rownum > -1)
-			{
-				$result = @mysql_result($query_id, $rownum, $field);
-			}
-			else
-			{
-				if(empty($this->row[$query_id]) && empty($this->rowset[$query_id]))
-				{
-					if($this->sql_fetchrow())
-					{
-						$result = $this->row[$query_id][$field];
-					}
-				}
-				else
-				{
-					if($this->rowset[$query_id])
-					{
-						$result = $this->rowset[$query_id][0][$field];
-					}
-					else if($this->row[$query_id])
-					{
-						$result = $this->row[$query_id][$field];
-					}
-				}
-			}
-			return $result;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	function sql_rowseek($rownum, $query_id = 0){
-		if(!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-		if($query_id)
-		{
-			$result = @mysql_data_seek($query_id, $rownum);
-			return $result;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	function sql_nextid(){
-		if($this->db_connect_id)
-		{
-			$result = @mysql_insert_id($this->db_connect_id);
-			return $result;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	function sql_freeresult($query_id = 0){
-		if(!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
+																																																																																																												// result handles are objects now, so key the row caches by object id
+																																																																																																												   function qkey($query_id)
+																																																																																																												   	    {
+																																																																																																															return is_object($query_id) ? spl_object_id($query_id) : 0;
+																																																																																																															       }
 
-		if ( $query_id )
-		{
-			unset($this->row[$query_id]);
-			unset($this->rowset[$query_id]);
+																																																																																																															       //
+																																																																																																																// Other base methods
+																																																																																																																   //
+																																																																																																																	function sql_close()
+																																																																																																																		 {
+																																																																																																																				if( is_object($this->db_connect_id) )
+																																																																																																																				    				    {
+																																																																																																																											if( is_object($this->query_result) )
+																																																																																																																																{
+																																																																																																																																				try { $this->query_result->free(); } catch (Error $e) { }
+																																																																																																																																				      				   }
+																																																																																																																																											try { $result = $this->db_connect_id->close(); } catch (Error $e) { $result = false; }
+																																																																																																																																											      	      return $result;
+																																																																																																																																														}
+																																																																																																																																																else
+																																																																																																																																																		{
+																																																																																																																																																					return false;
+																																																																																																																																																						}
+																																																																																																																																																							}
 
-			@mysql_free_result($query_id);
+																																																																																																																																																							//
+																																																																																																																																																								// Base query method
+																																																																																																																																																								   //
+																																																																																																																																																									function sql_query($query = "", $transaction = FALSE)
+																																																																																																																																																										 {
+																																																																																																																																																												// Remove any pre-existing queries
+																																																																																																																																																												   	  $this->query_result = null;
+																																																																																																																																																													  		      	if( $query != "" && is_object($this->db_connect_id) )
+																																																																																																																																																																    	   {
+																																																																																																																																																																				$this->num_queries++;
+																																																																																																																																																																							$this->query_result = @$this->db_connect_id->query($query);
+																																																																																																																																																																									      }
+																																																																																																																																																																											if( $this->query_result )
+																																																																																																																																																																											    			{
+																																																																																																																																																																																	$k = $this->qkey($this->query_result);
+																																																																																																																																																																																		unset($this->row[$k]);
+																																																																																																																																																																																					unset($this->rowset[$k]);
+																																																																																																																																																																																								return $this->query_result;
+																																																																																																																																																																																									}
+																																																																																																																																																																																											else
+																																																																																																																																																																																													{
+																																																																																																																																																																																																return ( $transaction == END_TRANSACTION ) ? true : false;
+																																																																																																																																																																																																       	 }
+																																																																																																																																																																																																		}
 
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	function sql_error($query_id = 0)
-	{
-		$result["message"] = @mysql_error($this->db_connect_id);
-		$result["code"] = @mysql_errno($this->db_connect_id);
+																																																																																																																																																																																																		//
+																																																																																																																																																																																																			// Other query methods
+																																																																																																																																																																																																			   //
+																																																																																																																																																																																																				function sql_numrows($query_id = 0)
+																																																																																																																																																																																																					 {
+																																																																																																																																																																																																							if( !$query_id )
+																																																																																																																																																																																																							    	       {
+																																																																																																																																																																																																											$query_id = $this->query_result;
+																																																																																																																																																																																																												    }
+																																																																																																																																																																																																														return ( is_object($query_id) ) ? $query_id->num_rows : false;
+																																																																																																																																																																																																														       }
 
-		return $result;
-	}
+																																																																																																																																																																																																														       function sql_affectedrows()
+																																																																																																																																																																																																														       		{
+																																																																																																																																																																																																																		return ( is_object($this->db_connect_id) ) ? $this->db_connect_id->affected_rows : false;
+																																																																																																																																																																																																																		       }
+
+																																																																																																																																																																																																																		       function sql_numfields($query_id = 0)
+																																																																																																																																																																																																																		       		{
+																																																																																																																																																																																																																						if( !$query_id )
+																																																																																																																																																																																																																						    	       {
+																																																																																																																																																																																																																										$query_id = $this->query_result;
+																																																																																																																																																																																																																											    }
+																																																																																																																																																																																																																													return ( is_object($query_id) ) ? $query_id->field_count : false;
+																																																																																																																																																																																																																													       }
+
+																																																																																																																																																																																																																													       function sql_fieldname($offset, $query_id = 0)
+																																																																																																																																																																																																																													       		{
+																																																																																																																																																																																																																																	if( !$query_id )
+																																																																																																																																																																																																																																	    	       {
+																																																																																																																																																																																																																																					$query_id = $this->query_result;
+																																																																																																																																																																																																																																						    }
+																																																																																																																																																																																																																																								if( is_object($query_id) )
+																																																																																																																																																																																																																																								    			 {
+																																																																																																																																																																																																																																														$f = $query_id->fetch_fields();
+																																																																																																																																																																																																																																															return isset($f[$offset]) ? $f[$offset]->name : false;
+																																																																																																																																																																																																																																															       			  }
+																																																																																																																																																																																																																																																				return false;
+																																																																																																																																																																																																																																																				       }
+
+																																																																																																																																																																																																																																																				       function sql_fieldtype($offset, $query_id = 0)
+																																																																																																																																																																																																																																																				       		{
+																																																																																																																																																																																																																																																								if( !$query_id )
+																																																																																																																																																																																																																																																								    	       {
+																																																																																																																																																																																																																																																												$query_id = $this->query_result;
+																																																																																																																																																																																																																																																													    }
+																																																																																																																																																																																																																																																															if( is_object($query_id) )
+																																																																																																																																																																																																																																																															    			 {
+																																																																																																																																																																																																																																																																					$f = $query_id->fetch_fields();
+																																																																																																																																																																																																																																																																						if( !isset($f[$offset]) )
+																																																																																																																																																																																																																																																																										{
+																																																																																																																																																																																																																																																																														return false;
+																																																																																																																																																																																																																																																																																}
+																																																																																																																																																																																																																																																																																			// map mysqli numeric type codes to the names mysql_field_type() returned
+																																																																																																																																																																																																																																																																																			       	      switch( $f[$offset]->type )
+																																																																																																																																																																																																																																																																																									{
+																																																																																																																																																																																																																																																																																													case 1: case 2: case 3: case 8: case 9: case 16: return 'int';
+																																																																																																																																																																																																																																																																																													     	     	case 4: case 5: case 246: return 'real';
+																																																																																																																																																																																																																																																																																															     	     	case 7: return 'timestamp';
+																																																																																																																																																																																																																																																																																																			case 10: return 'date';
+																																																																																																																																																																																																																																																																																																						case 11: return 'time';
+																																																																																																																																																																																																																																																																																																									case 12: return 'datetime';
+																																																																																																																																																																																																																																																																																																												case 13: return 'year';
+																																																																																																																																																																																																																																																																																																															case 249: case 250: case 251: case 252: return 'blob';
+																																																																																																																																																																																																																																																																																																															     	       	    default: return 'string';
+																																																																																																																																																																																																																																																																																																																				}
+																																																																																																																																																																																																																																																																																																																						}
+																																																																																																																																																																																																																																																																																																																								return false;
+																																																																																																																																																																																																																																																																																																																								       }
+
+																																																																																																																																																																																																																																																																																																																								       function sql_fetchrow($query_id = 0)
+																																																																																																																																																																																																																																																																																																																								       		{
+																																																																																																																																																																																																																																																																																																																												if( !$query_id )
+																																																																																																																																																																																																																																																																																																																												    	       {
+																																																																																																																																																																																																																																																																																																																																$query_id = $this->query_result;
+																																																																																																																																																																																																																																																																																																																																	    }
+																																																																																																																																																																																																																																																																																																																																			if( is_object($query_id) )
+																																																																																																																																																																																																																																																																																																																																			    			 {
+																																																																																																																																																																																																																																																																																																																																									$r = $query_id->fetch_array(MYSQLI_BOTH);
+																																																																																																																																																																																																																																																																																																																																										if( $r === null )
+																																																																																																																																																																																																																																																																																																																																										       	   {
+																																																																																																																																																																																																																																																																																																																																															$r = false;
+																																																																																																																																																																																																																																																																																																																																																}
+																																																																																																																																																																																																																																																																																																																																																			$this->row[$this->qkey($query_id)] = $r;
+																																																																																																																																																																																																																																																																																																																																																								return $r;
+																																																																																																																																																																																																																																																																																																																																																									}
+																																																																																																																																																																																																																																																																																																																																																											else
+																																																																																																																																																																																																																																																																																																																																																													{
+																																																																																																																																																																																																																																																																																																																																																																return false;
+																																																																																																																																																																																																																																																																																																																																																																	}
+																																																																																																																																																																																																																																																																																																																																																																		}
+
+																																																																																																																																																																																																																																																																																																																																																																		function sql_fetchrowset($query_id = 0)
+																																																																																																																																																																																																																																																																																																																																																																			 {
+																																																																																																																																																																																																																																																																																																																																																																					if( !$query_id )
+																																																																																																																																																																																																																																																																																																																																																																					    	       {
+																																																																																																																																																																																																																																																																																																																																																																									$query_id = $this->query_result;
+																																																																																																																																																																																																																																																																																																																																																																										    }
+																																																																																																																																																																																																																																																																																																																																																																												if( is_object($query_id) )
+																																																																																																																																																																																																																																																																																																																																																																												    			 {
+																																																																																																																																																																																																																																																																																																																																																																																		$k = $this->qkey($query_id);
+																																																																																																																																																																																																																																																																																																																																																																																			unset($this->rowset[$k]);
+																																																																																																																																																																																																																																																																																																																																																																																						unset($this->row[$k]);
+																																																																																																																																																																																																																																																																																																																																																																																									$result = array();
+																																																																																																																																																																																																																																																																																																																																																																																											while( $r = $query_id->fetch_array(MYSQLI_BOTH) )
+																																																																																																																																																																																																																																																																																																																																																																																											       	    {
+																																																																																																																																																																																																																																																																																																																																																																																																$result[] = $r;
+																																																																																																																																																																																																																																																																																																																																																																																																		}
+																																																																																																																																																																																																																																																																																																																																																																																																					return $result;
+																																																																																																																																																																																																																																																																																																																																																																																																						}
+																																																																																																																																																																																																																																																																																																																																																																																																								else
+																																																																																																																																																																																																																																																																																																																																																																																																										{
+																																																																																																																																																																																																																																																																																																																																																																																																													return false;
+																																																																																																																																																																																																																																																																																																																																																																																																														}
+																																																																																																																																																																																																																																																																																																																																																																																																															}
+
+																																																																																																																																																																																																																																																																																																																																																																																																															function sql_fetchfield($field, $rownum = -1, $query_id = 0)
+																																																																																																																																																																																																																																																																																																																																																																																																																 {
+																																																																																																																																																																																																																																																																																																																																																																																																																		if( !$query_id )
+																																																																																																																																																																																																																																																																																																																																																																																																																		    	       {
+																																																																																																																																																																																																																																																																																																																																																																																																																						$query_id = $this->query_result;
+																																																																																																																																																																																																																																																																																																																																																																																																																							    }
+																																																																																																																																																																																																																																																																																																																																																																																																																									if( is_object($query_id) )
+																																																																																																																																																																																																																																																																																																																																																																																																																									    			 {
+																																																																																																																																																																																																																																																																																																																																																																																																																															$k = $this->qkey($query_id);
+																																																																																																																																																																																																																																																																																																																																																																																																																																$result = false;
+																																																																																																																																																																																																																																																																																																																																																																																																																																		if( $rownum > -1 )
+																																																																																																																																																																																																																																																																																																																																																																																																																																		    	      {
+																																																																																																																																																																																																																																																																																																																																																																																																																																							if( $query_id->data_seek($rownum) )
+																																																																																																																																																																																																																																																																																																																																																																																																																																													{
+																																																																																																																																																																																																																																																																																																																																																																																																																																																		$r = $query_id->fetch_array(MYSQLI_BOTH);
+																																																																																																																																																																																																																																																																																																																																																																																																																																																					$result = ( $r !== null && isset($r[$field]) ) ? $r[$field] : false;
+																																																																																																																																																																																																																																																																																																																																																																																																																																																						       }
+																																																																																																																																																																																																																																																																																																																																																																																																																																																									}
+																																																																																																																																																																																																																																																																																																																																																																																																																																																												else
+																																																																																																																																																																																																																																																																																																																																																																																																																																																															{
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																			if( empty($this->row[$k]) && empty($this->rowset[$k]) )
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																			    			     			      {
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																														if( $this->sql_fetchrow($query_id) )
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																					{
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																											$result = $this->row[$k][$field];
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																															}
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																			}
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																							else
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																											{
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																if( !empty($this->rowset[$k]) )
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																						{
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																												$result = $this->rowset[$k][0][$field];
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																}
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																					else if( !empty($this->row[$k]) )
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																											{
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																	$result = $this->row[$k][$field];
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																					}
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																									}
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																												}
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																															return $result;
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																}
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																		else
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																				{
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																							return false;
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																								}
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																									}
+
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																									function sql_rowseek($rownum, $query_id = 0)
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																										 {
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																												if( !$query_id )
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																												    	       {
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																$query_id = $this->query_result;
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																	    }
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																			return ( is_object($query_id) ) ? $query_id->data_seek($rownum) : false;
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																			       }
+
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																			       function sql_nextid()
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																			       		{
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																							return ( is_object($this->db_connect_id) ) ? $this->db_connect_id->insert_id : false;
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																							       }
+
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																							       function sql_freeresult($query_id = 0)
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																							       		{
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																											if( !$query_id )
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																											    	       {
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																															$query_id = $this->query_result;
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																    }
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																		if( is_object($query_id) )
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																		    			 {
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																								$k = $this->qkey($query_id);
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																									unset($this->row[$k]);
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																												unset($this->rowset[$k]);
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																															// phpBB sometimes frees a result twice; PHP 8 throws on the second free
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																															   	 	   try { $query_id->free(); } catch (Error $e) { }
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																	       	 		    return true;
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																						}
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																								else
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																										{
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																													return false;
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																														}
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																															}
+
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																															function sql_escape($msg)
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																 {
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																		return is_object($this->db_connect_id)
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																				? $this->db_connect_id->real_escape_string($msg)
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																						: addslashes($msg);
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																						  }
+
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																						  function sql_error($query_id = 0)
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																						  	   {
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																									$result = array('message' => '', 'code' => 0);
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																										  if( is_object($this->db_connect_id) )
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																										      				      {
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																	try
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																				{
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																								$result['message'] = $this->db_connect_id->error;
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																												$result['code'] = $this->db_connect_id->errno;
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																															}
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																		catch (Error $e) { }
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																		      	     }
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																					else
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																							{
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																										// connection failed: report why
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																										   	      	      $result['message'] = $this->connect_error;
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																$result['code'] = $this->connect_errno;
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																		  }
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																				return $result;
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																				       }
 
 } // class sql_db
 
-} // if ... define
+} // if ... defined
 
 ?>

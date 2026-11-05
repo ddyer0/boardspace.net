@@ -8,14 +8,14 @@
 #
 #use CGI qw(-debug :standard);
 use CGI qw(:standard);
-require "common.pl";
+require "./common.pl";
 require "../include.pl";
-require "gs_db.pl";
+require "./gs_db.pl";
 use strict;
 
 $::recurse = 1;
 
-var @'months = ("", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+var @::months = ("", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
 
 sub link_tournament()
 {  my ($gamedir,$dir,$file,$doubles) = @_;
@@ -68,7 +68,7 @@ sub match_dir
 
 {	print "Running tournament game collection\n";
 	my $dir;
-	foreach $dir (@'game_dirs)
+	foreach $dir (@::game_dirs)
             {
             my $gdir = &dircat($::webroot,$dir);
 	    &match_dir($dir, $gdir);

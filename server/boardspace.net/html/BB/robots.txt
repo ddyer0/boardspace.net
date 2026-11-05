@@ -1,0 +1,14 @@
+User-agent: Baiduspider
+Disallow: /BB/
+Disallow: /analog/
+Disallow: /nngs/cgames/
+Disallow: /cgi-bin/
+Disallow: /players/
+User-agent: *
+Disallow: /BB/
+Disallow: /analog/
+Disallow: /nngs/cgames/
+Disallow: /cgi-bin/
+Disallow: /players/
+
+

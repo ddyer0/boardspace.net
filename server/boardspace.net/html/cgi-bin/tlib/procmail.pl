@@ -28,8 +28,8 @@ use Debug;
 use strict;
 
 require "../include.pl";
-require "gs_db.pl";
-require "common.pl";
+require "./gs_db.pl";
+require "./common.pl";
 
 sub doit()
 {  

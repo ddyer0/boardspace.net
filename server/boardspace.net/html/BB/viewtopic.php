@@ -44,7 +44,34 @@ if ( isset($HTTP_GET_VARS[POST_POST_URL]))
 	$post_id = intval($HTTP_GET_VARS[POST_POST_URL]);
 }
 
+echo "<a href='lb.php?page=admin' style='display:none;' tabindex='-1' aria-hidden='true'>Admin Login</a>";
+echo "<a href='lb.php?page=wp-login' style='display:none;' tabindex='-1' aria-hidden='true'>WordPress Login</a>";
 
+echo "<style>.do-not-follow { position:absolute; left:-9999px; top:-9999px; width:1px; height:1px; overflow:hidden; }</style>";
+echo "<a href='/lb.php' class='do-not-follow' tabindex='-1' aria-hidden='true'></a>";
+
+
+// Use the null coalescing operator (??) to prevent PHP 8 Undefined Key warnings
+$sid = $_GET['sid'] ?? '';
+
+// This hack forces a login if a valid-looking sid is present for a non-logged-in user.
+if (isset($userdata['session_logged_in']) && !$userdata['session_logged_in'] && $sid !== '')
+{
+    // 1. Determine protocol securely (http or https)
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+    
+    // 2. Fetch the current server name securely, providing a fallback if Apache context is missing
+    $server_name = $_SERVER['SERVER_NAME'] ?? 'local.boardspace.net'; 
+    
+    // 3. Target your current local path safely
+    $redirect_target = urlencode($_SERVER['REQUEST_URI'] ?? '');
+    
+    // 4. Force an absolute local path redirect bypass
+    $local_login_url = $protocol . $server_name . '/BB/login.php?redirect=' . $redirect_target;
+    
+    header("Location: " . $local_login_url);
+    exit; 
+}
 $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 $start = ($start < 0) ? 0 : $start;
 
@@ -167,8 +194,8 @@ $forum_id = intval($forum_topic_data['forum_id']);
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, $forum_id);
 init_userprefs($userdata);
+$userdata = session_pagestart($user_ip, $forum_id);
 //
 // End session management
 //
@@ -427,11 +454,13 @@ if ($forum_topic_data['topic_replies'] + 1 < $start + count($postrow))
 } 
 elseif ($start + $board_config['posts_per_page'] > $forum_topic_data['topic_replies']) 
 { 
-   $row_id = intval($forum_topic_data['topic_replies']) % intval($board_config['posts_per_page']); 
-   if ($postrow[$row_id]['post_id'] != $forum_topic_data['topic_last_post_id'] || $start + count($postrow) < $forum_topic_data['topic_replies']) 
-   { 
-      $resync = TRUE; 
-   } 
+  $row_id = intval($forum_topic_data['topic_replies']) % intval($board_config['posts_per_page']);
+  if ( !isset($postrow[$row_id])
+    || $postrow[$row_id]['post_id'] != $forum_topic_data['topic_last_post_id']
+        || $start + count($postrow) < $forum_topic_data['topic_replies'] )
+	{
+	    $resync = TRUE;
+	    }
 } 
 elseif (count($postrow) < $board_config['posts_per_page']) 
 { 
@@ -605,6 +634,7 @@ if ( $is_auth['auth_mod'] )
 // Topic watch information
 //
 $s_watching_topic = '';
+$s_watching_topic_img = '';
 if ( $can_watch_topic )
 {
 	if ( $is_watching_topic )

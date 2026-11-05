@@ -97,9 +97,9 @@ $reg_counter = 0;
 $guest_counter = 0;
 $prev_user = 0;
 $prev_ip = '';
-
 while ( $row = $db->sql_fetchrow($result) )
 {
+	$user_id = '';
 	$view_online = false;
 
 	if ( $row['session_logged_in'] ) 

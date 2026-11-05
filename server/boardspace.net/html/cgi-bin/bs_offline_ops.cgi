@@ -14,7 +14,7 @@ if( param() )
 	#__dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
 	# return true if we're not using combined params
 	# or if the combined params were parsed and validated
-	my $ok = &useCombinedParams($'tea_key,1);
+	my $ok = &useCombinedParams($::tea_key,1);
 	if($ok && checkChecksumVersion())
 	{
 	my $ip = $ENV{'REMOTE_ADDR'};

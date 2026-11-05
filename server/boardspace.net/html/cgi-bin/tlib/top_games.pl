@@ -1,6 +1,6 @@
 # top_games_table.pl
 #
-# Pulls per-game sample icons out of Icons.jar (a zip archive) instead of
+# Pulls per-game sample icons out of icons.jar (a zip archive) instead of
 # scanning a directory of loose image files. Uses Archive::Zip so the jar
 # is opened and its central directory read exactly once per process, with
 # every subsequent lookup served from that same in-memory object.
@@ -13,10 +13,6 @@
 # "xx" can be any suffix - sample1/sample2/sample3/etc - since matching
 # is done on the ${gamename}- prefix and .jpg suffix only.
 
-#
-# note that this icons file is also used by the offline app to present images for the games that
-# can be played, and the appdata/icons.res file ought to contain the same images for the mobile apps
-#
 use Archive::Zip qw(:ERROR_CODES);
 use MIME::Base64;
 
@@ -33,12 +29,9 @@ sub open_icons_jar
     }
   return $icons_zip = $zip;
 }
-#
+
 # some game codes don't match the icon naming convention used inside
 # icons.jar - map those known exceptions to the name actually used there.
-# mostly these are historical artifacts, we'll avoid adding to the exceptions list
-# in the future
-#
 my %icon_name_exceptions =
 ( 'checkers'      => 'checkerboard',
   'go'            => 'goban',

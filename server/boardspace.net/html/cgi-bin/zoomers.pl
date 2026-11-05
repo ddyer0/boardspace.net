@@ -17,7 +17,7 @@ use strict;
 require "include.pl";
 require "tlib/gs_db.pl";
 require "tlib/common.pl";
-require "bs_offline_maintenance.pl";
+require "./bs_offline_maintenance.pl";
 
 { my $zoom_threshold=50;
   my $master_zoom_threshold=100;

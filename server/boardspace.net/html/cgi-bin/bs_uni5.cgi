@@ -89,11 +89,11 @@ sub main_score_routine()
 		my $session=param('session');
 		my $key = param('key');
 		my $port = param('sock');
-		if($port<2240) { $port=$'game_server_port}
+		if($port<2240) { $port=$::game_server_port}
 
 		if( !&check_server($port,$session,$key,$u[1],$u[2],$u[3],$u[4],$u[5],$u[6]))
 		{
-		 __dm( __LINE__." scoring rejected: \"$'reject_line\" $ENV{'QUERY_STRING'}" );
+		 __dm( __LINE__." scoring rejected: \"$::reject_line\" $ENV{'QUERY_STRING'}" );
 		 print "\n** Ranking update was rejected by the server **\n";
 		 return;
 		}
@@ -367,11 +367,11 @@ sub main_score_routine()
 }
 
 sub doit()
-{	__dStart( "$'debug_log",$ENV{'SCRIPT_NAME'});;
+{	__dStart( "$::debug_log",$ENV{'SCRIPT_NAME'});;
 
 	if( param() ) 
 	{
-	my $ok = &useCombinedParams($'tea_key) && checkChecksumVersion();
+	my $ok = &useCombinedParams($::tea_key) && checkChecksumVersion();
 	if($ok)
 	{
   	print header;

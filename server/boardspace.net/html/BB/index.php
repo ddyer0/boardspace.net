@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id: index.php,v 1.2 2007/01/13 05:10:30 ddyer Exp $
+ *   $Id: index.php,v 1.4 2026/10/30 09:15:55 ddyer Exp $
  *
  *
  ***************************************************************************/
@@ -417,7 +417,7 @@ if( ( $total_categories = count($category_rows) ) )
 								$last_post = $lang['No_Posts'];
 							}
 
-							if ( count($forum_moderators[$forum_id]) > 0 )
+							if ( count(($forum_moderators[$forum_id] ?? array())) > 0 )
 							{
 								$l_moderators = ( count($forum_moderators[$forum_id]) == 1 ) ? $lang['Moderator'] : $lang['Moderators'];
 								$moderator_list = implode(', ', $forum_moderators[$forum_id]);

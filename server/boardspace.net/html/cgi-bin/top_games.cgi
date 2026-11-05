@@ -42,7 +42,7 @@ sub show_activity
   {
   &readtrans_db($dbh);
   print "<center>\n";
-  &top_games_table($dbh,$::top_players_per_row,'english','',@'top_player_variations);
+  &top_games_table($dbh,$::top_players_per_row,'english','',@::top_player_variations);
   print "</center>\n";
   if(!param('embed')) { &standard_footer(); }
   }

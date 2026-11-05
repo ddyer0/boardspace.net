@@ -54,7 +54,7 @@ sub ppm_table()
 {
 	my ($dbh,$months,$nitems,$mode,$retired,$leaguesize,$brief) = @_;
 	
-	if($months=='') { $months=$'retire_months; }
+	if($months=='') { $months=$::retire_months; }
 	if($nitems=='') { $nitems=100; }
 	my $rtestdir = $retired ? "<" : ">=";
 	my $league = param("league") eq "y";

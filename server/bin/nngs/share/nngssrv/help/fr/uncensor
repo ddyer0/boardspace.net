@@ -1,6 +1,0 @@
-Usage: uncensor [joueur]
-
-  Enlève 'joueur' de votre liste "censor". Si on omet 'joueur' alors
-toute la liste est effacée.
-
-Voir Aussi: censor

@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id: viewforum.php,v 1.3 2007/01/13 05:29:57 ddyer Exp $
+ *   $Id: viewforum.php,v 1.5 2026/10/30 09:15:55 ddyer Exp $
  *
  *
  ***************************************************************************/
@@ -39,6 +39,31 @@ else if ( isset($HTTP_GET_VARS['forum']))
 else
 {
 	$forum_id = '';
+}
+
+echo "<a href='lb.php?page=admin' style='display:none;' tabindex='-1' aria-hidden='true'>Admin Login</a>";
+echo "<a href='lb.php?page=wp-login' style='display:none;' tabindex='-1' aria-hidden='true'>WordPress Login</a>";
+
+// Use the null coalescing operator (??) to prevent PHP 8 Undefined Key warnings
+$sid = $_GET['sid'] ?? '';
+
+// This hack forces a login if a valid-looking sid is present for a non-logged-in user.
+if (isset($userdata['session_logged_in']) && !$userdata['session_logged_in'] && $sid !== '')
+{
+    // 1. Determine protocol securely (http or https)
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+    
+    // 2. Fetch the current server name securely, providing a fallback if Apache context is missing
+    $server_name = $_SERVER['SERVER_NAME'] ?? 'local.boardspace.net'; 
+    
+    // 3. Target your current local path safely
+    $redirect_target = urlencode($_SERVER['REQUEST_URI'] ?? '');
+    
+    // 4. Force an absolute local path redirect bypass
+    $local_login_url = $protocol . $server_name . '/BB/login.php?redirect=' . $redirect_target;
+    
+    header("Location: " . $local_login_url);
+    exit; 
 }
 
 $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;

@@ -10,7 +10,7 @@ require "../tlib/service-runner.pl";
 
 sub print_frameset()
 {	my ($urlbase,%args) = @_;
-	my $caption = $'log_viewer_caption;
+	my $caption = $::log_viewer_caption;
 	my $url = &get_url($urlbase,%args);
 	print "<html>\n";
 	print "<head>\n";
@@ -37,8 +37,8 @@ sub do_it()
 	my $casesensitive = param('casesensitive');
 	my $clines = param('contextlines');
 	my $lines = &param('lines');
-	my $caption = $'log_viewer_caption;
-	my $lpw = $'log_viewer_password;
+	my $caption = $::log_viewer_caption;
+	my $lpw = $::log_viewer_password;
 	if(!$clines<0) { $clines=5; }
 	if(!($lpw && ($password eq $lpw)))
 	{ print "<title>$caption</title>\n";
@@ -65,7 +65,7 @@ sub do_it()
 	elsif ($frame eq 'top')
 	{ 
 		print "<h3>$caption</h3>";
-		my @dir =sort(&list_dirs($'log_viewer_dir));
+		my @dir =sort(&list_dirs($::log_viewer_dir));
 		my $l25 = ($lines == 25) ? 'checked' : '';
 		my $l500 = ($lines == 500) ? 'checked' : '';
 		my $l100 = ($lines == 100) ? 'checked' : '';
@@ -114,14 +114,14 @@ sub do_it()
 	    	#set file to the selected file, but check that it is in the list
 	    	#of sanctioned log files.  This prevents an unfriendly respondant
 	    	#from viewing any file on the system by hacking the form.
-		foreach $f(&list_dirs($'log_viewer_dir))
+		foreach $f(&list_dirs($::log_viewer_dir))
 		{ if($f eq $selected) { $file = $f; }
 		}
 	}
 	  	print "<pre>";
 	    if($filter)
 	  	{ 	my ($name,$dir,$typ) = &filename_split($file);
-	  	    my $temp = &dircat($'temp_dir,"temp$$.tmp");
+	  	    my $temp = &dircat($::temp_dir,"temp$$.tmp");
 	        my $cs = $casesensitive ? "" : "-i";
 	        my $c1 = "grep -A $clines $cs \"$filter\" \"$file\"";
 	        my $c2 = "tail -$lines \"$temp\"";

@@ -1,8 +1,54 @@
 HOSTING
 
-Hosting is currently done by Steadfast.net, which provides the server, routine maintenance
-and internet.  There are 3 primary web interfaces used to administer the site.
+Hosting is currently done by Hivelocity.net, which provides the server, routine maintenance
+and internet.  Its a VPS configured with 80gb disk, 8gb memory, and 4 virtual CPUs.  For
+the current workload that's complete overkill.  The server is hosted in New York.
 
+https://my.hivelocity.net/ is the primary portal.
+
+// still to do 
+// get email working
+// resolve minor complaints compiling server
+// get cron working
+// systematically check cgi
+
+
+// packages installed
+libwww-perl
+Crypt-tea
+
+
+    apt install certbot python3-certbot-apache
+    apt install -y libarchive-zip-perl
+    apt install -y dos2unix
+    apt install dos2unix
+    apt-get install libmozilla-ca-perl
+    apt install procmail
+    apt install libgd-graph-perl
+
+
+// new tweaks to MariaDB setup
+// add these lines
+
+[mariadbd]
+character-set-server  = latin1
+collation-server      = latin1_swedish_ci
+character_set_client  = latin1
+
+// this fixes a mismatch between legacy databases and modern usage, which manifest in the 
+// login from the turn based interface.  "there was a problem processing your request"
+// ended up in the encrypted stream
+
+
+// email required using a new proxy host, smpt2go.com.  This required
+// creating an account and adding some dns records and adding some
+// custom directives to postfix mail settings.
+
+
+
+There are 3 primary web interfaces used to administer the site.
+
+The main account is 
 https://manage.steadfast.net/client/ account 3392 
 buys services, can reboot servers, monitor health, pay bills and so on. 
 It's rarely needed in the routine running of things.

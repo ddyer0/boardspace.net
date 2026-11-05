@@ -23,7 +23,7 @@ $| = 1;                         # force writes
 if( param() ) 
 {
   $| = 1;                         # force writes
-  my $ok = &useCombinedParams($'tea_key,1) && checkChecksumVersion();
+  my $ok = &useCombinedParams($::tea_key,1) && checkChecksumVersion();
   if($ok)
   {
   print header;
@@ -88,13 +88,13 @@ if( param() )
 		my $session=param('session');
 		my $key = param('key');
 		my $port = param('sock');
-		if($port<2240) { $port=$'game_server_port}
+		if($port<2240) { $port=$::game_server_port}
 
 		if( $turnbased 
 			? !&check_turnbased($dbh,$session,$key,$u[1],$u[2])
 			: !&check_server($port,$session,$key,$u[1],$u[2]))
 		{
-		 __dm( __LINE__." scoring rejected: \"$'reject_line\" $ENV{'QUERY_STRING'}" );
+		 __dm( __LINE__." scoring rejected: \"$::reject_line\" $ENV{'QUERY_STRING'}" );
 		 print "\n** Ranking update was rejected by the server **\n";
 		}
 		elsif (($robo[1] ne "g") && ($robo[2] ne "g"))

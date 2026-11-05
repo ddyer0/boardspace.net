@@ -39,6 +39,11 @@ init_userprefs($userdata);
 //
 // End session management
 //
+echo "<a href='lb.php?page=admin' style='display:none;' tabindex='-1' aria-hidden='true'>Admin Login</a>";
+echo "<a href='lb.php?page=wp-login' style='display:none;' tabindex='-1' aria-hidden='true'>WordPress Login</a>";
+
+echo "<style>.do-not-follow { position:absolute; left:-9999px; top:-9999px; width:1px; height:1px; overflow:hidden; }</style>";
+echo "<a href='/lb.php' class='do-not-follow' tabindex='-1' aria-hidden='true'></a>";
 
 // session id check
 if (!empty($HTTP_POST_VARS['sid']) || !empty($HTTP_GET_VARS['sid']))
@@ -216,7 +221,7 @@ else
 				{
 					for($i = 1; $i < count($forward_match); $i++)
 					{
-						if( !ereg("sid=", $forward_match[$i]) )
+						if( !preg_match("/sid=/", $forward_match[$i]) )
 						{
 							if( $forward_page != '' )
 							{

@@ -100,7 +100,7 @@ function phpbb_ltrim($str, $charlist = false)
 	// php version < 4.1.0
 	if ((int) $php_version[0] < 4 || ((int) $php_version[0] == 4 && (int) $php_version[1] < 1))
 	{
-		while ($str{0} == $charlist)
+		while ($str[0] == $charlist)
 		{
 			$str = substr($str, 1);
 		}
@@ -126,7 +126,7 @@ function phpbb_rtrim($str, $charlist = false)
 	// php version < 4.1.0
 	if ((int) $php_version[0] < 4 || ((int) $php_version[0] == 4 && (int) $php_version[1] < 1))
 	{
-		while ($str{strlen($str)-1} == $charlist)
+		while ($str[strlen($str)-1] == $charlist)
 		{
 			$str = substr($str, 0, strlen($str)-1);
 		}
@@ -312,7 +312,7 @@ function init_userprefs($userdata)
 	global $template, $lang, $phpEx, $phpbb_root_path, $db;
 	global $nav_links;
 
-	if ( $userdata['user_id'] != ANONYMOUS )
+	if ( ($userdata['user_id'] ?? 0) != ANONYMOUS )
 	{
 		if ( !empty($userdata['user_lang']))
 		{
@@ -336,7 +336,7 @@ function init_userprefs($userdata)
 
 	if ( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $default_lang . '/lang_main.'.$phpEx)) )
 	{
-		if ( $userdata['user_id'] != ANONYMOUS )
+		if ( ($userdata['user_id'] ??0)!= ANONYMOUS )
 		{
 			// For logged in users, try the board default language next
 			$default_lang = phpbb_ltrim(basename(phpbb_rtrim($board_config['default_lang'])), "'");
@@ -357,11 +357,11 @@ function init_userprefs($userdata)
 
 	// If we've had to change the value in any way then let's write it back to the database
 	// before we go any further since it means there is something wrong with it
-	if ( $userdata['user_id'] != ANONYMOUS && $userdata['user_lang'] !== $default_lang )
+	if ( ($userdata['user_id'] ?? 0) != ANONYMOUS && ($userdata['user_lang'] ?? 0) !== $default_lang )
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . "
 			SET user_lang = '" . $default_lang . "'
-			WHERE user_lang = '" . $userdata['user_lang'] . "'";
+			WHERE user_lang = '" . ($userdata['user_lang']??0) . "'";
 
 		if ( !($result = $db->sql_query($sql)) )
 		{
@@ -370,7 +370,7 @@ function init_userprefs($userdata)
 
 		$userdata['user_lang'] = $default_lang;
 	}
-	elseif ( $userdata['user_id'] === ANONYMOUS && $board_config['default_lang'] !== $default_lang )
+	elseif ( ($userdata['user_id'] ?? 0) === ANONYMOUS && $board_config['default_lang'] !== $default_lang )
 	{
 		$sql = 'UPDATE ' . CONFIG_TABLE . "
 			SET config_value = '" . $default_lang . "'
@@ -401,7 +401,7 @@ function init_userprefs($userdata)
 	//
 	if ( !$board_config['override_user_style'] )
 	{
-		if ( $userdata['user_id'] != ANONYMOUS && $userdata['user_style'] > 0 )
+		if (($userdata['user_id'] ?? 0) != ANONYMOUS && ($userdata['user_style']??0) > 0 )
 		{
 			if ( $theme = setup_style($userdata['user_style']) )
 			{

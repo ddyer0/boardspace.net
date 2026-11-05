@@ -1,5 +1,5 @@
 #
 # config file for general utilities
 #
-$lib'configfile = "util.config";
-$lib'lib = "tlib";
+$lib::configfile = "util.config";
+$lib::lib = "tlib";

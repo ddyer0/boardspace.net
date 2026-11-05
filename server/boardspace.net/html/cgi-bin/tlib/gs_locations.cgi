@@ -6,9 +6,9 @@
 # nitems=100                      =n to show top n players
 #
 use CGI qw(:standard);
-require "common.pl";
-require "../include.pl";
-require "gs_db.pl";
+require "tlib/common.pl";
+require "include.pl";
+require "tlib/gs_db.pl";
 use strict;
 
 

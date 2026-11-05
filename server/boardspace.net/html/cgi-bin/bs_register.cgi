@@ -94,6 +94,8 @@ sub setup_php()
 	my $que = "select user_id from phpbb_users where username=$qname ";
 	my $sth = &query($dbh,$que);
 	my $num = &numRows($sth);
+	my $formsg = &trans("Use your boardspace username and password to access the #1 forums #2",
+				"<a href=/BB/>","</a><p>");
 	if($num==0)
 	{	my $sth2 = &query($dbh,"select max(user_id) from phpbb_users");
 		my $nr2 = &numRows($sth2);

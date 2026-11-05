@@ -1,9 +1,0 @@
-
-USAGE: asetwater player n
-
-RESTRICTED TO ADMINISTRATORS.
-
-Sets the players's number of water balloons to "n".
-
-SEE ALSO: variables emote
-

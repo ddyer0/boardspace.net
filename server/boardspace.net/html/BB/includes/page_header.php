@@ -343,6 +343,10 @@ $l_timezone = (count($l_timezone) > 1 && $l_timezone[count($l_timezone)-1] != 0)
 // The following assigns all _common_ variables that may be used at any point
 // in a template.
 //
+if ( !isset($page_title) )
+{
+    $page_title = '';
+    }
 $template->assign_vars(array(
 	'SITENAME' => $board_config['sitename'],
 	'SITE_DESCRIPTION' => $board_config['site_desc'],

@@ -108,7 +108,7 @@ sub logon
 
 
 
-%'allstatus = 
+%::allstatus = 
 	( "new"=>"new",
 		"accepted"=>"accepted",
 	  "implemented"=>"implemented",
@@ -313,7 +313,7 @@ __d("$ENV{'REQUEST_URI'} $myaddr");
 						{
 						print "<tr><td><b>Status:</b></td><td>";
 						if($status eq '') { $status='new'; }
-						&print_select_menu("status",$status,%'allstatus);
+						&print_select_menu("status",$status,%::allstatus);
 						print "</td></tr>\n";
 						}
 						else

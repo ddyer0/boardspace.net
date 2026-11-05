@@ -1,7 +1,8 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-
+# this is used by the cheerpj branch of translations
+#
 # anthropic_proxy.cgi — Anthropic API proxy for Apache CGI / mod_cgi / mod_cgid
 #
 # Apache vhost config (place the script in your cgi-bin, or use ScriptAlias):

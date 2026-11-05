@@ -13,20 +13,20 @@
 # For more information, see:
 #     http://cgi-lib.stanford.edu/cgi-lib/
 
-$cgi_lib'version = sprintf("%d.%02d", q$Revision: 1.1.2.1 $ =~ /(\d+)\.(\d+)/);
+$cgi_lib::version = sprintf("%d.%02d", q$Revision: 1.1.2.1 $ =~ /(\d+)\.(\d+)/);
 
 
 # Parameters affecting cgi-lib behavior
 # User-configurable parameters affecting file upload.
-$cgi_lib'maxdata    = 131072;    # maximum bytes to accept via POST - 2^17
-$cgi_lib'writefiles =      0;    # directory to which to write files, or
+$cgi_lib::maxdata    = 131072;    # maximum bytes to accept via POST - 2^17
+$cgi_lib::writefiles =      0;    # directory to which to write files, or
                                  # 0 if files should not be written
-$cgi_lib'filepre    = "cgi-lib"; # Prefix of file names, in directory above
+$cgi_lib::filepre    = "cgi-lib"; # Prefix of file names, in directory above
 
 # Do not change the following parameters unless you have special reasons
-$cgi_lib'bufsize  =  8192;    # default buffer size when reading multipart
-$cgi_lib'maxbound =   100;    # maximum boundary length to be encounterd
-$cgi_lib'headerout =    0;    # indicates whether the header has been printed
+$cgi_lib::bufsize  =  8192;    # default buffer size when reading multipart
+$cgi_lib::maxbound =   100;    # maximum boundary length to be encounterd
+$cgi_lib::headerout =    0;    # indicates whether the header has been printed
 
 
 # ReadParse
@@ -72,7 +72,7 @@ sub ReadParse {
   $type = $ENV{'CONTENT_TYPE'};
   $len  = $ENV{'CONTENT_LENGTH'};
   $meth = $ENV{'REQUEST_METHOD'};
-  if ($len > $cgi_lib'maxdata) { #'
+  if ($len > $cgi_lib::maxdata) { #'
       &CgiDie("cgi-lib.pl: Request to receive too much data: $len bytes\n");
   }
   
@@ -122,7 +122,7 @@ sub ReadParse {
     local ($buf, $boundary, $head, @heads, $cd, $ct, $fname, $ctype, $blen);
     local ($bpos, $lpos, $left, $amt, $fn, $ser);
     local ($bufsize, $maxbound, $writefiles) = 
-      ($cgi_lib'bufsize, $cgi_lib'maxbound, $cgi_lib'writefiles);
+      ($cgi_lib::bufsize, $cgi_lib'maxbound, $cgi_lib'writefiles);
 
 
     # The following lines exist solely to eliminate spurious warning messages
@@ -422,7 +422,7 @@ sub CgiError {
     @msg = ("Error: script $name encountered fatal error\n");
   };
 
-  if (!$cgi_lib'headerout) { #')
+  if (!$cgi_lib::headerout) { #')
     print &PrintHeader;	
     print "<html>\n<head>\n<title>$msg[0]</title>\n</head>\n<body>\n";
   }
@@ -431,7 +431,7 @@ sub CgiError {
     print "<p>$msg[$i]</p>\n";
   }
 
-  $cgi_lib'headerout++;
+  $cgi_lib::headerout++;
 }
 
 
@@ -477,10 +477,10 @@ sub PrintEnv {
 
 
 # The following lines exist only to avoid warning messages
-$cgi_lib'writefiles =  $cgi_lib'writefiles;
-$cgi_lib'bufsize    =  $cgi_lib'bufsize ;
-$cgi_lib'maxbound   =  $cgi_lib'maxbound;
-$cgi_lib'version    =  $cgi_lib'version;
-$cgi_lib'filepre    =  $cgi_lib'filepre;
+$cgi_lib::writefiles =  $cgi_lib::writefiles;
+$cgi_lib::bufsize    =  $cgi_lib::bufsize ;
+$cgi_lib::maxbound   =  $cgi_lib::maxbound;
+$cgi_lib::version    =  $cgi_lib::version;
+$cgi_lib::filepre    =  $cgi_lib::filepre;
 
 1; #return true 

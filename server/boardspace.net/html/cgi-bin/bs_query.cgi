@@ -49,7 +49,7 @@ sub print_gamedir()
 }
 sub print_country_list()
 {	
-	foreach my $val (@'countries) 
+	foreach my $val (@::countries) 
 	{	$::result = $::result . "$val\n";
 	}
 }
@@ -92,7 +92,7 @@ sub print_mobileinfo()
 	# no particular order is required, but start with languages
 	my @ll;
 	&print_contact_log("online");
-	foreach my $key (keys(%'language_codes)) 
+	foreach my $key (keys(%::language_codes)) 
 	{	my $val = $::language_codes{$key};
 		if(!("" eq $val)) { push(@ll,$val); }
 	}

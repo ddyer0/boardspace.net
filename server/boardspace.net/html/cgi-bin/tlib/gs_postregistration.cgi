@@ -7,8 +7,8 @@
 use CGI::Carp qw( fatalsToBrowser );
 use CGI qw(:standard);
 require "../include.pl";
-require "common.pl";
-require "gs_db.pl";
+require "./common.pl";
+require "./gs_db.pl";
 use strict;
 
 

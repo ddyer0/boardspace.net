@@ -65,7 +65,7 @@ sub parse_form {
         # arent a security risk if the HTML gets returned.  Another
         # security hole plugged up.
         
-		  $value =~ s/[;<>*`|&$#]//g;
+	$value =~ s/[;<>*`|&\$#]//g;
 
         # Store name/value pair in %CONFIG if the corresponding entry is
         # defined

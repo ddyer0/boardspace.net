@@ -140,7 +140,7 @@ sub print_jnlp_gameparams_tag()
 
 sub print_language_list()
 {	my @ll;
-	foreach my $key (keys(%'language_codes)) 
+	foreach my $key (keys(%::language_codes)) 
 	{	my $val = $::language_codes{$key};
 		if(!("" eq $val)) { push(@ll,$val); }
 	}
@@ -202,7 +202,7 @@ sub print_mobileinfo()
 	&make_log("platform $platform ip $ENV{'REMOTE_ADDR'}");
 	# no particular order is required, but start with languages
 	my @ll;
-	foreach my $key (keys(%'language_codes)) 
+	foreach my $key (keys(%::language_codes)) 
 	{	my $val = $::language_codes{$key};
 		if(!("" eq $val)) { push(@ll,$val); }
 	}
@@ -225,7 +225,7 @@ sub print_mobileinfo()
 
 sub print_country_list()
 {	
-	foreach my $val (@'countries) 
+	foreach my $val (@::countries) 
 	{	print "$val\n";
 	}
 }

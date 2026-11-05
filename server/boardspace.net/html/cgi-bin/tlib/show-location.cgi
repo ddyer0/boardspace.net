@@ -3,7 +3,7 @@
 require 5.001;
 use CGI qw(:standard);
 
-require "getLocation.pl";
+require "./getLocation.pl";
 
 
 sub init {

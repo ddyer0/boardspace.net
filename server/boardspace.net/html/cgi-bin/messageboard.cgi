@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 #
 # send a message to a player, to be received when he logs in
+
 #
 use CGI::Carp qw( fatalsToBrowser );
 use CGI qw(:standard);

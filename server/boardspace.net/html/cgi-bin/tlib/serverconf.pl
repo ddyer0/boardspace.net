@@ -7,8 +7,8 @@
 require 5.001;
 use strict;
 require "../include.pl";
-require "gs_db.pl";
-require "common.pl";
+require "./gs_db.pl";
+require "./common.pl";
 use File::Copy;
 use CGI qw(:standard);
 use Mysql;
@@ -48,6 +48,6 @@ use Mysql;
   $idx++;
  }
  &finishQuery($sth);
- print "#list produded by database_info.pl\n$namestr$gamestr";
+ print "#list produded by serverconf.pl\n$namestr$gamestr";
 }}
 

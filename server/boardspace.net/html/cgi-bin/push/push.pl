@@ -14,7 +14,7 @@ sub send_discord_notification()
 {
   my ($discord, $player, $subject, $email) = @_;
 
-  my $webhook = WebService::Discord::Webhook->new( $'webhook );
+  my $webhook = WebService::Discord::Webhook->new( $::webhook );
   $webhook->get();
   #
   #print "Webhook posting as '" . $webhook->{name} . "' in channel " . $webhook->{channel_id} . "\n";

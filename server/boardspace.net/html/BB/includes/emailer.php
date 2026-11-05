@@ -186,10 +186,17 @@ class emailer
 			$this->msg = trim(preg_replace('#' . $drop_header . '#s', '', $this->msg));
 		}
 
-		$to = $this->addresses['to'];
-
-		$cc = (count($this->addresses['cc'])) ? implode(', ', $this->addresses['cc']) : '';
-		$bcc = (count($this->addresses['bcc'])) ? implode(', ', $this->addresses['bcc']) : '';
+		$to = (isset($this->addresses['to']) && is_array($this->addresses['to']))
+		      ? implode(', ', $this->addresses['to'])
+		      : '';
+		$addresses = isset($this->addresses['cc']) && is_array($this->addresses['cc'])
+			     		? $this->addresses['cc']
+					: [];
+		$cc = (count($addresses)) ? implode(', ',$addresses) : '';
+		$addresses = isset($this->addresses['bcc']) && (is_array($this->addresses['bcc'])
+	     				    ? $this->addresses['bcc']
+					    : [];
+		$bcc = (count($addresses)) ? implode(', ', $addresses) : '';
 
 		// Build header
 		$this->extra_headers = (($this->reply_to != '') ? "Reply-to: $this->reply_to\n" : '') . (($this->from != '') ? "From: $this->from\n" : "From: " . $board_config['board_email'] . "\n") . "Return-Path: " . $board_config['board_email'] . "\nMessage-ID: <" . md5(uniqid(time())) . "@" . $board_config['server_name'] . ">\nMIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . date('r', time()) . "\nX-Priority: 3\nX-MSMail-Priority: Normal\nX-Mailer: PHP\nX-MimeOLE: Produced By phpBB2\n" . $this->extra_headers . (($cc != '') ? "Cc: $cc\n" : '')  . (($bcc != '') ? "Bcc: $bcc\n" : ''); 

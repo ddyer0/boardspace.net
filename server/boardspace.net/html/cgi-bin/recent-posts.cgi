@@ -8,6 +8,7 @@ use CGI qw(:standard);
 use strict;
 use Debug;
 use CGI::Cookie;
+use Crypt::Tea;
 
 require "include.pl";
 
@@ -15,9 +16,8 @@ require "include.pl";
 require "tlib/common.pl";
 require "tlib/timestamp.pl";
 require "tlib/gs_db.pl";
-require "tlib/show-recent.pl"
+require "tlib/show-recent.pl";
 
-use Crypt::Tea;
 
 
 sub init {

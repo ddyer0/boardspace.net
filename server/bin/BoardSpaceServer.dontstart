@@ -1,0 +1,3 @@
+#!/bin/csh
+echo "Content-type: text/html";
+echo "server should be started as a sevice, not this"

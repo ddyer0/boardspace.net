@@ -4,15 +4,15 @@ use CGI::Carp qw( fatalsToBrowser );
 use CGI qw(:standard);
 use strict;
 
-require "config.pl";
+require "./config.pl";
 require "../include.pl";
-require "../$lib'lib/common.pl";
+require "../tlib/common.pl";
 
 $| = 1;				# force writes
 
 sub doit()
 {
-    my $log = $'perl_log;
+    my $log = $::perl_log;
     open(FILE,">>$log");
 print <<HEADER;
 Content-type: text/html
@@ -24,7 +24,7 @@ Content-type: text/html
 <h3>Received Form</h3>
 HEADER
 
-print "Logged to $'perl_log<p>";
+print "Logged to $::perl_log<p>";
 print FILE "\n---\nReceived Form:\n";
 
 { my @pars = param();

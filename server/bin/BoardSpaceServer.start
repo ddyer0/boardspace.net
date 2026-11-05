@@ -2,7 +2,7 @@
 echo "Content-type: text/html";
 echo ""
 
-source /home/boardspa/cgi-bin/include.csh
+source /home/boardspace/www/cgi-bin/include.csh
 
 if (`lockfile -r 1 -l 60 /tmp/boardspaceserver_startup.lock`) then
 echo "couldn't get lockfile /tmp/boardspaceserver_startup.lock"
@@ -17,8 +17,11 @@ set suffix = "$now[2]-$now[3]-$now[6]";
 if((! -e "$debug_log-$suffix") && -e $debug_log) mv "$debug_log" "$debug_log-$suffix"
 if((! -e "$java_error_log-$suffix") && -e $java_error_log) mv "$java_error_log" "$java_error_log-$suffix"
 
+echo root is $root
 
-cd $root/cgi-bin/tlib
+cd $root/www/cgi-bin/tlib
+
+pwd
 
 perl serverconf.pl > $root/bin/dynamic.conf
 

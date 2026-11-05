@@ -9,7 +9,7 @@ $dbms = 'mysql';
 $dbhost = 'localhost';
 $dbname = 'phpbb';
 $dbuser = 'root';
-$dbpasswd = 'xxxxxx';
+$dbpasswd = 'greatpumpkin';
 
 $table_prefix = 'phpbb_';
 

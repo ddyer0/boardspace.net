@@ -1,6 +1,6 @@
 set path = ($path /usr/jdk1.2.2/bin/)
 setenv ip_name "boardspace.net"
-setenv root "/home/boardspa"
+setenv root "/home/boardspace"
 setenv game_server_port 2255
 setenv database "boardspace"
 setenv other_databases "phpbb"
@@ -15,6 +15,7 @@ setenv debug_log  "$root/logs/mysql_debug.log"
 setenv name_change_log "$root/logs/name-change.log"
 setenv game_completed_log  "$root/logs/game-results.log"
 setenv server_logon_log  "$root/logs/game-logon.log"
+setenv diskspace_log "$root/logs/diskspace.log"
 setenv java_error_log "$root/logs/java_error.log"
 setenv apache_error_log "$root/wlogs/error_log"
 setenv server_start "$root/bin/BoardSpaceServer.start"

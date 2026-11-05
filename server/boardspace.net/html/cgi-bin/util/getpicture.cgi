@@ -12,7 +12,7 @@ use strict;
 require "../include.pl";
 
 { my $player = lc(param('pname'));
-  my $name = $ENV{'DOCUMENT_ROOT'}.$'image_dir.$player.".jpg";
+  my $name = $ENV{'DOCUMENT_ROOT'}.$::image_dir.$player.".jpg";
   #$| = 1;				# force writes
   print "Content-type: image/jpeg\n\n";
   if(open(IMAGE, $name))

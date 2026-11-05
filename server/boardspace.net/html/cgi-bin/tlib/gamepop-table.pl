@@ -1,4 +1,4 @@
-﻿
+
 use CGI qw(:standard);
 use CGI::Carp qw( fatalsToBrowser );
 use Mysql;
@@ -42,7 +42,7 @@ sub showtop_gamepop()
 	&finishQuery($substh);
 	my $msg =  &trans("Most Popular Games");
 	my $title = ($leaguesize<40) 
-		? "'" . &trans('Link to a longer list') . "' target=_new"
+		? "'" . &trans('Link to a longer list') . "' target=_blank"
 		: "'" . &trans("Played in the last #1 months",$months) . "'";
     $msg = "<a href='/cgi-bin/boardspace_olympics.cgi' title=$title >$msg</a>";
 
@@ -148,7 +148,7 @@ sub showtop_active()
 	my $n = 0;
 	my $msg =  &trans("Most Games Played");
 	my $title = ($leaguesize<40) 
-		? "'" . &trans('Link to a longer list') . "' target=_new"
+		? "'" . &trans('Link to a longer list') . "' target=_blank"
 		: "'" . &trans("Played against other players, in the last #1 months",$months) . "'";
     $msg = "<a href='/cgi-bin/boardspace_olympics.cgi' title=$title>$msg</a>";
 	print "<h3><center>" . $msg . "</center></h3>";

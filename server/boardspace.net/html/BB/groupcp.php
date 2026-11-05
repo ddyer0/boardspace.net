@@ -1154,7 +1154,9 @@ else
 	// a pending membership.
 	//
 	$in_group = array();
-	
+	$s_member_groups_opt = '';	
+ 	$s_pending_groups_opt = '';
+ 
 	if ( $userdata['session_logged_in'] ) 
 	{
 		$sql = "SELECT g.group_id, g.group_name, g.group_type, ug.user_pending 

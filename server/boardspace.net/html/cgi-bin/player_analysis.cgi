@@ -618,7 +618,7 @@ sub compare_players
 		  push(@uids,$uu);
 		}
 		else { $fail = 1; 
-		$failmessage .= &trans("there is no player named #1<br>\n",$pl);
+		$failmessage .= &trans("there is no player named #1<br>",$pl);
 		}
 	}}
 	

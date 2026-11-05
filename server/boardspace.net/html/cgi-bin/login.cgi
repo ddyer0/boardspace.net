@@ -191,8 +191,9 @@ language=$language
 $gameparams
 extramouse=$extra
 $guestnameout$feat
-claudeapi=$'claudeapi
-claudemodel=$'claudemodel
+claudeapi=$::claudeapi
+claudemodel=$::claudemodel
+enablescroll=$::enablescroll
 final=true
 ");
 	my $cs = &simplecs($msg);

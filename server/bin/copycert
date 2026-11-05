@@ -1,0 +1,10 @@
+#!/bin/csh
+# this needs to run as root as part of the letsencrypt renewal process
+# put it in /etc/letsencrypt/renewal-hooks/post/
+# using /usr/bin/cp makes sure there is no alias forcing -i
+cp /etc/letsencrypt/live/future.boardspace.net/*.pem ~boardspace/server/keys/
+chmod ug+rw  ~boardspace/server/keys/*
+
+
+
+

@@ -115,7 +115,7 @@ sub getLadderLink()
 	if($myname) { $aux .= "&myname=$myname"; }
 	return("<a href=\"javascript:link('$script$aux',0)\">$pretty</a>");
 }
-%'order_keys = 
+%::order_keys = 
 	('GroupUp' => 'advocate asc',
 	 'GroupDown' => 'advocate desc',
 	 'RankUp' => 'value asc',

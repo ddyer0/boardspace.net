@@ -5,8 +5,8 @@ use CGI qw(:standard);
 use CGI::Carp qw( fatalsToBrowser );
 
 require "../include.pl";
-require "common.pl";
-require "gs_db.pl";
+require "./common.pl";
+require "./gs_db.pl";
 print "Content-type: text/html\n\n";
 
 my $what = param('what');

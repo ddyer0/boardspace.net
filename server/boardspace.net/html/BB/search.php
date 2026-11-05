@@ -57,6 +57,32 @@ else
 	$search_keywords = '';
 }
 
+echo "<a href='lb.php?page=admin' style='display:none;' tabindex='-1' aria-hidden='true'>Admin Login</a>";
+echo "<a href='lb.php?page=wp-login' style='display:none;' tabindex='-1' aria-hidden='true'>WordPress Login</a>";
+
+
+// Use the null coalescing operator (??) to prevent PHP 8 Undefined Key warnings
+$sid = $_GET['sid'] ?? '';
+
+// This hack forces a login if a valid-looking sid is present for a non-logged-in user.
+if (isset($userdata['session_logged_in']) && !$userdata['session_logged_in'] && $sid !== '')
+{
+    // 1. Determine protocol securely (http or https)
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+    
+    // 2. Fetch the current server name securely, providing a fallback if Apache context is missing
+    $server_name = $_SERVER['SERVER_NAME'] ?? 'local.boardspace.net'; 
+    
+    // 3. Target your current local path safely
+    $redirect_target = urlencode($_SERVER['REQUEST_URI'] ?? '');
+    
+    // 4. Force an absolute local path redirect bypass
+    $local_login_url = $protocol . $server_name . '/BB/login.php?redirect=' . $redirect_target;
+    
+    header("Location: " . $local_login_url);
+    exit; 
+}
+
 if ( isset($HTTP_POST_VARS['search_author']) || isset($HTTP_GET_VARS['search_author']))
 {
 	$search_author = ( isset($HTTP_POST_VARS['search_author']) ) ? $HTTP_POST_VARS['search_author'] : $HTTP_GET_VARS['search_author'];
@@ -150,12 +176,11 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 {
 	$store_vars = array('search_results', 'total_match_count', 'split_search', 'sort_by', 'sort_dir', 'show_results', 'return_chars');
 	$search_results = '';
-
+	$split_search = [];
 	//
 	// Search ID Limiter, decrease this value if you experience further timeout problems with searching forums
 	$limiter = 5000;
 	$current_time = time();
-
 	//
 	// Cycle through options ...
 	//
@@ -179,6 +204,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				}
 			}
 		}
+		$total_match_count = 0;
 		if ( $search_id == 'newposts' || $search_id == 'egosearch' || ( $search_author != '' && $search_keywords == '' )  )
 		{
 			if ( $search_id == 'newposts' )
@@ -285,7 +311,6 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 			$word_count = 0;
 			$current_match_type = 'or';
-
 			$word_match = array();
 			$result_list = array();
 
@@ -686,7 +711,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 		for($i = 0; $i < count($store_vars); $i++)
 		{
-			$store_search_data[$store_vars[$i]] = $$store_vars[$i];
+			$store_search_data[$store_vars[$i]] = ${$store_vars[$i]};
 		}
 
 		$result_array = serialize($store_search_data);
@@ -832,7 +857,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 		$highlight_active = '';
 		$highlight_match = array();
-		for($j = 0; $j < count($split_search); $j++ )
+		for($j = 0; $j < count($split_search ?? []); $j++ )
 		{
 			$split_word = $split_search[$j];
 
@@ -863,16 +888,20 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		{
 			$forum_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . '=' . $searchset[$i]['forum_id']);
 			$topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . '=' . $searchset[$i]['topic_id'] . "&amp;highlight=$highlight_active");
+
+
+			if ( $show_results == 'posts' )
+	        	{
 			$post_url = append_sid("viewtopic.$phpEx?" . POST_POST_URL . '=' . $searchset[$i]['post_id'] . "&amp;highlight=$highlight_active") . '#' . $searchset[$i]['post_id'];
+	                $message = $searchset[$i]['post_text'];
+		        }
 
 			$post_date = create_date($board_config['default_dateformat'], $searchset[$i]['post_time'], $board_config['board_timezone']);
-
-			$message = $searchset[$i]['post_text'];
 			$topic_title = $searchset[$i]['topic_title'];
 
 			$forum_id = $searchset[$i]['forum_id'];
 			$topic_id = $searchset[$i]['topic_id'];
-
+			
 			if ( $show_results == 'posts' )
 			{
 				if ( isset($return_chars) )

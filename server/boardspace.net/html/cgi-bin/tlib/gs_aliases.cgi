@@ -11,8 +11,8 @@
 require 5.001;
 use strict;
 require "../include.pl";
-require "gs_db.pl";
-require "common.pl";
+require "./gs_db.pl";
+require "./common.pl";
 
 use CGI::Carp qw( fatalsToBrowser );
 use CGI qw(:standard);

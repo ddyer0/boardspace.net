@@ -129,8 +129,8 @@ sub connect()
 	return($dbh);
 }
 
-%'lastquery='';
-%'lastdbh='';
+%::lastquery='';
+%::lastdbh='';
 sub datestring()
 {
 	my (undef,undef,undef,$day,$month,$year) = localtime();
@@ -197,10 +197,11 @@ sub disconnect()
 				. " ON DUPLICATE KEY UPDATE $newtime,comment=concat(comment,'\n',$da,$qtime,'(',long_time-UNIX_TIMESTAMP(),')')");
 		}
 	}
-	$::standard_database_connection = 0;
+
+	$::standard_database_connection=0;
 	}
 	
-    for $kk (keys(%'lastquery))
+    for $kk (keys(%::lastquery))
         {
 		my $db = $::lastdbh{$kk};
 		my $key = $::lastquery{$kk};
@@ -461,7 +462,7 @@ sub allow_ip_access()
 		my $bancom = $dbh->quote("excess long penalty=$long_penalty");
 		my $quid = $dbh->quote($uid);
 		&commandQuery($dbh,"update ipinfo set status='autobanned',long_time=0,short_time=0,comment=concat(comment,'\n',$da,$bancom) where uid=$quid");
-		$gooduid = 0;
+		my $gooduid = 0;
         }
        
        $::single_ip_uid = $uid;

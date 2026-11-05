@@ -1,4 +1,18 @@
 <?php
+if (!function_exists('get_magic_quotes_gpc'))      { function get_magic_quotes_gpc()      { return 0; } }
+if (!function_exists('set_magic_quotes_runtime'))  { function set_magic_quotes_runtime($v) { return false; } }
+if (!function_exists('each'))
+{
+	function each(&$a)
+		 {
+				$k = key($a);
+				if ($k === null) { return null; }
+		     	    $v = current($a);
+		       	 next($a);
+			return array(1 => $v, 'value' => $v, 0 => $k, 'key' => $k);
+	       }
+}
+
 /***************************************************************************
  *                                common.php
  *                            -------------------
@@ -6,7 +20,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id: common.php,v 1.2 2007/01/13 05:10:25 ddyer Exp $
+ *   $Id: common.php,v 1.4 2026/10/30 09:15:55 ddyer Exp $
  *
  ***************************************************************************/
 

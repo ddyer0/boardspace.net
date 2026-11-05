@@ -360,9 +360,9 @@ sub print_capability()
     print "</td></tr>\n";
     }
 }
+
 sub do_gs_edit()
 {
-param();
   {
   __dStart( "$::debug_log", $ENV{'SCRIPT_NAME'} );
   __d( "Checking Parameters...");
@@ -371,7 +371,7 @@ param();
     if(!$dbh || ! (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0)) { return; }
 	&readtrans_db($dbh);
 	my $language = &select_language(&param('language'));
-	my $pname = param('pname');
+	my $pname = &param('pname');
 	
 	 &bless_parameter_length($pname,20);
 

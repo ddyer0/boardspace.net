@@ -1,0 +1,113 @@
+New Server October 2026
+
+In general you need "a linux" "a perl" "a mysql" "a apache" and "a php" to run boardspace.
+There is also the actual game server, which has to be compiled deployed for the site.
+Here are the specifics for this generation of the site.
+
+future:~> hostnamectl
+ Static hostname: future.boardspace.net
+       Icon name: computer-vm
+         Chassis: vm ??
+      Machine ID: 3c2fabec085640248c67ddb9c15132d9
+         Boot ID: ce13932285c3442fbcd054786505b35b
+  Virtualization: kvm
+Operating System: \Ubuntu 26.04.1 LTS\              
+          Kernel: Linux 7.0.0-38-generic
+    Architecture: x86-64
+ Hardware Vendor: Apache Software Foundation
+  Hardware Model: CloudStack KVM Hypervisor
+Hardware Version: pc-i440fx-6.2
+Firmware Version: 1.15.0-1
+   Firmware Date: Tue 2014-04-01
+    Firmware Age: 5:185m12y 6month 4w 2d       
+
+ perl -version
+ perl 5, version 40, subversion 1 (v5.40.1) built for x86_64-linux-gnu-thread-multi
+
+apache2 -v
+Server version: Apache/2.4.66 (Ubuntu)
+Server built:   2026-10-08T19:55:44
+
+future:~> mysql -V
+mysql from 11.8.6-MariaDB, client 15.2 for debian-linux-gnu (x86_64) using  EditLine wrapper
+
+future:~> php -version
+PHP 8.5.4 (cli) (built: Oct 19 2026 14:35:18) (NTS)
+
+
+---
+
+As usual, a bunch of incidental changes had to be made to cope with about 10 years of version updates.  
+in this process, using claude-ai as a copilot was hugely useful, bordering on indespensible.
+
+
+OS Ubuntu
+
+The main account for the site is "boardspace" whereas the old server used "boardspa".  There were
+a disturbing number of places where the path "boardspa/" exists, they all had to be found and changed.
+The main places were in cgi-bin/include.pl and include.csh, but also in cgi-bin/Debug.pm and 
+server/static.conf .  
+
+The old sever had a default apache configuration which was not exactly replicated.  The new 
+root of the public html is ~boardspace/www/   
+
+The new server environment doesn't permit direct sending email, so a proxy service
+has to be used.  The current choice is smtp2go.com where the free level of service
+is marginally adequate for boardspace (and real-me.net)
+
+
+Perl
+
+Lots of perl modules use obsolete $'varname which is replaced with $::varname. These show up
+as warnings in /var/log/apache2/error.log, but some scripts leak those warnings into payloads,
+so they all needed to be hunted down and replaced.   I systematically did perl <file> for all
+the scripts to eliminate them.   
+
+Some difference in path resolution caused "require 'xx'" to not resolve the same and miss tlib/
+so a lot of "./" and "tlib/" had to be added (rather than messing with perl's defaults).  
+Similarly for some package uses.  
+
+I also added some links to assist using packages as they sat rather than removing them.
+future:~/server> ls -al /usr/local/lib/site_perl/
+total 36
+drwxr-xr-x 3 root       root   4096 Oct 25 00:38 .
+drwxr-xr-x 4 root       root   4096 Oct 25 22:02 ..
+lrwxrwxrwx 1 root       root     34 Oct 25 00:11 Crypt -> /home/boardspace/www/cgi-bin/Crypt
+lrwxrwxrwx 1 root       root     37 Oct 25 00:18 Debug.pm -> /home/boardspace/www/cgi-bin/Debug.pm
+drwxr-xr-x 2 boardspace users  4096 Jan  4  2021 Mysql
+-rwxr-xr-x 1 boardspace users 23888 Jan  3  2021 Mysql.pm
+lrwxrwxrwx 1 root       root     39 Oct 25 00:18 include.pl -> /home/boardspace/www/cgi-bin/include.pl
+lrwxrwxrwx 1 root       root     33 Oct 25 00:38 push -> /home/boardspace/www/cgi-bin/push
+lrwxrwxrwx 1 root       root     33 Oct 25 00:19 tlib -> /home/boardspace/www/cgi-bin/tlib
+
+A lot of standard perl packages were installed "as needed" using apt.
+
+
+Mysl
+
+A significant glitch showed up related to character sets.  Rather than alter the database
+schema or modify all the scripts that use the database, I added this configuration to mysql
+to force the old character set as a default.   I don't think there's any character set
+related problem with the database, but in the future modifying the schema might avoid
+latent problems.
+future:/etc/mysql/mariadb.conf.d# diff 50-server.cnf 50-server.cnf~
+# this is only for the mariadbd daemon
+[mariadbd]
+character-set-client-handshake = FALSE
+character-set-server           = latin1
+collation-server               = latin1_swedish_ci
+init_connect                   = 'SET NAMES latin1'
+
+
+PHP
+
+Using a modern, maintainable php was the main motivation for this upgrade, but the main user, phpbb,
+was written for a much older version of php.  We run a phpbb that was split from the main branch
+many years ago, and boardspace version has a number of custom features to integrate it with the
+boardspace database, and more recently to detect and trip-up rogue robots.  So my choice was to
+upgrade the phpbb to the newer php version.  The main method here was to browse the BB and
+use claude to say how to fix the problems.
+
+Boardspace Server
+No changes, but several new warnings to resolve eventually
+

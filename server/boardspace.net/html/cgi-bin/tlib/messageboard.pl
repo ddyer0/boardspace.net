@@ -188,7 +188,7 @@ sub do_messageboard()
 	  if($link)
 	  {
 	  my $msg = &trans("Add a Message");
-	  print "<center><a target=_new href='/cgi-bin/messageboard.cgi?fromname=$fromname'>$msg</a></center>";
+	  print "<center><a target=_blank href='/cgi-bin/messageboard.cgi?fromname=$fromname'>$msg</a></center>";
 	  }
 	  else
 	  {

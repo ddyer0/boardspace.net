@@ -4,8 +4,8 @@ require 5.001;
 #use Win32::Process; 
 #use Win32;
 use strict;
-require "config.pl";
-require "../$lib'lib/common.pl";
+require "./config.pl";
+require "../tlib/common.pl";
 
 $::extraargs = "";  # /P to get a message box
 $::native_perl = 1; # if 1, use native stuff,otherwise use win32 process

@@ -9,8 +9,8 @@ use warnings;
 use HTTP::Tiny;
 
 # JSON decode
-use JSON;
- 
+use JSON::PP;
+
 # Base64 encode for avatar images
 use MIME::Base64 qw(encode_base64);
  

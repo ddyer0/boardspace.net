@@ -36,6 +36,26 @@ sub timestamp()
 	return(&encode_entities(&encrypt($val,$::tea_key)),$val);
 
 }
+
+sub record_timestamp()
+{
+	my ($dbh,$dv0,$limit) = @_;
+
+	if($limit>1) 
+	{ 
+	# limit 2 also introduces a "fail" which will rate limit the use of the form
+	my $myaddr = $ENV{'REMOTE_ADDR'};
+	&note_failed_login($dbh,$myaddr,"timestamped");
+	}
+
+	my $qt = $dbh->quote($dv0);
+	my $q = "insert ignore into timestamps set data=$qt";
+	my $sth = &query($dbh,$q);
+	my $uid = &last_insert_id($sth);
+	&finishQuery($sth);
+	&commandQuery($dbh,"delete from timestamps where date < now()-interval 1 day ");
+	return $uid>0;
+}
 #
 # limit 1 will add a check that timestamps are used only once
 # limit 2 will add a rate limit so the form can't be used too often
@@ -48,28 +68,30 @@ sub check_timestamp()
 	my $maybe = ($dv eq &timestamp_date(0)) || ($dv eq &timestamp_date(1));
 	if($maybe && $limit>0)
 	{
+	$maybe = 0;
 	my $dbh = &connect();
 	my $myaddr = $ENV{'REMOTE_ADDR'};
 	if($dbh)
 	{ if(&allow_ip_access($dbh,$myaddr))
 		{
-		# limit 2 also introduces a "fail" which will rate limit the use of the form
-		if($limit>1) { &note_failed_login($dbh,$myaddr,"timestamped"); }
-		my $qt = $dbh->quote($dv0);
-		my $q = "insert ignore into timestamps set data=$qt";
-		my $sth = &query($dbh,$q);
-		my $uid = &last_insert_id($sth);
-		if(!$uid) 
-			{ #print "failed, duplicate<p>";
-			 $maybe = 0;
-			} 
-		&finishQuery($sth);
-		&commandQuery($dbh,"delete from timestamps where date < now()-interval 1 day ");
+		$maybe = &record_timestamp($dbh,$dv0,$limit);
 		}
-		else { $maybe = 0; }
-		}
-	  
 	  &disconnect($dbh);
+	}}
+	return $maybe;
+}
+#
+# check the timestamp with an existing database connection
+#
+sub check_timestamp_unique()
+{	my ($dbh,$var,$limit) = @_;
+	my $dv0 = &decrypt(&decode_entities($var),$::tea_key);
+        #print "check unique ($limit) $dv0";
+	my ($dv) = split(/\+/,$dv0);
+	my $maybe = ($dv eq &timestamp_date(0)) || ($dv eq &timestamp_date(1));
+	if($maybe && $limit>0)
+	{
+	$maybe = &record_timestamp($dbh,$dv0,$limit);
 	}
 	return $maybe;
 }

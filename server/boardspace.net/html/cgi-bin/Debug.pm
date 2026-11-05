@@ -19,7 +19,7 @@ require Exporter;
 BEGIN {
 	#print "Initalizing debug....\n\n";
 
-	$log_file = "/home/boardspa/logs/debug.log";
+	$log_file = "/home/boardspace/logs/debug.log";
 	$log_name = "no _dStart $0";
 	$operator = "gamemaster\@boardspace.net";
 	$debug = 1;                                   # Debugging flag
@@ -101,7 +101,7 @@ sub __d {                               #  &log
   if ($debug ) {
         #print "[$year/$mon/$mday $hour:$min:$sec]  $string \n";
          if ( $first_run ) {
-                 open(F_OUT,">>$log_file") || __dmsg("open log file $log_file failed",&showEnv());
+                 open(F_OUT,">>$log_file") || __dmsg("open log file $log_file failed: $!",&showEnv());
 #                 print F_OUT "\n                  $log_name";
                  print F_OUT "\n";
  		$first_run = 0;

@@ -17,7 +17,7 @@ sub send_discord_notification()
   my ($discord, $player, $subject, $email) = @_;
   #   
   # silent notifications use the hook for the turn based notification channel
-  my $webhook = WebService::Discord::Webhook->new($'turnhook );
+  my $webhook = WebService::Discord::Webhook->new($::turnhook );
   $webhook->get();
   #
   #print "Webhook posting as '" . $webhook->{name} . "' in channel " . $webhook->{channel_id} . "\n";
@@ -77,7 +77,7 @@ sub send_alertz_notification()
 	}
    if (!$response->is_success)
 	{
-    	$'error = "alertz fail " . $response->status_line . "<br>";
+    	$::error = "alertz fail " . $response->status_line . "<br>";
 	}
 }
 

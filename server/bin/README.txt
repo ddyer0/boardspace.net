@@ -1,26 +1,52 @@
 
-This folder contains the running server, backup versions of the server, test versions of the server
-and configuration files for the server.
+This folder contains the actively running game server and related files.
 
-Games contains the active games that are dribbled from the running server
-TestGames contains the same for the test server.
+BoardSpaceServer is the game server binary, also TestServer and frequently
+other "last known good" versions.
 
-Generally, the test server is used to test new versions of the server, not for testing new games,
-but it can be used that way.
+*.conf are configuration files used to start the server.  Static.conf
+contains the fixed part, which is combined with data pulled from the
+database to form BoardSpaceServer.conf
 
-The actual configuration for the server is partly derived from the database "variations" table,
-so that when a new game is added to the database, all that is necessary is to restart the server.
-The main thing is that the mapping between directory number known to the games, and the actual
-location of the games archives, is determined by the database and the server config file derived
-from it.
+-- Obsolete --
+the actual startup script is BoardSpaceServer.start
+which is invoked by various perl scripts which detect the server is not running
+this has the undesirable effect that if apache is restarted, the server is restarted too.
+-- Current 11/2026
+boardspace is install as a service in /etc/systemd/system/boardspace.service
+which runs two scripts derived from the old BoardSpaceServer.start,
+ buildconf.sh updates the config file
+ runserver.sh starts the service.
+ the other difference to make this work is that static.conf sets detatch,0
 
-Copies of files from the active games directories are sometimes useful for low level debugging
-of things like the game restart process.
 
-The contents of the Games directory is maintained by the server.  Old items are deleted after
-a pretty long sunset period, or (normally) when the game is finished and saved to the game archives.
+the Games/ directory contains copies of the game state for active games.
+It's loaded and trimmed when the server starts, which supplies the newly
+start server with the last known state of games in progress.  New copies
+of these files are trickled out as the server runs, to server as a restart
+checkpoint in the unlikely event that the server crashes or reboots.
 
-Note that the regular game archives are in ".sgf" format, but the active games directories are 
-in a digital wrapper used by the server, followed by a "game state" in a format that is only
-known to the individual game.
+the keys/ folder contains copies of the current SSL keys, for use by
+the websocket branch of the server connections.   This copy is kept
+up to date by the copycert script, which is invoked by the ssl update
+code.
+
+---
+
+When any client is activated, it uses a HTTP request to check the status
+of the game server and retrieve the basic parameters - host and socket
+to connect to the game server.  As a side effect of this, a quick connection
+to the server is made and if it fails, the startup script is invoked.
+
+When the login process (another HTTP interaction) is complete, the login
+script contacts the server again, and passes the identity of the logged
+in user.  The user's client then connects directly to the game server
+and presents the credentials that the login script has provided to the
+server.
+
+---
+
+The startup script + config files + actual server + active game records
+are more or less duplicated by the testserver versions, useful in some
+debugging and development scenarios, but not usually active.
 

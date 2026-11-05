@@ -30,9 +30,9 @@ $examplemail = "yourname\@domain.com";
 
 # Done With Configuration.
 
-require 'parsform.cgi';
-require 'error.cgi';
-require 'formdate.cgi';
+require './parsform.cgi';
+require './error.cgi';
+require './formdate.cgi';
 
 $timeformat = "<timesec>";
 $dmonthformat = "<m>";
