@@ -339,7 +339,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
         monte_search_state.randomize_uct_children = true;     
         monte_search_state.maxThreads = DEPLOY_THREADS;
-        monte_search_state.random_moves_per_second = WEAKBOT ? 15000 : 400000;		// 
+        monte_search_state.random_moves_per_second = WEAKBOT ? 0 : 400000;		// 
         monte_search_state.max_random_moves_per_second = 5000000;		// 
         // for some games, the child pool is exhausted very quickly, but the results
         // still get better the longer you search.  Other games may work better

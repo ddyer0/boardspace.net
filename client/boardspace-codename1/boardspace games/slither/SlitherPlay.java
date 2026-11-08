@@ -501,7 +501,7 @@ public void PrepareToMove(int playerIndex)
         int limit =  WEAKBOT ? baseMoveRate/10 : baseMoveRate;
         int maxlimit = limit*4;
         
-        monte_search_state.random_moves_per_second = limit;		// 
+        monte_search_state.random_moves_per_second = WEAKBOT ? 0 : limit;		// 
         monte_search_state.max_random_moves_per_second = maxlimit;		// 
         // for some games, the child pool is exhausted very quickly, but the results
         // still get better the longer you search.  Other games may work better

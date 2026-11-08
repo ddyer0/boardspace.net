@@ -257,7 +257,7 @@ public class SantoriniPlay extends commonRobot<SantoriniBoard> implements Runnab
         monte_search_state.alpha = 0.5;
         monte_search_state.maxThreads = DEPLOY_THREADS;
         monte_search_state.randomize_uct_children = true;     
-       monte_search_state.random_moves_per_second = WEAKBOT ? 7000:740000;
+       monte_search_state.random_moves_per_second = WEAKBOT ? 0:740000;
 
         monte_search_state.simulationsPerNode = 1;
         move = monte_search_state.getBestMonteMove();

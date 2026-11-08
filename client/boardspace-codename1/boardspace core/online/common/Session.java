@@ -35,6 +35,7 @@ import lib.TimeControl;
 import lib.commonPanel;
 import lib.exCanvas;
 import online.common.TurnBasedViewer.AsyncGameInfo;
+import online.search.RobotProtocol;
 import lib.TimeControl.Kind;
 import lib.XFrame;
 import lib.InternationalStrings;
@@ -506,7 +507,9 @@ public class Session implements LobbyConstants
 	{	
 		return((currentGame!=null) 
 				&& (n.idx>=0)
-				&& currentGame.fastEnoughForRobot(n));
+				&& currentGame.fastEnoughForRobot(n)
+				&& (!G.isCodename1() || (n.idx==RobotProtocol.WEAKBOT_LEVEL))
+				);
 	}
 	public Bot[]getRobots()
 	{

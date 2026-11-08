@@ -226,7 +226,7 @@ public void PrepareToMove(int playerIndex)
         // we depend on blitz evaluation because the lineOwner information is not maintained on unwind
         monte_search_state.blitz = true;
         monte_search_state.maxThreads = DEPLOY_THREADS;
-        monte_search_state.random_moves_per_second =     WEAKBOT ? 5000 : 300000;		// 
+        monte_search_state.random_moves_per_second =     WEAKBOT ? 0 : 300000;		// 
         monte_search_state.max_random_moves_per_second = 500000;		// 
         monte_search_state.terminalNodeOptimization = terminalNodeOptimize;
         move = monte_search_state.getBestMonteMove();

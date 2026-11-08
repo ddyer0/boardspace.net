@@ -166,7 +166,7 @@ public commonMove DoMonteCarloFullMove()
      monte_search_state.simulationsPerNode = 1;
      monte_search_state.only_child_optimization = true;
      monte_search_state.dead_child_optimization = true;
-     monte_search_state.random_moves_per_second = WEAKBOT ? 400 : 8000;
+     monte_search_state.random_moves_per_second = WEAKBOT ? 0 : 8000;
      monte_search_state.terminalNodeOptimization = terminalNodeOptimize;
      move = monte_search_state.getBestMonteMove();
      }

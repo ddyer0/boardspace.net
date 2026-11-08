@@ -1023,7 +1023,7 @@ class SlitherBoard
  		case MOVE_PICKB:
         	// come here only where there's something to pick, which must
  			{
- 			SlitherCell src = m.to_col=='@' ? playerCell[m.to_row] : getCell(m.to_col,m.to_row);
+ 			SlitherCell src = m.to_col=='@' ? playerCell[m.to_row ^ (swapped ? 1 : 0)] : getCell(m.to_col,m.to_row);
  			if(isDest(src)) { unDropObject(); }
  			else
  			{
@@ -1633,15 +1633,18 @@ public commonMove getRandomMove(Random rand,CellStack focus)
 	 		break;
 	 	case Play:
 	 		m = randomPlayMove(rand,99999,focus);
+	 		Meter.count("randomPlayMove");
 	 		break;
 	 	case PlayOrSlide:
 	 		{
 	 		if(rand.nextInt(100)<50) 
 	 		{
 	 			m = randomSlideMove(rand,9999,focus);
+	 			Meter.count("randomSlideMove");
 	 		}
 	 		if(m==null)
 	 		{	m = randomPlayMove(rand,9999,focus);
+	 			Meter.count("randomPlayMove");
 	 		}
 	 		}
 	 		break;
@@ -1654,6 +1657,7 @@ public commonMove getRandomMove(Random rand,CellStack focus)
 			}
 			else 
 			{ m = randomSlideMove(rand,(int)(occupiedCells[whoseTurn].size()*0.25),focus);
+			  Meter.count("randomSlideMove");
 			}	
 	 		break;
 		case SlideAfterDrop:
@@ -1664,6 +1668,7 @@ public commonMove getRandomMove(Random rand,CellStack focus)
 	 	default:
 	 			G.Error("Not expecting state ",board_state);
 	 	}
+		Meter.count("randomOtherMove");
 	 	return(m);
 	 }
 private commonMove randomSlideMove(Random rand, int tries,CellStack focus)

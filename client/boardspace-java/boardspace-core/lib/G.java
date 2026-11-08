@@ -1473,20 +1473,29 @@ private static int fact(int n)
 }
 
 private static double speed = 0.0;
-public static double cpuTest()
+public static double cpuTestOld()
 {	long now = G.Date();
 		for(int j=0;j<(10000000/2);j++) { fact(20); }
 	long later = G.Date();
 	//G.print("elapsed "+(later-now)/1000.0);
    	return(126.0/(later-now+1));	// 1.0 based on the codename1 simulator running on my machine 1/2016
 } 
+public static double cpuTest()
+{	return CpuSpeed.estimate()/(123823/1.2);// 1.0 based on the codename1 simulator running on my machine 1/2016
+}
 /**
  * return the apparent cpu speed, where 1.0 is a normalized "standard" pc.  Other than the 
  * reference to an arbitrary standard, this number has no intrinsic meaning.
  * @return a double representing cpu speed
  */
 public static double cpuSpeed()
-{	if(speed<=0) { speed = cpuTest(); }
+{	if(speed<=0) 
+		{ 
+		double speed1 = cpuTestOld(); 
+		double speed2 = cpuTest();
+		speed = speed2;
+		G.print("Speed ",speed1," or ",speed2);
+		}
 	return(speed);
 }
 
@@ -1748,7 +1757,9 @@ public static boolean debugOnce() { boolean o = once; once = false; return(o); }
 public static void putGlobal(String p,Object v) 
 { 
 	getGlobals().put(p, v);
-	if("debug".equalsIgnoreCase(p)) { DEBUG = getBoolean((String)v,true);}
+	if("debug".equalsIgnoreCase(p)) 
+		{ DEBUG = Boolean.valueOf((String)v);
+		}
 //G.print("put "+p+" "+v);
 }
 public static Object getGlobal(String p) { return(getGlobals().get(p)); }

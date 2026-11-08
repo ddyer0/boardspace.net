@@ -283,7 +283,7 @@ public class SixmakingPlay extends commonRobot<SixmakingBoard> implements Runnab
 
         monte_search_state.randomize_uct_children = true;     
         monte_search_state.random_moves_per_second = 
-        		WEAKBOT ? 10000 : USE_BLITZ ? 200000 : 227550;	// unexecute mode
+        		WEAKBOT ? 0 : USE_BLITZ ? 200000 : 227550;	// unexecute mode
         monte_search_state.blitz = USE_BLITZ;
         monte_search_state.maxThreads = DEPLOY_THREADS;
         monte_search_state.terminalNodeOptimization = terminalNodeOptimize;

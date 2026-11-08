@@ -245,7 +245,7 @@ public class OnedayPlay extends commonMPRobot<OnedayBoard> implements Runnable, 
         monte_search_state.simulationsPerNode = 1;
         monte_search_state.node_expansion_rate = 1.0;
         monte_search_state.randomize_uct_children = true;     
-        monte_search_state.random_moves_per_second = WEAKBOT ? 1000 : 120000;
+        monte_search_state.random_moves_per_second = WEAKBOT ? 0 : 120000;
         // terminal node optimizations don't work with, because the things
         // it sees are only possibilities, not facts.  So seeing the possibility of
         // a win or loss isn't a good motivation for remembering as a fact.

@@ -632,9 +632,8 @@ public void addToMenus(JButton m)
 		super.addKeyListener(keyCode,listener);
 	}
 	public void fireKeyEvent(int keycode,boolean pressed)
-	{	//G.print("KeyEvent ",keycode,"(0x",Integer.toHexString((keycode&0xff)),")",
+	{	//G.print("KeyEvent ",keycode,"(0x",Integer.toHexString((keycode&0xffff)),")",
 		//	focusedListener," ",pressed);
-	
 		if(keylisteners!=null)
 		{	int code = keycode;
 			for(KeyListener k : keylisteners)

@@ -1023,7 +1023,7 @@ class SlitherBoard
  		case MOVE_PICKB:
         	// come here only where there's something to pick, which must
  			{
- 			SlitherCell src = m.to_col=='@' ? playerCell[m.to_row] : getCell(m.to_col,m.to_row);
+ 			SlitherCell src = m.to_col=='@' ? playerCell[m.to_row ^ (swapped ? 1 : 0)] : getCell(m.to_col,m.to_row);
  			if(isDest(src)) { unDropObject(); }
  			else
  			{

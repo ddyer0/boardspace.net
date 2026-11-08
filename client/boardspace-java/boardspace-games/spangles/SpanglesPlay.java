@@ -137,7 +137,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.verbose = verbose;
         monte_search_state.alpha = 0.5;
         monte_search_state.simulationsPerNode =1;
-        monte_search_state.random_moves_per_second = WEAKBOT ? 5000:2000000;
+        monte_search_state.random_moves_per_second = WEAKBOT ? 0:2000000;
         monte_search_state.terminalNodeOptimization = terminalNodeOptimize;
         move = monte_search_state.getBestMonteMove();
         }

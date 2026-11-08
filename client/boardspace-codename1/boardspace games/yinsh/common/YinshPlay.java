@@ -273,7 +273,7 @@ public class YinshPlay extends commonRobot<YinshBoard> implements Runnable, Yins
            monte_search_state.verbose = verbose;
            monte_search_state.alpha = 0.5;
            monte_search_state.dead_child_optimization=true;
-           monte_search_state.random_moves_per_second = WEAKBOT ? 1000 : 500000;
+           monte_search_state.random_moves_per_second = WEAKBOT ? 0 : 500000;
            monte_search_state.simulationsPerNode = EXP_MONTEBOT ? 10 : 1;
            monte_search_state.maxThreads = DEPLOY_THREADS;
            move = monte_search_state.getBestMonteMove();

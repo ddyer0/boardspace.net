@@ -255,7 +255,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.final_depth = 9999;		// not needed for qe which is always finite
         monte_search_state.randomize_uct_children = true;     
         monte_search_state.maxThreads = DEPLOY_THREADS;
-        monte_search_state.random_moves_per_second = WEAKBOT ? 5000 : 50000;		// 
+        monte_search_state.random_moves_per_second = WEAKBOT ? 0 : 50000;		// 
         monte_search_state.max_random_moves_per_second = 2000000;		// 
         monte_search_state.stored_child_limit_stop = STORED_CHILD_LIMIT_STOP;
         // has hidden state, so may no be a good idea

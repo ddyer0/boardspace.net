@@ -722,18 +722,17 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
     }
 	public static SocketProxy makeSocketConnection(String server,int port) throws IOException
 	{	Plog.log.addLog("Open socket ",server,":",port);
-		boolean cheer = G.isCheerpj();
+		boolean cheer = G.isCheerpj() || G.isJS();
 		// if we're using cheerpj, we need to use websockets rather than real sockets,
 		// and if we're using https connections, we need to use wss.  This requires
 		// using either the the "websockify" proxy, or the latest version of Boardspaceserver
 		// which includes ws and wss support. 
-		//System.out.println("cheer "+cheer+" wss "+wss);
 		SocketProxy p = cheer
 							? new WebSocket(server,port)
 							: (USE_NATIVE_SOCKETS && !G.isIOS()
 									? new ClientSocket(server, port)
 									: new Socket(server,port));
-		G.print("opened socket ",p);
+		Plog.log.addLog("opened socket ",p);
 		return(p);
 	}
 }

@@ -344,7 +344,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.dead_child_optimization = true;
         monte_search_state.only_child_optimization = true;
         monte_search_state.maxThreads = DEPLOY_THREADS;
-        monte_search_state.random_moves_per_second = 10000; 	// blitz mode and non-blitz about the same
+        monte_search_state.random_moves_per_second = WEAKBOT ? 0 : 10000; 	// blitz mode and non-blitz about the same
         monte_search_state.simulationsPerNode = 1;
         monte_search_state.blitz=false;
         monte_search_state.killHopelessChildrenShare = 1.0;		// very aggressive

@@ -98,7 +98,7 @@ public class Translator {
         			{"x-api-key",         apiKey},
         			{"anthropic-version", API_VER}			
         		};
-        	boolean useProxy = G.isCheerpj();
+        	boolean useProxy = G.isCheerpj()||G.isJS();
         	UrlResult result = Http.postURL( useProxy ? Http.getHostName() : ANTROPIC_HOST,
         									useProxy ? PROXY_ANTROPIC_API : ANTROPIC_API, props,
         									requestBody,null,new UrlResult());

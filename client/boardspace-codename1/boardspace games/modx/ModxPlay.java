@@ -222,7 +222,7 @@ public class ModxPlay extends commonRobot<ModxBoard> implements Runnable, ModxCo
         monte_search_state.node_expansion_rate = 1.0;
         monte_search_state.randomize_uct_children = true;     
         monte_search_state.random_moves_per_second = 
-        		WEAKBOT ? 5000 : USE_BLITZ ? 60000 : 100000;	
+        		WEAKBOT ? 0 : USE_BLITZ ? 60000 : 100000;	
         monte_search_state.blitz = USE_BLITZ;
         monte_search_state.maxThreads = DEPLOY_THREADS;
         monte_search_state.terminalNodeOptimization = terminalNodeOptimize;

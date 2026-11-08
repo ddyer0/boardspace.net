@@ -518,7 +518,7 @@ public commonMove Random_Good_Move(Search_Driver search,int n,double dif)
         monte_search_state.alpha = 0.75;
         monte_search_state.verbose = 1;
         monte_search_state.final_depth = MONTE_DEPTH_LIMIT*3;
-        monte_search_state.random_moves_per_second = 10000;
+        monte_search_state.random_moves_per_second = WEAKBOT ? 0 : 10000;
         monte_search_state.max_random_moves_per_second = 40000;	
         monte_search_state.maxThreads = 0;// DEPLOY_THREADS; threads don't work yet
         // setup for saving the tree

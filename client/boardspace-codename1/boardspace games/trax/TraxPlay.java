@@ -357,7 +357,7 @@ public commonMove DoMonteCarloFullMove()
        monte_search_state.dead_child_optimization = true;
        monte_search_state.final_depth = MONTE_FINAL_DEPTH;			// tree tends to be very deep, so restrain it.
        monte_search_state.simulationsPerNode = 1;
-       monte_search_state.random_moves_per_second = WEAKBOT ? 1000:180000;
+       monte_search_state.random_moves_per_second = WEAKBOT ? 0:180000;
        monte_search_state.max_random_moves_per_second = 1800000;
        // trax unmove  doesn't work with threads, despite the movespec being compatible looking
        monte_search_state.maxThreads = MONTE_THREADS;	// trax not organized to support threads

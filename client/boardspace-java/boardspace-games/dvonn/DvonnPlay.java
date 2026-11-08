@@ -156,7 +156,7 @@ public class DvonnPlay extends commonRobot<DvonnBoard> implements Runnable,  Rob
         UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this);
         monte_search_state.save_top_digest = false;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging only
-        monte_search_state.random_moves_per_second = WEAKBOT ? 4000 : 80000;
+        monte_search_state.random_moves_per_second = WEAKBOT ? 0 : 80000;
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
         monte_search_state.timePerMove =
         		(board.board_state==DvonnState.PLACE_RING_STATE)

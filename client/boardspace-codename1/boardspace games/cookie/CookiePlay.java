@@ -161,7 +161,7 @@ public commonMove DoMonteCarloFullMove()
      monte_search_state.alpha = 0.5;
      monte_search_state.final_depth = 100;			// tree tends to eb very deep, so restrain it.
      monte_search_state.simulationsPerNode = 2;
-     monte_search_state.random_moves_per_second = WEAKBOT ? 1000 : 25000;
+     monte_search_state.random_moves_per_second = WEAKBOT ? 0 : 25000;
      monte_search_state.max_random_moves_per_second = 26000;
      monte_search_state.maxThreads = DEPLOY_THREADS;
      monte_search_state.killHopelessChildrenVisits = KILL_VISITS;

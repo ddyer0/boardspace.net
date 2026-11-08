@@ -219,7 +219,7 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
     /** make a connection, return true if we were successful */
     public final boolean makeConn()
     {
-       int [] ports = { machinePort };
+        int[] ports = { machinePort };
        SocketProxy sock = getSocketConnection(machineName, ports);
 
         //System.out.println("Sock: "+sock);
@@ -448,9 +448,7 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
     	//  else { temp.close(); }
     	//}
         if(myS==null)
-        	{ 
-        	Plog.log.addLog("makeSocketConnection ",server,":",sock);
-        	myS = CommonNetConn.makeSocketConnection(server,sock); 
+        	{ myS = CommonNetConn.makeSocketConnection(server,sock); 
         	}
         
         //setting NoDelay seemed to work, but had no discernable effect

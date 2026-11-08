@@ -371,9 +371,11 @@ public class UCTMoveSearcher extends CommonDriver
 	    			: new UCTSPThread(mon,ind,this,leadRobot,name);
 	    }
 	    CommonMoveStack top_level_moves = null;
+	    
 	    public commonMove[] top_level_moves() { return top_level_moves.toArray(); }
 		public commonMove getBestMonteMove()
-		{
+		{	Meter.clear();
+			Meter.interval = 1000;	// 1 millisecond
 			aborted = false;
 			try {
 			BoardProtocol board = leadRobot.getBoard();
@@ -631,7 +633,10 @@ public class UCTMoveSearcher extends CommonDriver
 			G.print("Early Exit at "+(int)(partDone*100)+"%, starting at "+(int)(victimChildrenAt*100)+"%");
 			if(decided!=null) { G.print("Decided on winner "+decided); }
 			}
-
+			if(Meter.size()>0)
+				{	G.print("Top 20 functions");
+				    Meter.report(20);
+				}
 			return(useMonteCarlo());
 		}
 

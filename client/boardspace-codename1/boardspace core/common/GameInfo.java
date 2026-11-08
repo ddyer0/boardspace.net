@@ -1315,6 +1315,29 @@ synchronized(allGames) {
 				slitherTimes,
 				slitherClass,slitherRules,slitherAbout,
 				slitherVideo,false, BlackOverWhite));
+		put(new GameInfo(264,ES.game,126,"SL",ConnectionGames,"Slither","Slide-9",
+				OneBotPlus,
+				slitherTimes,
+				slitherClass,slitherRules,slitherAbout,
+				slitherVideo,false, BlackOverWhite));
+		
+		put(new GameInfo(265,ES.game,126,"SL",ConnectionGames,"Slither","Slide-11",
+				OneBotPlus,
+				slitherTimes,
+				slitherClass,slitherRules,slitherAbout,
+				slitherVideo,false, BlackOverWhite));
+		
+		put(new GameInfo(266,ES.game,126,"SL",ConnectionGames,"Slither","Slide-13",
+				OneBotPlus,
+				slitherTimes,
+				slitherClass,slitherRules,slitherAbout,
+				slitherVideo,false, BlackOverWhite));
+		
+		put(new GameInfo(267,ES.game,126,"SL",ConnectionGames,"Slither","Slide-19",
+				OneBotPlus,
+				slitherTimes,
+				slitherClass,slitherRules,slitherAbout,
+				slitherVideo,false, BlackOverWhite));
 
 	}
 	

@@ -4551,7 +4551,7 @@ public abstract class commonCanvas extends exCanvas
     public enum MovementStyle 
     	{ 
     	  Chained,		/** chained movement of a single piece or a stack of pieces */
-    	  ChainedToLast,	/** chained movement but intermediate steps stay visible, used for gyges */
+    	  ChainedToLast,	/** chained "ping pong" movement, intermediate steps stay visible, used for gyges */
     	  Simultaneous, /** everything moves at the same time */
     	  SimultaneousAfterOne,	/** first move is alone, them all together */
     	  Stack,		/** everything moves at the same time, as a stack */

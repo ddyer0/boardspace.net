@@ -371,9 +371,11 @@ public class UCTMoveSearcher extends CommonDriver
 	    			: new UCTSPThread(mon,ind,this,leadRobot,name);
 	    }
 	    CommonMoveStack top_level_moves = null;
+	    
 	    public commonMove[] top_level_moves() { return top_level_moves.toArray(); }
 		public commonMove getBestMonteMove()
-		{
+		{	Meter.clear();
+			Meter.interval = 1000000;	// 1 millisecond
 			aborted = false;
 			try {
 			BoardProtocol board = leadRobot.getBoard();
@@ -463,6 +465,7 @@ public class UCTMoveSearcher extends CommonDriver
 				for(UCTThread th : threads) { th.start(); }
 			}
 			long now = G .Date();
+			boolean cheer = G.isCheerpj()||G.isJS();
 			do
 			{	
 				before += commonPause();// just in case we pause
@@ -471,7 +474,7 @@ public class UCTMoveSearcher extends CommonDriver
 					{ UCTThread s = threads[0];
 					  s.simUsingTree();
 					  long later = G.Date();
-					  if(G.isCheerpj()) { Thread.yield(); }
+					  if(cheer) { Thread.yield(); }
 					  if(later-now>1000)
 					  {	  now=later;
 						 // G.print("Single search "+loops," T ",traverseMoves," R ",randomMoves);
@@ -630,7 +633,10 @@ public class UCTMoveSearcher extends CommonDriver
 			G.print("Early Exit at "+(int)(partDone*100)+"%, starting at "+(int)(victimChildrenAt*100)+"%");
 			if(decided!=null) { G.print("Decided on winner "+decided); }
 			}
-
+			if(Meter.size()>0)
+				{	G.print("Top 20 functions");
+				    Meter.report(20);
+				}
 			return(useMonteCarlo());
 		}
 

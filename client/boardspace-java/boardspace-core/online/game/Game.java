@@ -2142,7 +2142,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                     myFrame.addAction(to,deferredEvents);
                 }
             }
-        if(extraactions || G.isCheerpj()) 
+        if(extraactions) 
         {	JMenu de = v.debugMenu();
         	if(de!=null)
         	{
@@ -4080,7 +4080,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             	{ selectorFrame.moveToFront(); 
             	} 
             
-            if(G.isCheerpj())
+            if(G.isCheerpj()||G.isJS())
             { newsStack.push(cheerpjTextFile); 
             }
 

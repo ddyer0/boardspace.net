@@ -177,7 +177,7 @@ public class GygesPlay extends commonRobot<GygesBoard> implements Runnable,
         monte_search_state.node_expansion_rate = 1.0;
         monte_search_state.maxThreads = DEPLOY_THREADS;
         monte_search_state.randomize_uct_children = true;     
-        monte_search_state.random_moves_per_second = WEAKBOT ? 3000 : 120000;
+        monte_search_state.random_moves_per_second = WEAKBOT ? 0 : 120000;
         monte_search_state.terminalNodeOptimization = terminalNodeOptimize;
         move = monte_search_state.getBestMonteMove();
         }

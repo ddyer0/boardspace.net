@@ -44,7 +44,6 @@ public class PontePlay extends commonRobot<PonteBoard> implements Runnable, Pont
 	private double bridgeMultiplier = 1.0;
 	private int timePerMove = 15;
 	private int playRate = 80000;
-	private int weakPlayRate = 4000;
 	private PonteBoard GameBoard = null;			// this is the "real" game board we're starting from
     /* constructor */
     public PontePlay()
@@ -224,7 +223,7 @@ public class PontePlay extends commonRobot<PonteBoard> implements Runnable, Pont
         monte_search_state.node_expansion_rate = 1.0;
         monte_search_state.randomize_uct_children = true;     
         monte_search_state.blitz = true;
-        monte_search_state.random_moves_per_second = WEAKBOT ? weakPlayRate : playRate;
+        monte_search_state.random_moves_per_second = WEAKBOT ? 0 : playRate;
         monte_search_state.max_random_moves_per_second =  180000;
         monte_search_state.maxThreads = DEPLOY_THREADS;
         G.print("Optimize Random "+optimizeRandom);

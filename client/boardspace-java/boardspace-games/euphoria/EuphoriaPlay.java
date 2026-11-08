@@ -530,7 +530,7 @@ public commonMove DoMonteCarloFullMove()
         monte_search_state.simulationsPerNode = 1;
         monte_search_state.node_expansion_rate = 1.0;
         monte_search_state.randomize_uct_children = true;     
-        monte_search_state.random_moves_per_second = WEAKBOT ? 6000 : 250000;
+        monte_search_state.random_moves_per_second = WEAKBOT ? 0 : 250000;
         monte_search_state.max_random_moves_per_second = 300000;
         monte_search_state.maxThreads = randomize ? evaluator.threads : 0;	// 1 = test with a single thread, 0=don't use threads
         //

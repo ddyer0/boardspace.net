@@ -189,7 +189,7 @@ public class MorrisPlay extends commonRobot<MorrisBoard> implements Runnable, Mo
         monte_search_state.node_expansion_rate = 1.0;
         monte_search_state.randomize_uct_children = true;     
         monte_search_state.random_moves_per_second =
-        		WEAKBOT ? 15000 : USE_BLITZ ? 375000 : 560000;	// unexecute mode
+        		WEAKBOT ? 0 : USE_BLITZ ? 375000 : 560000;	// unexecute mode
         monte_search_state.blitz = USE_BLITZ;
         //monte_search_state.random_moves_per_second = 383633;	// blitz mode
         monte_search_state.maxThreads = DEPLOY_THREADS;
