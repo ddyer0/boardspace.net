@@ -91,6 +91,22 @@ public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessC
        	ChessChip.preloadImages(loader,ImageDir);
        	gameIcon = ChessChip.whiteKing.image;
     }
+    private void setIcon()
+    {
+    	switch(b.variation)
+    	{
+    	default: gameIcon = ChessChip.whiteKing.image;
+    		break;
+    	case Horde: 
+    		gameIcon = ChessChip.hordeIcon.image;
+    		break;
+    	case Ultima:
+    		gameIcon = ChessChip.whiteImmobilizer.image;
+    		break;
+    
+    	}
+    	myFrame.setIconAsImage(gameIcon);
+    }
     public int getAltChipset()
     {
     	if(!prerotated && seatingFaceToFace())
@@ -146,7 +162,7 @@ public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessC
     	{ 
     	  startFirstPlayer();
     	}
-
+        setIcon();
     }
     
 public Rectangle createPlayerGroup(int player,int x,int y,double rotate,int unit)
@@ -340,7 +356,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
         int w = G.Width(r);
         //G.frameRect(gc, Color.blue, r);
         prerotated = true;
-        int px = G.Left(r)+h/2;
+        int px = G.Left(r)+h/3;
         int py = G.Top(r)+h/2;
         // draw one chip at a time so promoted chips can be treated specially in the Crazy house variant
         int lim = thisCell.height();
@@ -348,7 +364,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
         int sz = h*4/3;
         ChessId rack = thisCell.rackLocation();
         {
-        int step = Math.min(sz/3,w/(lim+1));
+        int step = (w-h/3)/Math.max(lim,1);
         for(int i=0;i<lim;i++)
         {
         	ChessChip ch = thisCell.chipAtIndex(i);
@@ -604,7 +620,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
             				stateRect);
             gb.rack[whoseTurn].draw(gc,this,iconRect,null,2);
         }
-        goalAndProgressMessage(gc,highlight,Color.black,s.get(VictoryCondition),progressRect, goalRect);
+        goalAndProgressMessage(gc,highlight,Color.black,s.get(gb.variation==Variation.Horde ? HordeVictoryCondition : VictoryCondition),progressRect, goalRect);
    
         DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),repRect);
         drawVcrGroup(ourSelect, gc);
@@ -925,19 +941,6 @@ private void playSounds(commonMove m)
 
     }
 
-    
- //   public void doShowText()
- //   {
- //       if (debug)
- //       {
- //           super.doShowText();
- //       }
- //       else
- //       {
- //           theChat.postMessage(GAMECHANNEL,KEYWORD_CHAT,
- //               s.get(CensoredGameRecordString));
-//        }
-//    }
 
     /** return true if it's ok to offer a draw "right now" through the UI
      * 

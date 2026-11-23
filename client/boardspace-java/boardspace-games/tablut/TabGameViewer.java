@@ -96,6 +96,8 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     private Color GridColor = Color.black;
     private Color rackBackGroundColor = new Color(225,225,255);
     private Color boardBackgroundColor = new Color(220,165,155);
+    private Color rackIdleColor = new Color(205,205,235);
+    private Color rackIdleTextColor = new Color(100,100,100);
     
  
     // images, shared among all instances of the class so loaded only once
@@ -105,6 +107,13 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     private TabGameBoard b = null; //the board from which we are displaying
     private int CELLSIZE; 	//size of the layout cell
     private int BOARDCELLSIZE;
+    // shrink the board slightly inside boardRect, so the review background
+    // shows around the edges when reviewing during a live game
+    static final double BOARD_SCALE = 0.94;
+    private void setBoardGeometry(TabGameBoard gb)
+    {	gb.SetDisplayParameters(BOARD_SCALE,1.0,0,0,0);
+    	gb.SetDisplayRectangle(boardRect);
+    }
     // addRect is a service provided by commonCanvas, which supports a mode
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
@@ -113,6 +122,12 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     private Rectangle goldFlagRect = addRect("goldFlag");
 	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
 			HighlightColor, rackBackGroundColor);
+	// breakthru, gold chooses who moves first
+	private TextButton passButton = addButton(PASS,GameId.HitPassButton,PassFirstDescription,
+			HighlightColor, rackBackGroundColor);
+	// the done button is grayed out when it is not active
+	private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,
+			HighlightColor, rackBackGroundColor,rackIdleColor,Color.black,rackIdleTextColor);
 
     public Rectangle flagshipWinRect = addRect(".flagWinRect");		// flagship wins only in the corner
     public Rectangle flagOwnRect = addRect(".flagOwnRect");			// only king can occupy the center
@@ -142,8 +157,9 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {
         super.init(info,frame);
-       
-        b = new TabGameBoard(info.getString(GameInfo.GAMETYPE, Default_Tablut_Game),getStartingColorMap());
+        addZoneRect("done",doneButton);	// this makes the "done" button a zone of its own
+        String type = info.getString(GameInfo.GAMENAME, Default_Tablut_Game);
+        b = new TabGameBoard(info.getString(GameInfo.GAMETYPE, type),getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
    }
@@ -214,14 +230,17 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,
     						       logRect, minLogW,  minLogH,  minLogW*3/2, minLogH*3/2);
        	layout.placeTheVcr(this,minLogW,minLogW*3/2);
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,swapButton);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneButton,editRect,b.breakthru ? passButton : swapButton);
       	
+       	if(!b.breakthru)
+       	{	// breakthru has fixed rules, so no options
        	layout.placeRectangle(flagCaptureRect, ruleW,ruleH*4,BoxAlignment.Edge);
        	int ry = G.Top(flagCaptureRect);
        	G.SetHeight(flagCaptureRect, ruleH);
         G.AlignLeft(flagFoursideRect,ry+ruleH,flagCaptureRect);
         G.AlignLeft(flagOwnRect,ry+ruleH*2,flagCaptureRect);
         G.AlignLeft(flagshipWinRect,ry+ruleH*3,flagCaptureRect);
+       	}
  
  
     	Rectangle main = layout.getMainRectangle();
@@ -231,7 +250,8 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     	int mainH = G.Height(main);
      	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,mainH/(nrows+0.5));
-    	BOARDCELLSIZE = CELLSIZE = (int)cs;
+    	CELLSIZE = (int)cs;
+    	BOARDCELLSIZE = (int)(cs*BOARD_SCALE);
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
         int stateH = fh*5/2;
@@ -287,7 +307,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     {boolean review = reviewMode() && !mutable_game_record;
       // erase
       TabGameBoard gb = disB(gc);
-      gb.SetDisplayRectangle(boardRect); 	   // this is necessary to inform disb of the board geometry
+      setBoardGeometry(gb); 	   // this is necessary to inform disb of the board geometry
 
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
@@ -350,7 +370,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
         { // note what we hit, row, col, and cell
           highlight.hitCode = (closestCell.chip == null) ? TabId.EmptyBoardLocation : TabId.BoardLocation;
           highlight.hitObject = closestCell;
-          highlight.arrow = (closestCell.chip == null)?StockArt.DownArrow:StockArt.UpArrow;
+          highlight.arrow = ((closestCell.chip == null)||(gb.pickedObject!=null))?StockArt.DownArrow:StockArt.UpArrow;
           highlight.awidth = CELLSIZE;
         }
         // this enumerates the cells in the board in an arbitrary order.  A more
@@ -468,7 +488,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
 	   	{
 	   	// note this gets called in the game loop as well as in the display loop
 	   	// and is pretty expensive, so we shouldn't do it in the mouse-only case
-	       gb.SetDisplayRectangle(boardRect); 	   // this is necessary to inform disb of the board geometry
+	       setBoardGeometry(gb); 	   // this is necessary to inform disb of the board geometry
 	   	}
        
    		// 
@@ -504,7 +524,8 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
        commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
       
 
-       {
+       if(!gb.breakthru)
+       {	// options for tablut. Breakthru's rules are fixed
        HitPoint sp = ourTurnSelect;
        switch(state)
        {	
@@ -534,7 +555,16 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
        double messageRotation = pl.messageRotation();
        // draw the board control buttons 
        boolean conf = (state==TablutState.CONFIRM_SWAP_STATE) ;
-		if(conf
+		if(gb.breakthru)
+		{	// breakthru, gold can let silver move first
+			if((state==TablutState.PLAY_OR_SWAP_STATE)||(state==TablutState.CONFIRM_PASS_STATE))
+			{
+			passButton.highlightWhenIsOn = true;
+			passButton.setIsOn(state==TablutState.CONFIRM_PASS_STATE);
+			passButton.show(gc,messageRotation, buttonSelect);
+			}
+		}
+		else if(conf
 			|| (state==TablutState.PLAY_OR_SWAP_STATE) 
 			|| (state==TablutState.PUZZLE_STATE))
 		{ // make the "swap" button appear if we're in the co;rrect state
@@ -548,8 +578,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
 			if(!planned)
-				{handleDoneButton(gc,doneRect,(gb.DoneState() ? buttonSelect : null), 
-					HighlightColor, rackBackGroundColor);
+				{doneButton.show(gc,messageRotation,gb.DoneState() ? buttonSelect : null);
 				}
 			
 			handleEditButton(gc,messageRotation,editRect,buttonSelect, selectPos, HighlightColor, rackBackGroundColor);  
@@ -559,13 +588,13 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
  
 		// draw the avatars
         standardGameMessage(gc,messageRotation,
-        		state==TablutState.GAMEOVER_STATE?gameOverMessage(gb):s.get(state.getDescription()),
+        		state==TablutState.GAMEOVER_STATE?gameOverMessage(gb):s.get(gb.stateDescription()),
         				state!=TablutState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);
         gb.playerChip[gb.whoseTurn].drawChip(gc,this,iconRect,null);
         goalAndProgressMessage(gc,nonDragSelect,s.get(GoalString),progressRect, goalRect);
-        DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),swapButton);	
+        DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),gb.breakthru ? passButton : swapButton);	
         // draw the vcr controls
         drawVcrGroup(nonDragSelect, gc);
 
@@ -584,7 +613,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
 
         handleExecute(b,mm,replay);
         
-        numberMenu.recordSequenceNumber(b.moveNumber());
+        numberMenu.recordSequenceNumber(b.activeMoveNumber());
         startBoardAnimations(replay,b.animationStack,BOARDCELLSIZE,MovementStyle.Sequential);
 
         if(replay.animate) { playSounds(mm); }
@@ -612,7 +641,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
  */
     public commonMove ParseNewMove(String st, int player)
     {
-        return (new Tabmovespec(st, player));
+        return (new Tabmovespec(b,st, player));
     }
 
     
@@ -658,6 +687,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
 		case CONFIRM_STATE:
 		case CONFIRM_NOSWAP_STATE:
 		case PLAY_STATE:
+		case PLAY2_STATE:
 		case REARRANGE_GOLD_STATE:
 		case REARRANGE_SILVER_STATE:
 		case PLAY_OR_SWAP_STATE:
@@ -694,6 +724,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
 					throw G.Error("Not expecting %s in state %s",hitCode,state);
 				case CONFIRM_STATE:
 				case PLAY_STATE:
+				case PLAY2_STATE:
 				case CONFIRM_NOSWAP_STATE:
 				case PLAY_OR_SWAP_STATE:
 				case PUZZLE_STATE:
@@ -795,6 +826,16 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
      * the elements that we generated in sgf_save
      * summary: 5/23/2023
 		10667 files visited 0 problems
+		
+		// nov 20 2026.  these two problems are related to a kludge to paper over a bad version
+		// that existed for a short time.  They're safe to ignore
+		//
+		2595: replay forward Problem in zip file:G:\share\projects\boardspace-html\htdocs\tablut\tablutgames\tablutgames\archive-2009\games-Nov-2-2009.zip TB-Dumbot-khalon-2009-10-31-1854.sgf lib.ErrorX: digest after replay is different
+	    2673: replay forward Problem in zip file:G:\share\projects\boardspace-html\htdocs\tablut\tablutgames\tablutgames\archive-2009\games-Nov-2-2009.zip TB-khalon-Dumbot-2009-10-31-1831.sgf lib.ErrorX: digest after replay is different
+
+        10667 files visited 2 problems
+
+
      */
     public void ReplayMove(sgf_node no)
     {
@@ -843,7 +884,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     // support for the last move "numberMenu" logic
     //
 	public int getLastPlacement() {
-		return (b.moveNumber);
+		return (b.lastPlacedIndex);
 	}
 
 }

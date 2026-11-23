@@ -724,19 +724,6 @@ private void playSounds(TruMovespec m)
         b.doInit(token,rk);
      }
     
-   
-//    public void doShowText()
-//    {
-//        if ( debug)
-//        {
-//            super.doShowText();
-//        }
-//        else
-//        {
-//            theChat.postMessage(GAMECHANNEL,KEYWORD_CHAT,
-//                s.get(CensoredGameRecordString));
-//        }
-//    }
 
 
     public BoardProtocol getBoard()   {    return (b);   }

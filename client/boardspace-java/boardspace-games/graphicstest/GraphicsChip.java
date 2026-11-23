@@ -24,7 +24,7 @@ import lib.OStack;
 import lib.Random;
 import online.game.chip;
 import common.CommonConfig;
-import graphicstest.GraphicsConstants.PrototypeId;
+import graphicstest.GraphicsConstants.GraphicsId;
 class ChipStack extends OStack<GraphicsChip>
 {
 	public GraphicsChip[] newComponentArray(int n) { return(new GraphicsChip[n]); }
@@ -44,7 +44,7 @@ public class GraphicsChip extends chip<GraphicsChip> implements CommonConfig
 	private static Random r = new Random(5312324);	// this gives each chip a unique random value for Digest()
 	private static DrawableImageStack otherChips = new DrawableImageStack();
 	private static boolean imagesLoaded = false;
-	public PrototypeId id;
+	public GraphicsId id;
 	public String contentsString() { return(id==null ? file : id.name()); }
 
 

@@ -34,7 +34,7 @@ import bridge.XJMenu;
 
 public class GraphicsViewer extends CCanvas<GraphicsCell,GraphicsBoard> implements GraphicsConstants
 {		
-    static final String Prototype_SGF = "graphicstest"; // sgf game name
+    static final String Graphics_SGF = "graphicstest"; // sgf game name
 
     // file names for jpeg images and masks
     static final String ImageDir = "/graphicstest/images/";
@@ -179,10 +179,10 @@ public class GraphicsViewer extends CCanvas<GraphicsCell,GraphicsBoard> implemen
         step++; 
         toggle=!toggle;
         CellId id = hp.hitCode;
-       	if(!(id instanceof PrototypeId))  {   missedOneClick = performStandardActions(hp,missedOneClick);   }
+       	if(!(id instanceof GraphicsId))  {   missedOneClick = performStandardActions(hp,missedOneClick);   }
         else {
         missedOneClick = false;
-        PrototypeId hitCode = (PrototypeId)id;
+        GraphicsId hitCode = (GraphicsId)id;
         // if direct drawing, hp.hitObject is a cell from a copy of the board
         GraphicsCell hitObject = bb.getCell(hitCell(hp));
         switch (hitCode)
@@ -205,7 +205,7 @@ public class GraphicsViewer extends CCanvas<GraphicsCell,GraphicsBoard> implemen
     	}	
      
     // this is the subgame "setup" within the master type.
-    public String sgfGameType() { return(Prototype_SGF); }	// this is the official SGF number assigned to the game
+    public String sgfGameType() { return(Graphics_SGF); }	// this is the official SGF number assigned to the game
 
    
     /**

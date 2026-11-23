@@ -1,5 +1,8 @@
 all:	error BoardSpaceServer
 
+clean:
+	rm -f *.o BoardSpaceServer error
+
 error:	error.c
 	gcc -g -o error error.c
 

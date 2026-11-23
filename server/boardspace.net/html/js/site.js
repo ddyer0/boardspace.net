@@ -23,7 +23,8 @@ function link(to,newwin)
 		window.open(to,'');
 		}
 		else
-		{ location.href=to;
+		{ 
+		  location.href=to;
 		}
 }
 function editlink(to,newwin)
@@ -267,5 +268,29 @@ function setTimeZoneCookie() {
     var val = 'timezoneoffset=' + getTimeZone() + " ; expires="+then.toGMTString()+ " ; path=/";
     document.cookie = val;
 }
+
+function snackermann(m, n) {
+  const stack = [m];
+  while (stack.length > 0) {
+    m = stack.pop();
+    if (m === 0) {
+      n = n + 1;
+    } else if (n === 0) {
+      stack.push(m - 1);
+      n = 1;
+    } else {
+      stack.push(m - 1);
+      stack.push(m);
+      n = n - 1;
+    }
+  }
+  return n;
+}
+
+function snack()
+{
+  document.write('<a href="javascript:snackermann(4,2)" rel="nofollow" style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;" tabindex="-1" aria-hidden="true"></a>');
+}
+snack();
 
 setTimeZoneCookie();

@@ -21,6 +21,7 @@ import lib.ChatWidget;
 import colorito.ColoritoConstants;
 import common.GameInfo;
 import breakingaway.BreakingAwayConstants;
+import breakthrough.BreakthroughConstants;
 import bug.BugConstants;
 import bugs.BugsViewer;
 import cannon.CannonConstants;
@@ -208,6 +209,9 @@ public class masterStrings extends InternationalStrings
         setContext("amazons");
         AmazonsConstants.putStrings();
         
+        setContext("breakthrough");
+        BreakthroughConstants.putStrings();
+ 
         setContext("bug");
         BugConstants.putStrings();
 

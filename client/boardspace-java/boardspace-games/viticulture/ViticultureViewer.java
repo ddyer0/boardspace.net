@@ -20,6 +20,7 @@ package viticulture;
 // TODO: add "blended wines" as a new option - use 2 or more cheap wines to make a better
 //		 add "no seasons" as an option
 // TODO: preselect the font size for grapes and wines value
+// TODO: show charmat card when making wine
 
 import static viticulture.Viticulturemovespec.*;
 

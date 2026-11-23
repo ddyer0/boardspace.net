@@ -173,7 +173,7 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
         InitRobot(newParam, info, strategy);
         GameBoard = (ChessBoard) gboard;
         board = GameBoard.cloneBoard();
-        boolean reduced = board.variation==Variation.Ultima || board.variation==Variation.CrazyHouse;
+        boolean reduced = board.variation==Variation.Ultima || board.variation==Variation.CrazyHouse || board.variation==Variation.Horde;
         switch(strategy)
         {
         case WEAKBOT_LEVEL:

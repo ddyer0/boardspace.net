@@ -17,7 +17,7 @@
 package graphicstest;
 
 import lib.Random;
-import graphicstest.GraphicsConstants.PrototypeId;
+import graphicstest.GraphicsConstants.GraphicsId;
 import lib.OStack;
 import online.game.*;
 
@@ -40,13 +40,13 @@ public class GraphicsCell
 	extends stackCell<GraphicsCell,GraphicsChip>
 {	
 
-	public GraphicsCell(Random r,PrototypeId rack) { super(r,rack); }		// construct a cell not on the board
-	public GraphicsCell(PrototypeId rack,char c,int r) 		// construct a cell on the board
+	public GraphicsCell(Random r,GraphicsId rack) { super(r,rack); }		// construct a cell not on the board
+	public GraphicsCell(GraphicsId rack,char c,int r) 		// construct a cell on the board
 	{	// for square geometry, boards, this would be Oct or Square
 		super(cell.Geometry.Hex,rack,c,r);
 	};
 	/** upcast racklocation to our local type */
-	public PrototypeId rackLocation() { return((PrototypeId)rackLocation); }
+	public GraphicsId rackLocation() { return((GraphicsId)rackLocation); }
 	
 	/** sameCell is called at various times as a consistency check
 	 * 

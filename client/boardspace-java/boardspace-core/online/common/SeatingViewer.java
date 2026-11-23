@@ -115,7 +115,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	private int colorIndex[] = null;
 	private boolean changeRecurse = false;
 	private GearMenu gearMenu = new GearMenu(this);
-	
+	// TODO: add logic to allow variations to have their own second icons, specifically for kings color and horde
 	enum MainMode { Category(CategoriesMode,SeatId.CategoriesSelected),
 					AZ(A_ZMode,SeatId.A_Zselected),
 					Recent(RecentMode,SeatId.RecentSelected);

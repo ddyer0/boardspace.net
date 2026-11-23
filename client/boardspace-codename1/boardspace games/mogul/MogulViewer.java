@@ -878,19 +878,7 @@ private void playSounds(commonMove m)
         adjustPlayers(np);
     }
 
-    
- //   public void doShowText()
- //   {
- //       if (debug)
- //       {
- //           super.doShowText();
- //       }
- //       else
- //       {
- //           theChat.postMessage(GAMECHANNEL,KEYWORD_CHAT,
- //               s.get(CensoredGameRecordString));
-//        }
-//    }
+
 
 /** handle the run loop, and any special actions we need to take.
  * The mouse handling and canvas painting will be called automatically

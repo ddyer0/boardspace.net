@@ -32,7 +32,7 @@ public interface GraphicsConstants
 {	
 //	these next must be unique integers in the GraphicsMovespec dictionary
 //  they represent places you can click to pick up or drop a stone
-	enum PrototypeId implements CellId
+	enum GraphicsId implements CellId
 	{
 
 	
@@ -67,18 +67,18 @@ public enum GraphicsState implements BoardState,GraphicsConstants
 	public boolean simultaneousTurnsAllowed() { return(false); }
 };
  
- enum PrototypeVariation
+ enum GraphicsVariation
     {
-    	prototype("graphicstest");
+    	graphics("graphicstest");
     	String name ;
     	// constructor
-    	PrototypeVariation(String n) 
+    	GraphicsVariation(String n) 
     	{ name = n; 
     	}
     	// match the variation from an input string
-    	static PrototypeVariation findVariation(String n)
+    	static GraphicsVariation findVariation(String n)
     	{
-    		for(PrototypeVariation s : values()) { if(s.name.equalsIgnoreCase(n)) { return(s); }}
+    		for(GraphicsVariation s : values()) { if(s.name.equalsIgnoreCase(n)) { return(s); }}
     		return(null);
     	}
      	

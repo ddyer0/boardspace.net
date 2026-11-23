@@ -2151,19 +2151,7 @@ private void playSounds(commonMove m)
         adjustPlayers(np%100);	// players is overloaded with a compatability flag
     }
 
-    
- //   public void doShowText()
- //   {
- //       if (debug)
- //       {
- //           super.doShowText();
- //       }
- //       else
- //       {
- //           theChat.postMessage(GAMECHANNEL,KEYWORD_CHAT,
- //               s.get(CensoredGameRecordString));
-//        }
-//    }
+
 
     /** handle action events
      * 

@@ -31,6 +31,9 @@ in the current iteration.
 #include "migs-declarations.h"
 
 #include "websocket.h"
+#include <openssl/evp.h>
+#include <openssl/sha.h>
+#include <openssl/err.h>
 
 #define WEBSOCKET_BUFSIZE 65536
 #define WEBSOCKET_DBUFSIZE (WEBSOCKET_BUFSIZE * 3) / 4 - 20
@@ -275,7 +278,8 @@ HandshakeResult ws_socket_ssl(ws_ctx_t *ctx, SOCKET sock, char * certfile, char 
         use_keyfile = certfile;
     }
 
-    ctx->ssl_ctx = SSL_CTX_new(TLS_SERVER_METHOD());
+    ctx->ssl_ctx = SSL_CTX_new(TLS_server_method());
+    
     if (ctx->ssl_ctx == NULL) {
         logEntry(&mainLog, "[%s] Failed to configure SSL context socket S%d\n", timestamp(), sock);
         return HANDSHAKE_ERROR;
@@ -720,13 +724,17 @@ int parse_handshake(User *u,ws_ctx_t *ws_ctx, char *handshake) {
 
 static void gen_sha1(headers_t* headers, char* target,int size) 
 {
-    SHA_CTX c;
     unsigned char hash[SHA_DIGEST_LENGTH];
+ 
+     /* replaces: SHA_CTX c; */
+    EVP_MD_CTX *c = EVP_MD_CTX_new();
+    unsigned int hashlen = 0;
+    EVP_DigestInit_ex(c, EVP_sha1(), NULL);
 
-    SHA1_Init(&c);
-    SHA1_Update(&c, headers->key1, (int)strlen(headers->key1));
-    SHA1_Update(&c, HYBI_GUID, 36);
-    SHA1_Final(hash, &c);
+    EVP_DigestUpdate(c, headers->key1, strlen(headers->key1));
+    EVP_DigestUpdate(c, HYBI_GUID, 36);
+    EVP_DigestFinal_ex(c, hash, &hashlen);   /* hashlen will be 20 */
+    EVP_MD_CTX_free(c);
     base64_encode(hash, sizeof hash, target, size);
     if(settings.verbose)
         {

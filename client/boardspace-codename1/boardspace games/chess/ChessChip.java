@@ -243,7 +243,6 @@ public class ChessChip extends chip<ChessChip> implements ChessConstants,Config
 	
 	public static ChessChip whiteInit[] = { whiteRook,whiteKnight,whiteBishop,whiteQueen,whiteKing,whiteBishop,whiteKnight,whiteRook};
 	public static ChessChip blackInit[] = { blackRook,blackKnight,blackBishop,blackQueen,blackKing,blackBishop,blackKnight,blackRook};
-	public static char kingRookCol = 'H';
 	public static ChessChip whiteUltimaInit[] = { whiteImmobilizer,whiteLongLeaper,whiteChamelion,whiteUltimaKing,whiteWithdrawer,whiteChamelion,whiteLongLeaper,whiteCoordinator};
 	public static ChessChip blackUltimaInit0[] = { blackImmobilizer,blackLongLeaper,blackChamelion,blackUltimaKing,blackWithdrawer,blackChamelion,blackLongLeaper,blackCoordinator};
 	public static ChessChip blackUltimaInit1[] = { blackCoordinator,blackLongLeaper,blackChamelion,blackWithdrawer,blackUltimaKing,blackChamelion,blackLongLeaper,blackImmobilizer};
@@ -280,11 +279,15 @@ public class ChessChip extends chip<ChessChip> implements ChessConstants,Config
 	static double noscale[]= {0,0,1};
 	public static ChessChip backgroundTile = new ChessChip( "background-tile-nomask",null,allTiles);
 	public static ChessChip backgroundReviewTile = new ChessChip( "background-review-tile-nomask",null,allTiles);
+
+	// these panels identify the chess variant. Standard font is Comic Sans MS Bold
 	public static ChessChip standard = new ChessChip("standard",noscale);
 	public static ChessChip ultima = new ChessChip("ultima",noscale);
 	public static ChessChip chess960 = new ChessChip("chess960",noscale);
 	public static ChessChip atomic = new ChessChip("atomic",noscale);
 	public static ChessChip crazy = new ChessChip("crazy",noscale);
+	public static ChessChip horde = new ChessChip("horde",noscale);
+	
 	public static ChessChip QueenChip[] = new ChessChip[]{whiteQueen,blackQueen};
 	public static ChessChip PawnChip[] = new ChessChip[]{whitePawn,blackPawn};
 		// call from the viewer's preloadImages

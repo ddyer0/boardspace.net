@@ -55,6 +55,9 @@ The new server environment doesn't permit direct sending email, so a proxy servi
 has to be used.  The current choice is smtp2go.com where the free level of service
 is marginally adequate for boardspace (and real-me.net)
 
+Apache
+change apache user to be boardspace
+
 
 Perl
 
@@ -110,4 +113,120 @@ use claude to say how to fix the problems.
 
 Boardspace Server
 No changes, but several new warnings to resolve eventually
+
+Letsencrypt
+
+Special post-update file to copy the keys to the server file
+
+
+// consolidated list of packages installed manually
+2026-10-23 18:02:21 apt-get install --install-recommends webmin usermin -y
+2026-10-23 21:16:39 apt-get -y install tmux
+2026-10-23 21:28:12 apt-get -y install apache2
+2026-10-23 21:32:18 apt-get -y install mariadb-client mariadb-server
+2026-10-23 21:34:01 apt-get -y install php8.3-common php8.3-cli php8.3-fpm
+2026-10-24 00:11:58 apt install net-tools
+2026-10-24 00:32:20 apt install csh
+2026-10-24 02:42:20 apt install emacs
+2026-10-24 06:06:14 /usr/bin/unattended-upgrade
+2026-10-24 06:06:19 /usr/bin/unattended-upgrade
+2026-10-24 06:06:23 /usr/bin/unattended-upgrade
+2026-10-24 06:06:26 /usr/bin/unattended-upgrade
+2026-10-24 19:18:45 apt install tcsh
+2026-10-24 22:29:04 apt install certbot python3-certbot-apache
+2026-10-24 23:52:07 apt install cpanminus
+2026-10-25 00:24:04 apt install libwww-perl
+2026-10-25 00:31:15 apt install gcc
+2026-10-25 00:33:48 apt install libssl-dev
+2026-10-25 00:43:29 apt install libjson-perl
+2026-10-25 17:07:48 apt install libapache2-mod-php php-mysql php-mbstring php-xml php-gd php-curl
+2026-10-25 21:50:13 apt install -y libarchive-zip-perl
+2026-10-25 22:01:09 apt install -y dos2unix
+2026-10-25 22:02:50 apt autoremove
+2026-10-26 01:09:13 apt-get install libmozilla-ca-perl
+2026-10-26 02:47:13 apt install perl-doc
+2026-10-26 03:25:11 apt install procmail
+2026-10-26 20:20:02 apt install libgd-graph-perl
+2026-10-26 20:55:32 apt-get -y install sendmail
+2026-10-26 21:04:27 apt install postfix mailutils
+2026-10-26 21:16:10 apt-get -y install libbrotli1
+2026-10-27 01:14:08 apt install apache2-suexec-custom
+2026-10-27 20:20:22 apt install roundcube roundcube-mysql
+2026-10-27 21:02:15 apt install dovecot-imapd
+2026-10-28 18:53:34 apt install traceroute
+2026-10-28 19:25:17 apt-get -y install bpftool linux-generic linux-headers-generic linux-headers-virtual linux-image-generic linux-image-virtual linux-libc-dev linux-perf linux-tools-common linux-virtual
+2026-10-28 22:20:52 apt-get install webmin-virtual-server -y
+2026-10-29 06:46:44 /usr/bin/unattended-upgrade
+2026-10-29 06:46:48 /usr/bin/unattended-upgrade
+2026-10-29 06:46:51 /usr/bin/unattended-upgrade
+2026-10-29 06:46:56 /usr/bin/unattended-upgrade
+2026-10-29 20:52:46 apt install dovecot-pop3d
+2026-10-30 16:27:49 apt install fail2ban
+2026-10-30 19:53:49 apt install -y bind9 bind9-utils
+2026-11-04 06:44:16 /usr/bin/unattended-upgrade
+2026-11-04 06:44:20 /usr/bin/unattended-upgrade
+2026-11-04 06:44:30 /usr/bin/unattended-upgrade
+2026-11-05 06:23:19 /usr/bin/unattended-upgrade
+2026-11-05 06:23:30 /usr/bin/unattended-upgrade
+2026-11-05 06:23:38 /usr/bin/unattended-upgrade
+2026-11-05 17:28:20 apt-get -y install base-files motd-news-config vim vim-common vim-runtime vim-tiny xxd
+2026-11-05 17:29:06 apt-get -y install ca-certificates
+2026-11-09 04:16:25 apt-get -y install bpftool linux-generic linux-headers-generic linux-headers-virtual linux-image-generic linux-image-virtual linux-libc-dev linux-perf linux-tools-common linux-virtual
+2026-11-09 06:31:01 /usr/bin/unattended-upgrade
+2026-11-09 06:31:04 /usr/bin/unattended-upgrade
+2026-11-09 06:31:09 /usr/bin/unattended-upgrade
+2026-11-09 06:31:14 /usr/bin/unattended-upgrade
+2026-11-10 06:07:32 /usr/bin/unattended-upgrade
+2026-11-10 06:07:41 /usr/bin/unattended-upgrade
+2026-11-10 06:07:45 /usr/bin/unattended-upgrade
+2026-11-11 06:37:35 /usr/bin/unattended-upgrade
+www:~> [wd                                                                                                  
+www:~> 
+www:~> cd config/
+www:~/config> zcat -f /var/log/apt/history.log* | awk '/^Start-Date/{d=$2" "$3} /^Commandline/{print d, subs
+tr($0,14)}' | sort > packages
+www:~/config> grep 
+Usage: grep [OPTION]... PATTERNS [FILE]...
+Try 'grep --help' for more information.
+www:~/config> 
+www:~/config> grep "apt " packages
+2026-10-24 00:11:58 apt install net-tools
+2026-10-24 00:32:20 apt install csh
+2026-10-24 02:42:20 apt install emacs
+2026-10-24 19:18:45 apt install tcsh
+2026-10-24 22:29:04 apt install certbot python3-certbot-apache
+2026-10-24 23:52:07 apt install cpanminus
+2026-10-25 00:24:04 apt install libwww-perl
+2026-10-25 00:31:15 apt install gcc
+2026-10-25 00:33:48 apt install libssl-dev
+2026-10-25 00:43:29 apt install libjson-perl
+2026-10-25 17:07:48 apt install libapache2-mod-php php-mysql php-mbstring php-xml php-gd php-curl
+2026-10-25 21:50:13 apt install -y libarchive-zip-perl
+2026-10-25 22:01:09 apt install -y dos2unix
+2026-10-25 22:02:50 apt autoremove
+2026-10-26 02:47:13 apt install perl-doc
+2026-10-26 03:25:11 apt install procmail
+2026-10-26 20:20:02 apt install libgd-graph-perl
+2026-10-26 21:04:27 apt install postfix mailutils
+2026-10-27 01:14:08 apt install apache2-suexec-custom
+2026-10-27 20:20:22 apt install roundcube roundcube-mysql
+2026-10-27 21:02:15 apt install dovecot-imapd
+2026-10-28 18:53:34 apt install traceroute
+2026-10-29 20:52:46 apt install dovecot-pop3d
+2026-10-30 16:27:49 apt install fail2ban
+2026-10-30 19:53:49 apt install -y bind9 bind9-utils
+
+--- 
+
+steps for the "final" migration
+shut down tantrix server
+run the backup-database script
+copy the tantrix, tournament databases, and the server Games directory (see cron/final.csh)
+copy logs directory
+turn off crontab
+
+drop and recreate the databases
+swap in the games directory
+restart the game server
+change the ip address
 

@@ -16,7 +16,12 @@
  */
 package tablut;
 
+import com.codename1.ui.Font;
+
 import lib.G;
+import lib.Text;
+import lib.TextChunk;
+import lib.TextGlyph;
 import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
@@ -37,67 +42,102 @@ public class Tabmovespec extends commonMove implements TabConstants
 			"SetOption",MOVE_SETOPTION);
    }
 
-    TabId source; 	// where from/to
-	TabId object;		// object being picked/dropped
-	char from_col;
-	int from_row;
-    char to_col; // for from-to moves, the destination column
-    int to_row; // for from-to moves, the destination row
+    //
+    // the cells involved in the move.  These are cells on the board that parsed or
+    // generated the move, so the board that executes the move must use getCell()
+    // to find its own corresponding cells.
+    //
+    TabCell from;		// the source cell for MOVE_MOVE and MOVE_PICKB, the pool for MOVE_PICK,
+    					// and for MOVE_DROPB, the pool for the type of piece being dropped
+    TabCell to;			// the destination cell for MOVE_MOVE and MOVE_DROPB, the pool for MOVE_DROP
+    TabId option;		// for MOVE_SETOPTION, the option being set
+    TabId optionValue;	// for MOVE_SETOPTION, the new value
     TablutState state;	// the state of the move before state, for UNDO
-    public int capture_mask;	// mask of adjacent cells captured
+    public int capture_mask;	// mask of adjacent cells captured. In breakthru, the captured chip index+1
+    TabCell prevFirst = null;	// breakthru, the "first moved" ship before this move, for undo
+    TabChip chip = null;		// the piece moved, for the game log.  Set by the board when executed,
+    							// and only on the first half of a breakthru double move
     public Tabmovespec()
     {
     } // default constructor
 
     /* constructor */
-    public Tabmovespec(String str, int p)
+    public Tabmovespec(TabGameBoard b,String str, int p)
     {
-        parse(new Tokenizer(str), p);
+        parse(b,new Tokenizer(str), p);
     }
 
     /* constructor for robot moves */
-    public Tabmovespec(int oper,char fromcol,int fromrow,char tocol,int torow,int play)
+    public Tabmovespec(int oper,TabCell fromc,TabCell toc,int play)
     {
     	op=oper;
     	player = play;
-    	from_col = fromcol;
-    	from_row = fromrow;
-    	to_col = tocol;
-    	to_row = torow;
-   		source = TabId.EmptyBoardLocation;
-   	   	
+    	from = fromc;
+    	to = toc;
     }
     public boolean Same_Move_P(commonMove oth)
     {
         Tabmovespec other = (Tabmovespec) oth;
 
         return ((op == other.op) 
-				&& (source == other.source)
-				&& (object == other.object)
+				&& (option == other.option)
+				&& (optionValue == other.optionValue)
 				&& (state == other.state)
-				&& (to_row == other.to_row) 
-				&& (to_col == other.to_col)
-				&& (from_row == other.from_row)
-				&& (from_col == other.from_col)
+				&& cell.sameCellLocation(from,other.from)
+				&& cell.sameCellLocation(to,other.to)
 				&& (capture_mask == other.capture_mask)
 				&& (player == other.player));
     }
 
-    public void Copy_Slots(Tabmovespec to)
-    {	super.Copy_Slots(to);
- 		to.object = object;
-        to.to_col = to_col;
-        to.to_row = to_row;
-        to.from_col = from_col;
-        to.from_row = from_row;
-        to.state = state;
-        to.source = source;
-        to.capture_mask = capture_mask;
+    public void Copy_Slots(Tabmovespec dest)
+    {	super.Copy_Slots(dest);
+        dest.from = from;
+        dest.to = to;
+        dest.option = option;
+        dest.optionValue = optionValue;
+        dest.state = state;
+        dest.capture_mask = capture_mask;
+        dest.prevFirst = prevFirst;
+        dest.chip = chip;
     }
 
-    public commonMove Copy(commonMove to)
+    private Text icon(commonCanvas v,Object... msg)
     {
-        Tabmovespec yto = (to == null) ? new Tabmovespec() : (Tabmovespec) to;
+    	Text m = TextChunk.create(G.concat(msg));
+    	if(chip!=null)
+    	{
+    		m = TextChunk.join(TextGlyph.create(chip, v),m);
+    	}
+    	return(m);
+    }
+    /**
+     * the game log version of the move, with an icon for the piece moved.
+     * column and row are run together to keep the log compact.
+     */
+    public Text shortMoveText(commonCanvas v,Font f)
+    {
+        switch (op)
+        {
+        case MOVE_MOVE:
+        	return icon(v,from.col,from.row," - ",to.col,to.row);
+        case MOVE_PICKB:
+            return icon(v,from.col,from.row);
+		case MOVE_DROPB:
+            return icon(v,to.col,to.row);
+        case MOVE_PICK:
+            return icon(v,D.findUnique(op)," ",from.rackLocation().shortName);
+        case MOVE_DROP:
+            return icon(v,D.findUnique(op)," ",to.rackLocation().shortName);
+        case MOVE_DONE:
+            return TextChunk.create("");
+        default:
+            return TextChunk.create(D.findUniqueTrans(op));
+        }
+    }
+
+    public commonMove Copy(commonMove dest)
+    {
+        Tabmovespec yto = (dest == null) ? new Tabmovespec() : (Tabmovespec) dest;
 
         // we need yto to be a Tabmovespec at compile time so it will trigger call to the 
         // local version of Copy_Slots
@@ -106,10 +146,10 @@ public class Tabmovespec extends commonMove implements TabConstants
         return (yto);
     }
 
-    /* parse a string into the state of this move.  Remember that we're just parsing, we can't
-     * refer to the state of the board or the game.
+    /* parse a string into the state of this move.  The board is used only to
+     * convert the coordinates to cells; the current state of the board doesn't matter.
      * */
-    private void parse(Tokenizer msg, int p)
+    private void parse(TabGameBoard b,Tokenizer msg, int p)
     {
         String cmd = firstAfterIndex(msg);
         player = p;
@@ -121,40 +161,46 @@ public class Tabmovespec extends commonMove implements TabConstants
 
         case MOVE_SETOPTION:
         	{
-        	source = TabId.get(msg.nextToken());
-        	object = TabId.get(msg.nextToken());
+        	option = TabId.get(msg.nextToken());
+        	optionValue = TabId.get(msg.nextToken());
         	}
         	break;
         case MOVE_MOVE:
-        		source = TabId.EmptyBoardLocation;
-        		from_col = msg.charToken();
-        		from_row = msg.intToken();
-	            to_col = msg.charToken();
-	            to_row = msg.intToken();
+        	{
+        	char from_col = msg.charToken();
+        	int from_row = msg.intToken();
+        	char to_col = msg.charToken();
+        	int to_row = msg.intToken();
+        	from = b.getCell(from_col,from_row);
+        	to = b.getCell(to_col,to_row);
+        	}
 	            break;
         case MOVE_DROPB:
-	            source = TabId.EmptyBoardLocation;
-				object = TabId.get(msg.nextToken());	// B or W
-	            to_col = msg.charToken();
-	            to_row = msg.intToken();
+        	{
+        	from = b.getCell(TabId.get(msg.nextToken()));	// the pool for the piece being dropped
+        	char to_col = msg.charToken();
+        	int to_row = msg.intToken();
+        	to = b.getCell(to_col,to_row);
+        	}
 	            break;
 
 		case MOVE_PICKB:
-            source = TabId.BoardLocation;
-            from_col = msg.charToken();
-            from_row = msg.intToken();
-
+			{
+			char from_col = msg.charToken();
+			int from_row = msg.intToken();
+			from = b.getCell(from_col,from_row);
+			}
             break;
 
-        case MOVE_DROP:
         case MOVE_PICK:
-            source = TabId.get(msg.nextToken());
-
+            from = b.getCell(TabId.get(msg.nextToken()));
+            break;
+        case MOVE_DROP:
+            to = b.getCell(TabId.get(msg.nextToken()));
             break;
 
         case MOVE_START:
              player = D.getInt(msg.nextToken());
-
             break;
 
         default:
@@ -169,23 +215,19 @@ public class Tabmovespec extends commonMove implements TabConstants
         switch (op)
         {
         case MOVE_MOVE:
-        	return(from_col+" "+from_row+" - "+to_col+" "+to_row);
+        	return(""+from.col+from.row+" - "+to.col+to.row);
         case MOVE_PICKB:
-            return (from_col + " " + from_row);
-
+            return (""+from.col + from.row);
 		case MOVE_DROPB:
-            return (to_col + " " + to_row);
-
-        case MOVE_DROP:
+            return (""+to.col + to.row);
         case MOVE_PICK:
-            return (D.findUnique(op) + " "+source.shortName);
-
+            return (D.findUnique(op) + " "+from.rackLocation().shortName);
+        case MOVE_DROP:
+            return (D.findUnique(op) + " "+to.rackLocation().shortName);
         case MOVE_DONE:
             return ("");
-
         default:
             return (D.findUniqueTrans(op));
-
         }
     }
 
@@ -200,27 +242,20 @@ public class Tabmovespec extends commonMove implements TabConstants
         // review mode
         switch (op)
         {
-
         case MOVE_SETOPTION:
-        	{
-        	return(opname+source.shortName+" "+object.shortName);
-        	}
+        	return(opname+option.shortName+" "+optionValue.shortName);
         case MOVE_MOVE:
-        	return(opname+from_col+" "+from_row+" "+to_col+" "+to_row);
-        	
+        	return(opname+from.col+" "+from.row+" "+to.col+" "+to.row);
         case MOVE_PICKB:
-	        return (opname+ from_col + " " + from_row);
-
+	        return (opname+ from.col + " " + from.row);
 		case MOVE_DROPB:
-	        return (opname+object.shortName+" " + to_col + " " + to_row);
-
-        case MOVE_DROP:
+	        return (opname+from.rackLocation().shortName+" " + to.col + " " + to.row);
         case MOVE_PICK:
-            return (opname+source.shortName);
-
+            return (opname+from.rackLocation().shortName);
+        case MOVE_DROP:
+            return (opname+to.rackLocation().shortName);
         case MOVE_START:
             return (indx+"Start P" + player);
-
         default:
             return (opname);
         }

@@ -2,7 +2,6 @@ package online.search;
 
 import lib.G;
 import lib.LStack;
-import lib.Meter;
 import lib.Random;
 import lib.Sort;
 import online.game.BoardProtocol;
@@ -106,7 +105,6 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
                	}
  			
 		}
-		Meter.count("Unmake_Move");
 	}
 	@SuppressWarnings("unused")
 	private void checkBoard(String message,BoardProtocol original,BoardProtocol robotBoard,long targetDigest)
@@ -148,7 +146,6 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 			}
 		
 		robot.Make_Move(child);
-		Meter.count("Make_Move");
 	}
 	//
 	// get the full list of legal moves from the current position
@@ -180,7 +177,6 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 			{	G.print("Moves " + sz +" reduced to "+master.move_limit);
 	    	}
 		}
-		Meter.count("List_Of_Legal_Moves");
 		return(moves);
 	}
 	
@@ -190,7 +186,6 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 			{ throw new Error("No moves, but not game over"); 
 			}
 		randomMovesThisRun++;
-		Meter.count("Random_Move");
 		return(result);
 	}
     public StringBuffer getStackTrace(StringBuffer p)
@@ -226,17 +221,14 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 			{	nodeExpansionsThisRun++;
 				nodeExpansionSizeThisRun += visits;
 			}
-			Meter.count("expandLeafNode");
 			return(exp);
 		}
 		else if(visits>2)
 		{ // old way, expand on 3 visits
 		  nodeExpansionsThisRun++;
 		  nodeExpansionSizeThisRun += visits;
-			Meter.count("expandLeafNode");
 		  return(true);
 		}
-		Meter.count("expandLeafNode");
 		return(false);
 	}
 	
@@ -251,7 +243,6 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 	{
 		double val =  robot.NormalizedScore(lastMove);	// assign the value for the root move of the search
 		G.Assert((val>=-1.0)&&(val<=1.0),"simulation value %f is out of range -1 to 1",val); 
-		Meter.count("normalizedScore");
 		return val;
 	}
 	/*
@@ -308,7 +299,6 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 				
 			}}
 		robot.finishRandomDescent();
-		Meter.count("runSimulation");
 		return val;
 	}
 	
@@ -339,7 +329,6 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
     	{	robot.Search_Break("Eval Clock is  " + eval_clock);
     	}
     	double v = robot.Static_Evaluate_Search_Move(mm,current_depth,master);
-    	Meter.count("Static_Evaluate_Move");
     	return v;
     }
 	// 
@@ -381,7 +370,6 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
         master.sorts++;
         master.sort_time += (later-now);
         }
-    	Meter.count("sortMoves");
        
 	}
 	
@@ -438,10 +426,8 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 			commonMove children[] = moves.toArray();
 			if(sorting) { sortMoves(children); }
 			newChildrenThisRun += nmoves;
-			Meter.count("getNewChildren");
 			return(children);
 			}
-		Meter.count("getNewChildren");
 		return(null);
 	}
 	public BoardProtocol copyTheBoardNow()
@@ -454,7 +440,6 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 		copyTheBoard = false;
 		
 		}
-		Meter.count("copyTheBoardNow");
 		return boardCopy;
 	}
 	// 
@@ -769,7 +754,6 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 	        		}
 	        }
 		}}
-		Meter.count("simUsingTree");
 	}
 	
 	// unwind the tree part of the search.  Note that at this point
@@ -841,7 +825,6 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 		}
 		//master.root.update(rescore,master.simulationsPerNode,master.alpha);
 		}
-		Meter.count("unwindAndScore");
 	}
 	@Override
 	public void run() {
@@ -854,7 +837,6 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 			simUsingTree();
 			if(cheer) 
 				{ Thread.yield(); 
-				  Meter.count("yield in run");
 				}
 		}
 		}
@@ -867,7 +849,6 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 		{ 
         stop = stopped = true;
 		}
-		Meter.count("run");
 	}
 
 	public Throwable error = null;

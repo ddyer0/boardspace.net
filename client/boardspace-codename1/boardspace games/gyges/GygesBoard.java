@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,7 +12,7 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package gyges;
 
@@ -96,6 +96,8 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
     public int robotDepth = 0;
     private StateStack robotState = new StateStack();
     public GygesCell dropSource = null;
+    public GygesCell dropOrigin = null;
+    public LStack digestStack = new LStack();
     private boolean racksEmpty() 
     {	for(GygesCell row[] : rack) { for(GygesCell cell : row) 
     	{ if(cell.topChip()!=null) 
@@ -155,6 +157,7 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
         G.Assert(playing==from_b.playing,"playing mismatch");    
         G.Assert(dropping==from_b.dropping,"dropping mismatch");  
         G.Assert(sameCells(dropSource,from_b.dropSource),"dropSource mismatch");
+        G.Assert(sameCells(dropOrigin,from_b.dropOrigin),"dropOrigin mismatch");
         G.Assert(canDisplace==from_b.canDisplace,"canDisplace mismatch");
         
         G.Assert(sameCells(rack,from_b.rack),"rack mismatch");
@@ -210,12 +213,19 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
 		v ^= Digest(r,pickedSourceStack);
 		v ^= Digest(r,droppedDestStack);
 		v ^= Digest(r,dropSource);
+		v ^= Digest(r,dropOrigin);
 		v ^= (playing ? 1 : 2) * r.nextLong();
 		v ^= (dropping ? 1 : 2) * r.nextLong();
 		v ^= (canDisplace ? 1 : 2) * r.nextLong();
 		v ^= (board_state.ordinal()*10+whoseTurn)*r.nextLong();
         return (v);
     }
+   public long boardDigest()
+   {   Random r = new Random(235235);
+	   long v = Digest(r,whoseTurn);
+	   for(GygesCell c = allCells; c!=null; c=c.next) { v^= c.Digest(r); }
+	   return v;
+   }
    public GygesBoard cloneBoard() 
 	{ GygesBoard copy = new GygesBoard(gametype,randomKey,getColorMap());
 	  copy.copyFrom(this); 
@@ -235,6 +245,7 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
         playing = from_b.playing;
         dropping = from_b.dropping;
         dropSource = getCell(from_b.dropSource);
+        dropOrigin = getCell(from_b.dropOrigin);
         canDisplace = from_b.canDisplace;
         pickedObject = from_b.pickedObject;	
         copyFrom(rack,from_b.rack);
@@ -243,6 +254,7 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
         getCell(droppedDestStack,from_b.droppedDestStack);   
         unresign = from_b.unresign;
         robotDepth = from_b.robotDepth;
+        digestStack.copyFrom(from_b.digestStack);
         if(G.debug()) { sameboard(from_b); }
     }
 
@@ -272,12 +284,14 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
 	    playing = false;
 	    dropping = false;
 	    dropSource = null;
+	    dropOrigin = null;
 	    whoseTurn = FIRST_PLAYER_INDEX;
 		pickedSourceStack.clear();
 		droppedDestStack.clear();
 		robotUndo.clear();
 		robotDepth = 0;
 		pickedObject = null;
+		digestStack.clear();
         AR.setValue(win,false);
         moveNumber = 1;
 
@@ -513,11 +527,15 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
         case DropTop:
         case DropBottom:
         	setState(GygesState.Confirm);
+        	checkReps();
         	break;
         case PlaceTop:
         case PlaceBottom:
         	acceptPlacement();
-        	if(rackEmpty(whoseTurn)) { setState(GygesState.Confirm); } 
+        	if(rackEmpty(whoseTurn)) 
+        		{ setState(GygesState.Confirm); 
+        		checkReps();
+        		} 
         	break;
         case Confirm:
         case Draw:
@@ -530,13 +548,30 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
         	{	// continue with additional moves
         		setState(GygesState.Continue);
         	}
-        	else { setState(GygesState.Confirm); }
+        	else 
+        	{ setState(GygesState.Confirm); 
+	          checkReps();
+    		}
 			break;
 
         case Puzzle:
 			acceptPlacement();
             break;
         }
+    }
+    public void checkReps()
+    {
+    	if(robotDepth==0 && (board_state!=GygesState.Puzzle))
+		{	// creating a repetition is unlikely and difficult to create, but in the rare case
+			// that it occurs we enter the "illegal move" state and force the user to undo.
+			// this is a better UI than just not allowing the move, because the user will
+			// probably think the program is broken.  The robot treats moves that create repetition
+			// as triggering a resignation, so will never do it.
+			long dig = boardDigest();
+			if(digestStack.contains(dig)) 
+				{ setState(GygesState.IllegalRepetition); }
+			digestStack.push(dig);
+		}
     }
     //	
     //true if col,row is the place where something was picked up.  This is used
@@ -568,6 +603,7 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
         default:
         	throw G.Error("Not expecting pick in undoInfo %s", board_state);
         case Confirm:
+        case IllegalRepetition:
         case Draw:
         	setState((playing?(dropping?PlayerDropState:PlayerPlayState):PlayerPlaceState)[whoseTurn]);
         	break;
@@ -610,6 +646,7 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
     	case PlayBottom:
     		dropping = false;
     		dropSource = null;
+    		dropOrigin = null;
     		if(playing || racksEmpty())
     		{
     		playing = true;
@@ -619,7 +656,7 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
     		else
     		{  
     		   setState(whoseTurn==0 ? GygesState.PlaceTop : GygesState.PlaceBottom);
-    		}
+       		}
     		break;
     	}
 
@@ -722,6 +759,7 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
         				setState(PlayerDropState[whoseTurn]);
         				dropping = true;
         				dropSource = dest;
+        				dropOrigin = pickedSourceStack.elementAt(0);
         			}
         			else
         			{
@@ -777,6 +815,7 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
                        		setState(PlayerDropState[whoseTurn]);
             				dropping = true;
             				dropSource = c;
+            				dropOrigin = pickedSourceStack.elementAt(0);
             			}
             			else
             			{	// normal bounce
@@ -908,6 +947,7 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
         case PlayBottom:
         case Confirm:
         case Continue:
+        case IllegalRepetition:
         	 return(false);
         case PlaceTop:
         case PlaceBottom:
@@ -941,6 +981,8 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
  					return(isSource(cell) || (dests.get(cell)!=null));
  				}
  			}
+ 		case IllegalRepetition:
+ 			return isDest(cell);
  		case Resign:
 		case Gameover:
 			return(false);
@@ -951,12 +993,21 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
 		case DropTop:
 				{
 				int home = playerHomeRow(1);
-				return((cell.col!='G') && (cell.row>=home) && (cell.topChip()==null));
+				return((cell.col!='G') 
+						&& (cell.row>=home) 
+						&& (cell.topChip()==null)
+						&& !(cell==dropOrigin && pickedObject==dropSource.topChip())
+						);
 				}
 		case DropBottom:
 			{ 
 				int home = playerHomeRow(0);
-				return((cell.col!='G') && (cell.row<=home) && (cell.topChip()==null));
+				return ((cell.col!='G') 
+						&& (cell.row<=home) 
+						&& (cell.topChip()==null)
+						&& !(cell==dropOrigin && pickedObject==dropSource.topChip())
+						);
+
 			}
        default:
     	   throw G.Error("Not expecting undoInfo %s", board_state);
@@ -972,6 +1023,8 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
   					: (cell==top))	// dropping in the rack, must be to the same cell
   				);
   }
+  
+  CellStack robotCell = new CellStack();
  
  /** assistance for the robot.  In addition to executing a move, the robot
     requires that you be able to undo the execution.  The simplest way
@@ -984,11 +1037,9 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
     {	robotState.push(board_state);
     	robotDepth++;
     	robotUndo.push((dropping ? 2 : 0) | (playing ? 1 : 0)); //record the starting undoInfo. The most reliable
-        if((board_state==GygesState.DropTop)||(board_state==GygesState.DropBottom))
-        {	m.from_col = dropSource.col;
-        	m.from_row = dropSource.row;
-        }
-        // to undo undoInfo transitions is to simple put the original undoInfo back.
+    	robotCell.push(dropSource);
+    	robotCell.push(dropOrigin);
+    	// to undo undoInfo transitions is to simple put the original undoInfo back.
         //G.print("r "+m);
         if (Execute(m,replayMode.Replay))
         {	
@@ -1017,6 +1068,8 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
     {
     	//G.print("u "+m);
     	robotDepth--;
+    	dropOrigin = robotCell.pop();
+    	dropSource = robotCell.pop();
         switch (m.op)
         {
    	    default:
@@ -1031,7 +1084,6 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
         	acceptPlacement();
         	GygesCell dest = getCell(m.to_col,m.to_row);
         	pickedObject = dest.removeTop();
-        	dropSource = getCell(m.from_col,m.from_row);	// saved in robotexecute
          	}
         	break;
         case MOVE_RACK_BOARD:
@@ -1050,7 +1102,6 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
         		pickedObject = dest.removeTop();
         		dest.addChip(po);
         		dropObject(src);
-        		dropSource = null;
         	}
         	else
         	{
@@ -1414,8 +1465,15 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
  		getStandardMoves(all,whoseTurn,savePath,true);
  		
  		break;
+ 	case IllegalRepetition:
+ 		// 
+ 		// robot that finds itself in a repetion will resign.  This will be avoided 
+ 		// so should never be the first choice in a search.
+ 		//
+ 		all.push(new GygesMovespec(MOVE_RESIGN,whoseTurn));
+ 		break;
  	default:
- 		throw G.Error("Not implemented");
+ 		throw G.Error("getmoves Not implemented for %s",board_state);
  	}
   	return(all);
  }

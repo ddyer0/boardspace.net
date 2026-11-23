@@ -31,6 +31,11 @@ public interface TabConstants
 	static String MoveFirstDescription = "Make your first move, or swap fleets";
 	static String ConfirmFirstDescription = "Click Done to confirm swapping fleets with your opponent";
 	static String MoveShipDescription = "Move one ship";
+	static String BreakthruMoveDescription = "Move two ships, move the flagship, or capture";
+	static String BreakthruSecondMoveDescription = "Move a second ship";
+	static String BreakthruFirstDescription = "Make the first move, or pass to let silver move first";
+	static String ConfirmPassDescription = "Click Done to let silver move first";
+	static String PassFirstDescription = "Let silver make the first move";
 	static String TablutStrings[] = 
 	{ 	"Tablut",
 		GoalString,
@@ -39,6 +44,11 @@ public interface TabConstants
         MoveFirstDescription,
         ConfirmFirstDescription,
         MoveShipDescription,
+        BreakthruMoveDescription,
+        BreakthruSecondMoveDescription,
+        BreakthruFirstDescription,
+        ConfirmPassDescription,
+        PassFirstDescription,
         "Flagship must Reach the corner to win",
         "Flagship wins at any edge square",
         "Flagship can participate in captures",
@@ -60,6 +70,8 @@ public interface TabConstants
         {"Tablut-7_variation","7x7 board"},
         {"Tablut-9_variation","9x9 board"},
         {"Tablut-11_variation","11x11 board"},	
+        {"Breakthru","Breakthru"},
+        {"Breakthru_variation","Breakthru 11x11"},
 	};
 	
 	enum TabId implements CellId
@@ -110,6 +122,7 @@ public interface TabConstants
     static final String Tablut_11_INIT = "tablut-11"; //init for standard game
     static final String Tablut_9_INIT = "tablut-9";
     static final String Tablut_7_INIT = "tablut-7";
+    static final String Breakthru_INIT = "breakthru";	// Alex Randolph's Breakthru (3M 1965)
     static final String Default_Tablut_Game = "tablut-9";
     static final String ENDOPTIONS = ".endoptions.";
     public enum TablutState implements BoardState
@@ -123,7 +136,9 @@ public interface TabConstants
     	CONFIRM_SWAP_STATE(ConfirmFirstDescription),
     	PLAY_STATE(MoveShipDescription),
     	DRAW_STATE(DrawStateDescription),
-    	CONFIRM_NOSWAP_STATE(ConfirmStateDescription);
+    	CONFIRM_NOSWAP_STATE(ConfirmStateDescription),
+    	PLAY2_STATE(BreakthruSecondMoveDescription),		// breakthru, second half of a two ship move
+    	CONFIRM_PASS_STATE(ConfirmPassDescription);			// breakthru, gold lets silver move first
     	String description;
     	TablutState(String des) { description = des; }
     	public String getDescription() { return(description); }

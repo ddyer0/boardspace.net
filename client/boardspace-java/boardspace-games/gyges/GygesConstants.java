@@ -32,7 +32,7 @@ public interface GygesConstants
 	static String GygesDropNotTop = "Drop the displaced chip anywhere except the top row";
 	static String GygesDropNotBottom = "Drop the displaced chip anywhere expept the bottom row";
 	static String GygesContinueMoving = "Continue moving";
-
+	static String GygesIllegalRepetition = "This move is illegal because it creates a duplicate position. Undo";
 	                          
 	static final String Gyges_INIT_beginner = "gyges-beginner";			//init for standard game
 	static final String Gyges_INIT_advanced = "gyges-advanced";			//init for the advanced game with drops
@@ -82,7 +82,10 @@ public interface GygesConstants
     	Continue(GygesContinueMoving),
     	
     	DropTop(GygesDropNotTop,GygesDropNotBottom),
-    	DropBottom(GygesDropNotBottom,GygesDropNotTop);
+    	DropBottom(GygesDropNotBottom,GygesDropNotTop),
+    	
+    	IllegalRepetition(GygesIllegalRepetition)
+    	;
     	
     	GygesState(String des) { altDescription = description = des;	}
     	GygesState(String des,String alt) { altDescription = alt; description = des;	}
@@ -120,6 +123,7 @@ static void putStrings()
        GygesMoveToBottom,
        GygesDropNotTop,
        GygesDropNotBottom,
+       GygesIllegalRepetition,
        GygesContinueMoving,
  	};
 		String GygesStringPairs[][] = 

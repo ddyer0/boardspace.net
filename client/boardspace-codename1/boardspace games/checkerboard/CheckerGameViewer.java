@@ -1005,20 +1005,7 @@ private void playSounds(commonMove m)
 
     }
 
-    
- //   public void doShowText()
- //   {
- //       if (debug)
- //       {
- //           super.doShowText();
- //       }
- //       else
- //       {
- //           theChat.postMessage(GAMECHANNEL,KEYWORD_CHAT,
- //               s.get(CensoredGameRecordString));
-//        }
-//    }
-    
+
     /** return true if it's ok to offer a draw "right now" through the UI
      * 
      */

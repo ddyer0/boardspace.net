@@ -828,19 +828,6 @@ private void playSounds(commonMove m)
         b.doInit(token,rk,rev);
     }
 
-    
- //   public void doShowText()
- //   {
- //       if (debug)
- //       {
- //           super.doShowText();
- //       }
- //       else
- //       {
- //           theChat.postMessage(GAMECHANNEL,KEYWORD_CHAT,
- //               s.get(CensoredGameRecordString));
-//        }
-//    }
 
     /** handle action events
      * 

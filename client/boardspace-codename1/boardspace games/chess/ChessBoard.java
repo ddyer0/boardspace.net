@@ -66,6 +66,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     static final char OOO_ROOK = 'D';
     static final char OO_KING = 'G';
     static final char OO_ROOK = 'F';
+    static final char HORDE_EXTRA_PAWNS[] = { 'B','C','F','G' };	// the fifth rank pawns in horde chess
 
 	public int getMaxRevisionLevel() { return(REVISION); }
 	
@@ -87,7 +88,10 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     public void SetDrawState() { setState(ChessState.Draw); }
     public ChessChip selectedForPromotion = null;
     public ChessChip rack[] = null;	// the pool of chips for each player.  
-    
+    public static char standardKingRookCol = 'H';
+    public static char standardQueenRookCol = 'A';
+	public char kingRookCol = standardKingRookCol;
+	public char queenRookCol = standardQueenRookCol;
     public CellStack animationStack = new CellStack();
     //
     // private variables
@@ -346,6 +350,21 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
      	emptyCells.QRRemove(c);
        	occupiedCells[ci].push(c);
    }
+    //
+    // horde chess: white has 36 pawns and no king, black has the normal army.
+    // black wins by capturing every white piece, white wins by checkmate.
+    //
+    private boolean hordeSide(int who)
+    {	return((variation==Variation.Horde) && (playerColor[who]==ChessId.White_Chip_Pool));
+    }
+    // the player index that owns the horde
+    private int hordePlayer()
+    {	return((playerColor[FIRST_PLAYER_INDEX]==ChessId.White_Chip_Pool) ? FIRST_PLAYER_INDEX : SECOND_PLAYER_INDEX);
+    }
+    // true if this player's king is gone.  The horde never had one.
+    private boolean kingMissing(int who)
+    {	return((kingLocation[who]==null) && !hordeSide(who));
+    }
     public ChessChip[] getBackRowInit(int pl)
     {
     	switch(variation)
@@ -355,6 +374,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     	case Atomic:
     	case CrazyHouse:
     	case Chess960:
+    	case Horde:
     		return pl==0 ? ChessChip.whiteInit : ChessChip.blackInit;
 
     	case Ultima:
@@ -399,11 +419,11 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
      	case Atomic:
      	case Chess960:
      	case CrazyHouse:
+     	case Horde:
     	case Ultima:
      		boardColumns = variation.size;
      		boardRows = variation.size;
      		initBoard(boardColumns,boardRows);
- 
       		gametype = gtype;
      		break;
       	}
@@ -436,6 +456,8 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 	    	{	
 	    	ChessChip blackPawn = ChessChip.blackPawn;
 	    	ChessChip whitePawn = ChessChip.whitePawn;
+     		queenRookCol = standardQueenRookCol;
+     		kingRookCol = standardKingRookCol;
 	    	
 	    	if(variation==Variation.Ultima)
 	    	{
@@ -506,9 +528,11 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 	    	
 	    	addChip(getCell((char)('A'+lrookCol),Starting_Row[FIRST_PLAYER_INDEX]),ChessChip.whiteRook);
 	    	addChip(getCell((char)('A'+lrookCol),Starting_Row[SECOND_PLAYER_INDEX]),ChessChip.blackRook);
+	    	kingRookCol = (char)('A'+lrookCol);
+	    	
 	    	addChip(getCell((char)('A'+rrookCol),Starting_Row[FIRST_PLAYER_INDEX]),ChessChip.whiteRook);
 	    	addChip(getCell((char)('A'+rrookCol),Starting_Row[SECOND_PLAYER_INDEX]),ChessChip.blackRook);
-	    	
+	    	queenRookCol = (char)('A'+rrookCol);
 	    	for(int col = 0; col<ncols;col++)
 	    	{		    	
 	    		addChip(getCell((char)('A'+col),Pawn_Starting_Row[SECOND_PLAYER_INDEX]),ChessChip.blackPawn);
@@ -519,6 +543,32 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 	    	}
 	    	break;
 	    	
+	    case Horde:
+	    	{	// white is the horde: ranks 1 to 4 full of pawns, plus pawns on b5 c5 f5 g5, and no king.
+	    		// black has the normal army.
+	    	rack[first] = ChessChip.whitePawn;
+	    	rack[second] = ChessChip.blackPawn;
+     		queenRookCol = standardQueenRookCol;
+     		kingRookCol = standardKingRookCol;
+	    	{
+	    	int col = 0;
+	    	for(ChessChip ch : getBackRowInit(SECOND_PLAYER_INDEX))
+	    	{
+	    		addChip(getCell((char)('A'+col),Starting_Row[SECOND_PLAYER_INDEX]),ch);
+	    		addChip(getCell((char)('A'+col),Pawn_Starting_Row[SECOND_PLAYER_INDEX]),ChessChip.blackPawn);
+	    		col++;
+	    	}}
+	    	for(int row=1; row<=4; row++)
+	    	{	for(int col=0; col<ncols; col++)
+	    		{	addChip(getCell((char)('A'+col),row),ChessChip.whitePawn);
+	    		}
+	    	}
+	    	for(char col : HORDE_EXTRA_PAWNS)
+	    	{	addChip(getCell(col,5),ChessChip.whitePawn);
+	    	}
+	    	}
+	    	break;
+
 	    default: break;
 
 	    }
@@ -601,6 +651,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     //
     private double scoreSmotherKing(int who)
     {	double val = 0;
+    	if(hordeSide(who)) { return(0); }	// the horde has no king
     	int ncap = captured[who].height();
     	if(ncap>ncols)
     	{	// more than half captured
@@ -846,7 +897,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     	if((top!=null)&&(top.piece==ChessPiece.Pawn))
     	{
     		ChessCell src = lastSrc[prev];
-    		if((src.rackLocation()==ChessId.BoardLocation) && Math.abs(src.row-dest.row)==2) { return(dest);}
+    		if((src.rackLocation()==ChessId.BoardLocation) && Math.abs(src.row-dest.row)==2 && src.row==pawnStartingRow(prev)) { return(dest);}
     	}}
     	return(null);
     }
@@ -1168,10 +1219,15 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
        	case DeclinePending:
        	case Puzzle:
     	case Play:
-    		if(kingLocation[whoseTurn]==null) 
+    		if((variation==Variation.Horde) && (occupiedCells[hordePlayer()].size()==0))
+    			{ // the horde has been completely captured, black wins
+    			  boolean hordeToMove = (whoseTurn==hordePlayer());
+    			  setGameOver(!hordeToMove,hordeToMove);
+    			}
+    		else if(kingMissing(whoseTurn)) 
     			{ setGameOver(false,true); 
     			}
-    		else if(kingLocation[1^whoseTurn]==null)
+    		else if(kingMissing(1^whoseTurn))
     			{ setGameOver(true,false); 
     			}
     		else if(hasSimpleMoves())
@@ -1264,11 +1320,11 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 	    	}}
     				break;
     	case Rook:	if(src.row==startingRow(whoseTurn))
-    				{	if(src.col==ChessChip.kingRookCol)
+    				{	if(src.col==kingRookCol)
     					{
     					kingRookHasMoved[whoseTurn] = true;
     					}
-    					else 
+    					else if(src.col==queenRookCol)
     					{ queenRookHasMoved[whoseTurn] = true;
     					}
     				}
@@ -2204,7 +2260,8 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
 		 	nonKingMoves++;
 			if(all==null) { return(true); }
 			all.push(new ChessMovespec(from,forward,who));
-			if(from.row==pawnStartingRow(who))
+			if((from.row==pawnStartingRow(who))
+				|| (hordeSide(who) && (from.row==startingRow(who))))	// horde pawns on the first rank can also advance two
 				{
 				ChessCell forward2 = forward.exitTo(direction);
 				if(forward2.topChip()==null)
@@ -2464,13 +2521,16 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
 	 case Chess960:	return add960CastlingMoves(all,from,who);
 	 case Atomic:
 	 case CrazyHouse:
+	 case Horde:
 	 case Chess: return(addStandardCastlingMoves(all,from,who));
 	 default: throw G.Error("not expecting %s",variation);
 	 }
  }
  private boolean addStandardCastlingMoves(CommonMoveStack all,ChessCell from,int who)
  {
-	 if(!kingHasMoved[who] && (board_state!=ChessState.Check))
+	 // the king must not be in check right now.  board_state is not a reliable test, because
+	 // it is Filter rather than Check while the game is deciding whether the position is checkmate.
+	 if(!kingHasMoved[who] && !attackingKing(who))
 	 {	ChessCell start = kingLocation[who];
 	 	int other = 1^who;
 		if(!kingRookHasMoved[who])
@@ -2951,7 +3011,7 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
  }
 
  private boolean attackingKing(int who)
- {	if(kingLocation[who]==null) { return true; }	// already gone (atomic attack)
+ {	if(kingLocation[who]==null) { return !hordeSide(who); }	// already gone (atomic attack), but the horde never had a king
  	int next = 1^who;
  	ChessCell loc = kingLocation[who];
  	boolean direct = attackingSquare(loc,next);
@@ -3061,6 +3121,7 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
 	 case Chess960:
 	 case Atomic:
 	 case CrazyHouse:
+	 case Horde:
 	 case Chess:
  		 // captures are mandatory
 		 CellStack cells =  occupiedCells[who];
@@ -3107,6 +3168,7 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
 	 case Chess960:
 	 case Atomic:
 	 case CrazyHouse:
+	 case Horde:
 	 case Chess:
  		 switch(board_state)
  		 {

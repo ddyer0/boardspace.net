@@ -681,7 +681,9 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         { //moving a ball
         	boolean dropped = false;
         	zCell from = b.pickedSource;
-        	ZertzId fromCode = from.rackLocation();
+        	if(from!=null)
+        	{
+           	ZertzId fromCode = from.rackLocation();
             if (fromCode==ZertzId.EmptyBoard)
             { //from board
                 if (toCode == ZertzId.EmptyBoard)
@@ -724,7 +726,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
             else 
             { //System.out.println("not dropped");
             }
-
+        	}
         }
         else if (toCode == ZertzId.EmptyBoard)
         {	zCell c = (zCell)hp.hitObject;

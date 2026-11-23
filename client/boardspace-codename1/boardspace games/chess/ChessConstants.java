@@ -26,6 +26,7 @@ import online.game.BaseBoard.StateRole;
 
 public interface ChessConstants 
 {	static String VictoryCondition = "Checkmate your opponent's king";
+	static String HordeVictoryCondition = "White: checkmate the black king.  Black: capture all the white pieces";
 	static String ChessMoveDescription = "Move a piece";
 	static String PromoteStateDescription = "Choose what to promote to, and click on Done";
 
@@ -37,6 +38,7 @@ public interface ChessConstants
 		Chess960(ChessChip.chess960,null,"chess960",8),
 		Atomic(ChessChip.atomic,null,"atomic",8),
 		CrazyHouse(ChessChip.crazy,null,"crazyhouse",8),
+		Horde(ChessChip.horde,null,"horde",8),			// white has 36 pawns and no king
 		;	// chess 960
 		int size;
 		String name;
@@ -151,6 +153,7 @@ public interface ChessConstants
     			PromoteStateDescription,
     			ChessMoveDescription,
     			VictoryCondition,
+    			HordeVictoryCondition,
     		};
     		String ChessStringPairs[][] = 
     		{   {"Chess_family","Chess"},
@@ -161,6 +164,8 @@ public interface ChessConstants
     			{"Chess960_variation","Chess 960"},
     			{"CrazyHouse","Crazy House Chess"},
     			{"CrazyHouse_variation","Crazy House Chess"},
+    			{"Horde","Horde Chess"},
+    			{"Horde_variation","Horde Chess"},
     		};
     		InternationalStrings.put(ChessStrings);
     		InternationalStrings.put(ChessStringPairs);

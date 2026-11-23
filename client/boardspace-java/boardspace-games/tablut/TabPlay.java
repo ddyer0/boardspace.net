@@ -98,6 +98,8 @@ public class TabPlay extends commonRobot<TabGameBoard> implements Runnable, TabC
     double TOTAL_SWEEP_WEIGHT = -1.0;
     double WOOD_WEIGHT = 10.0;
     double OPEN_RANK_WEIGHT = 10.0;	// good for gold, lines are counted twice
+    double FLAG_THREAT_WEIGHT = 30.0;	// breakthru, flagship can be captured
+    double FLAG_LOST_WEIGHT = 5000.0;	// breakthru, flagship can be captured and it's silver's turn
     double dumbotEval(TabGameBoard evboard,int player,boolean print)
     {	double val = 0.0;
     	if(evboard.playerChip[player]==TabChip.GoldShip)
@@ -120,6 +122,19 @@ public class TabPlay extends commonRobot<TabGameBoard> implements Runnable, TabC
         	if(print) { msg += " open ranks "+lv; }
         	}
 
+    	if(evboard.breakthru)
+    	{	// silver ships diagonally adjacent to the flagship can capture it. If it's silver's
+    		// turn to start a new move, that's as good as lost.
+    		int threats = evboard.flagshipThreats();
+    		if(threats>0)
+    		{
+    		boolean silverToMove = (evboard.playerChip[evboard.whoseTurn]==TabChip.SilverShip)
+    							&& (evboard.getState()==TablutState.PLAY_STATE);
+    		double lv = -threats*(silverToMove ? FLAG_LOST_WEIGHT : FLAG_THREAT_WEIGHT);
+    		val += lv;
+    		if(print) { msg += " threats "+lv; }
+    		}
+    	}
     	{
     	double lv = (evboard.gold_ships*2 - evboard.silver_ships)*WOOD_WEIGHT;
     	val += lv;
@@ -236,7 +251,7 @@ public void PrepareToMove(int playerIndex)
  
             if (board.DoneState())
             { // avoid problems with gameover by just supplying a done
-                move = new Tabmovespec("Done", board.whoseTurn);
+                move = new Tabmovespec(board,"Done", board.whoseTurn);
             }
 
             // it's important that the robot randomize the first few moves a little bit.

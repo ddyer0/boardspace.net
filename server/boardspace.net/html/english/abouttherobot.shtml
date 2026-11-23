@@ -4,15 +4,13 @@
 charset=windows-1252"><title>About the Robot</title>
 
 <script src="site.js">
-</script>
-</head>
-
-  <body style="background-image: url(/images/background-image.jpg);">
+</script></head>
+<body style="background-image: url(/images/background-image.jpg);">
 <a href="/cgi-bin/noticeme.cgi?from=aboutpage">    </a>
 <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
 <tbody>
 <tr>
-<td><h1 style="text-align: center;"><img style="width: 600px; height: 100px;" alt="boardspace.net" title="" src="file:///images/master-logo.jpg"></h1></td>
+<td><h1 style="text-align: center;"><img style="width: 600px; height: 100px;" alt="boardspace.net" src="/images/master-logo.jpg"></h1></td>
 <td>
 <div id="google_translate_element"></div>
 <script type="text/javascript">

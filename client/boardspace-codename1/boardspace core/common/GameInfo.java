@@ -338,7 +338,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 				)
 				{ included.addElement(info);
 				  if(reviewdir==-1) { reviewdir = info.dirNum; }
-				  sameReviewDir &= (reviewdir==info.dirNum) && !info.distinctVariations;
+				  sameReviewDir &= ((reviewdir==info.dirNum) && !info.distinctVariations);
 				}
 		}
 		if((playercount==0) && sameReviewDir) { return(null); }	// no variations menu needed
@@ -531,11 +531,24 @@ synchronized(allGames) {
 				null,false, WhiteOverBlack));	  
 	  put(new GameInfo(784,ES.game,118,"AC",AncientGames,"Chess","Atomic",OneBotPlus,
 				new double[]{0.5,0.05},
-				"chess.ChessViewer","/chess/english/atomic-rules.html","about_atomic.html",
+				"chess.ChessViewer","/chess/english/atomic-rules.html","about_chess.html",
 				null,false, WhiteOverBlack));	  
 	  put(new GameInfo(785,ES.game,129,"CX",AncientGames,"Chess","CrazyHouse",OneBotPlus,
 				chessBot,"chess.ChessViewer","/chess/english/crazyhouse-rules.html","about_chess.html",
 				null,false, WhiteOverBlack)).familyName="CrazyHouse";
+	  put(new GameInfo(786,ES.game,134,"CHH",AncientGames,"Chess","Horde",OneBotPlus,
+				new double[]{0.5,0.05},
+				"chess.ChessViewer","/chess/english/horde-rules.html","about_chess.html",
+				null,false, WhiteOverBlack));	  
+	}
+	{ // Breakthrough by Dan Troyka.  Directory 135 and "BT" must be added to the variation table
+	  double btBot[] = {0.5,0.05};
+	  put(new GameInfo(790,ES.game,136,"BT",ManeuverGames,"Breakthrough","Breakthrough",OneBotPlus,
+				btBot,"breakthrough.BreakthroughViewer","/breakthrough/english/rules.html","about_breakthrough.html",
+				null,false, WhiteOverBlack));
+	  put(new GameInfo(791,ES.game,136,"BT",ManeuverGames,"Breakthrough","Breakthrough-7",OneBotPlus,
+				btBot,"breakthrough.BreakthroughViewer","/breakthrough/english/rules.html","about_breakthrough.html",
+				null,false, WhiteOverBlack));
 	}
 	{ 
 	put(new GameInfo(753,ES.game,74,"GO",AncientGames,"Go","Go-9",NoBots,null,
@@ -1649,7 +1662,7 @@ synchronized(allGames) {
 	mm = put(new GameInfo(702,ES.game,125,"BS",EuroGames,"BugSpiel","BugSpiel-sequential",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			pViewer,sRules,"about_bugspiel.html",
+			pViewer,sRules,"about_bugs.html",
 			null,false, map));
 	mm.maxPlayers = 2;
 	mm.variableColorMap = true;
@@ -1657,7 +1670,7 @@ synchronized(allGames) {
 	mm = put(new GameInfo(703,ES.game,125,"BS",EuroGames,"BugSpiel","BugSpiel-sequential-large",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			pViewer,sRules,"about_bugspiel.html",
+			pViewer,sRules,"about_bugs.html",
 			null,false, map));
 	mm.maxPlayers = 4;
 	mm.variableColorMap = true;
@@ -2552,22 +2565,31 @@ synchronized(allGames) {
 
 	{	String tclass  = "tablut.TabGameViewer";
 		String trules = "/english/about_tablut.html";
-		put(new GameInfo(710,ES.game,10,"TB",AncientGames,"Tablut","Tablut-9",
+		GameInfo m = put(new GameInfo(710,ES.game,10,"TB",AncientGames,"Tablut","Tablut-9",
 				OneBotPlus,
 				new double[]{0.1,0.01},
 				tclass,trules,"about_tablut.html",
 				null,false, GoldOverSilver));
-		put(new GameInfo(720,ES.game,10,"TB",AncientGames,"Tablut","Tablut-7",
+		m.distinctVariations = true;
+		m = put(new GameInfo(720,ES.game,10,"TB",AncientGames,"Tablut","Tablut-7",
 				OneBotPlus,
 				new double[]{0.1,0.01},
 				tclass,trules,"about_tablut.html",
 				null,false, GoldOverSilver));
-		
-		put(new GameInfo(730,ES.game,10,"TB",AncientGames,"Tablut","Tablut-11",
+		m.distinctVariations = true;
+		m = put(new GameInfo(730,ES.game,10,"TB",AncientGames,"Tablut","Tablut-11",
 				OneBotPlus,
 				new double[]{0.1,0.01},
 				tclass,trules,"about_tablut.html",
 				null,false, GoldOverSilver));
+		m.distinctVariations = true;
+		// Breakthru (Alex Randolph, 3M 1965) as a variation of tablut, with fixed options. Directory 137 and "BU" must be added to the variation table
+		m = put(new GameInfo(735,ES.game,137,"BU",AncientGames,"Tablut","Breakthru",
+				OneBotPlus,
+				new double[]{0.1,0.01},
+				tclass,"/breakthru/english/rules.html","about_breakthru.html",
+				null,false, GoldOverSilver));
+		m.distinctVariations = true;
 	}	
 
 	//put(new GameInfo(740,ES.test,32,"TI",TerritoryGames,"Tajii","Tajii",
@@ -2634,7 +2656,7 @@ synchronized(allGames) {
 				"Phlip",
 				"Phlip",
 				OneBotPlus,
-				new double[]{0.13,0.01},"universe.UniverseViewer","/english/about_phlip.html","about_philip.html",
+				new double[]{0.13,0.01},"universe.UniverseViewer","/english/about_phlip.html","about_phlip.html",
 				null,// phlip internally has to know which two colors to use, so we can't
 				// allow an arbitrary choice.
 				true, new Color[] {Color.yellow,Color.red}));

@@ -14,7 +14,10 @@
 	You should have received a copy of the GNU General Public License along with Boardspace.
 	If not, see https://www.gnu.org/licenses/.
  */
+#include <stdlib.h>
 #include "migs-declarations.h"
+
+
 #if 0
 
   This is the server that provides communications among clients for boardspace.net and tantrix.com.  It evolvedsession reserved
@@ -5697,6 +5700,17 @@ void process_check_score(char *data,User *u,char *seq)
 		closeClient(u,"scoring check not compiled",grace_forbidden);
 #endif
 }
+#ifdef _WIN32
+#include <time.h>
+#ifndef CLOCK_REALTIME
+#define CLOCK_REALTIME 0
+static __inline int clock_gettime(int clk, struct timespec* ts)
+{
+	(void)clk;
+	return timespec_get(ts, TIME_UTC) ? 0 : -1;
+}
+#endif
+#endif
 
  // 302 + session description
  // if session description changes, lobbies are updated
@@ -5705,7 +5719,11 @@ void process_ping(char *message,User *u,char *seq)
 {
     Session *S=u->session;
 	struct timeb hnow;
-	ftime(&hnow);
+	struct timespec ts;
+	clock_gettime(CLOCK_REALTIME, &ts);
+	hnow.time    = ts.tv_sec;
+	hnow.millitm = (unsigned short)(ts.tv_nsec / 1000000);
+	
 	lsprintf(u->tempBufSize,u->tempBufPtr,ECHO_PING "%d %d %d %d",maxSessions+1, MAXCLIENTS,hnow.time,hnow.millitm);
 
 	// look for ping stats

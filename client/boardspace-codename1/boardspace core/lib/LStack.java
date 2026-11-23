@@ -107,16 +107,21 @@ public class LStack implements Digestable {
 		  index++;	// increment later, so readers never see an unfilled slot
 		}
 	/**
-	 * return true if the stack contains the integer
+	 * return true if the stack contains the long
 	 * @param o
-	 * @return true if the stack contains the integer
+	 * @return true if the stack contains the long
 	 */
-	public boolean contains(int o)
+	public boolean contains(long o)
 	{	for(int i=index-1; i>=0; i--) // backwards so recently pushed items are fastest 
 			{ if(data[i]==o)
 				{return(true); }}
 		return(false);
 	}
+	// might contain a standard int too
+	public boolean contains(int o)
+	{	return contains((long)o);
+	}
+	
 	/**
 	 * return the index of item o
 	 * @param o

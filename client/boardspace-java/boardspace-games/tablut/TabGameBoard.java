@@ -68,6 +68,16 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
     public boolean Flagship_Can_Capture = false;			// flagship can capture
     public boolean Flagship_Four_Sided_Capture = false;		// flagship captured on 4 sides only
 
+    // Breakthru (Alex Randolph, 3M 1965) is played as a variation. The options are fixed,
+    // captures are by diagonal displacement, and a turn is two ship moves, one flagship 
+    // move, or one capture.
+    public boolean breakthru = false;
+    TabCell firstMoved = null;			// breakthru, the ship moved by the first half of a two ship turn
+    TabCell firstSource = null;			// where it came from, so the UI can undo it
+    TablutState firstState = null;		// the state before the first half
+    TabChip capturedChip = null;		// breakthru, the chip displaced by the current unconfirmed capture
+    TablutState preDropState = null;	// breakthru, the state before the current unconfirmed drop
+
     public boolean getOptionValue(TabId code)
     {
     	switch(code)
@@ -120,6 +130,13 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
     	if(canCaptureCompatibility) { Flagship_Can_Capture = true; }
     	if(captureCompatibility2) { Flagship_Owns_Center = true; }
     	if(hasSome && !hasRev) { revision = 100; }
+    	if(breakthru)
+    	{	// the options are not used by breakthru, but standardize them anyway
+    		Flagship_Wins_In_Corner = false;		// win at any edge
+    		Flagship_Owns_Center = false;
+    		Flagship_Can_Capture = true;
+    		Flagship_Four_Sided_Capture = false;
+    	}
     }
     //
     // private variables
@@ -227,10 +244,16 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
     private void Init_Standard(String gamespec)
     {	Tokenizer tok = new Tokenizer(gamespec);
     	String game = tok.nextToken();
+    	if("Tablut".equalsIgnoreCase(game)) { game=Tablut_11_INIT; }
     	if(Tablut_11_INIT.equalsIgnoreCase(game)) { nCols = nRows = 11; }
     	else if(Tablut_9_INIT.equalsIgnoreCase(game)) { nCols = nRows = 9; }
     	else if(Tablut_7_INIT.equalsIgnoreCase(game)) { nCols = nRows = 7; }
+    	else if(Breakthru_INIT.equalsIgnoreCase(game)) { nCols = nRows = 11; }
     	else { throw G.Error(WrongInitError,game); }
+    	breakthru = Breakthru_INIT.equalsIgnoreCase(game);
+    	firstMoved = firstSource = null;
+    	firstState = preDropState = null;
+    	capturedChip = null;
         gametype = game;
         parseOptions(tok);
         setState(TablutState.PUZZLE_STATE);
@@ -251,6 +274,27 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
 		for(TabCell c = allCells; c!=null; c=c.next)
 		{  c.reInit();
 		}
+		if(breakthru)
+		{	// the standard breakthru start. Gold may rearrange inside the center area
+			// and silver anywhere outside it before the first move.
+			char cc = (char)('A'+center);
+			int cr = center+1;
+			for(int d=-1;d<=1;d++)
+			{	SetBoard((char)(cc+d),cr-2,TabChip.GoldShip);		// 12 gold escorts in a ring
+				SetBoard((char)(cc+d),cr+2,TabChip.GoldShip);
+				SetBoard((char)(cc-2),cr+d,TabChip.GoldShip);
+				SetBoard((char)(cc+2),cr+d,TabChip.GoldShip);
+			}
+			for(int d=-2;d<=2;d++)
+			{	SetBoard((char)(cc+d),2,TabChip.SilverShip);		// 20 silver ships in 4 lines
+				SetBoard((char)(cc+d),nRows-1,TabChip.SilverShip);
+				SetBoard('B',cr+d,TabChip.SilverShip);
+				SetBoard((char)('A'+nCols-2),cr+d,TabChip.SilverShip);
+			}
+			SetBoard(cc,cr,TabChip.GoldFlag);
+		}
+		else
+		{
 		for(int col=center-span;col<=center+span;col++)
 		{	SetBoard((char)(col+'A'),center+1,TabChip.GoldShip);
 			SetBoard((char)('A'+center),col+1,TabChip.GoldShip);
@@ -266,7 +310,7 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
 		SetBoard((char)('A'+center),2,TabChip.SilverShip);
 		SetBoard((char)('A'+center),nCols-1,TabChip.SilverShip);
 		SetBoard((char)('A'+center),center+1,TabChip.GoldFlag);
-  
+		}
 		SetCellProperties();
   
     }
@@ -297,6 +341,8 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
         	"flagship capture differs "+Flagship_Can_Capture+" "+from_b.Flagship_Can_Capture);
         G.Assert(Flagship_Four_Sided_Capture == from_b.Flagship_Four_Sided_Capture,
         	"flagship fourside differs "+Flagship_Four_Sided_Capture+" "+from_b.Flagship_Four_Sided_Capture);
+        G.Assert(breakthru==from_b.breakthru,"breakthru mismatch");
+        G.Assert(sameCells(firstMoved,from_b.firstMoved),"firstMoved mismatch");
     }
 
     /** this is used in fraud detection to see if the same game is being played
@@ -317,6 +363,11 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
 
  		v ^= chip.Digest(r,pickedObject);
         v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
+        if(breakthru)
+        {	// only for breakthru, so tablut digests are unchanged
+        	v ^= r.nextLong();
+        	v ^= Digest(r,firstMoved);
+        }
         return (v);
     }
 
@@ -345,12 +396,31 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
         Flagship_Four_Sided_Capture = from_b.Flagship_Four_Sided_Capture;
         lastP = from_b.lastP;
         lastD = from_b.lastD;
+        lastPlacedIndex = from_b.lastPlacedIndex;
+        firstLastP = from_b.firstLastP;
+        firstLastD = from_b.firstLastD;
         board_state = from_b.board_state;
         unresign = from_b.unresign;
         pickedSource = getCell(from_b.pickedSource);
         droppedDest= getCell(from_b.droppedDest);
+        breakthru = from_b.breakthru;
+        firstMoved = getCell(from_b.firstMoved);
+        firstSource = getCell(from_b.firstSource);
+        firstState = from_b.firstState;
+        capturedChip = from_b.capturedChip;
+        preDropState = from_b.preDropState;
         if(G.debug()) { sameboard(from_b); }
     }
+    /** get the pool cell corresponding to a pool location */
+    public TabCell getCell(TabId id)
+    {	for(TabCell pi : pools) { if(pi.rackLocation==id) { return pi; }}
+    	throw G.Error("getCell not handled %s",id);
+    }
+    /**
+     * get the cell on this board corresponding to a cell on some other board.
+     * This is used when copying boards, and when executing moves, which
+     * may have been created by a different board.
+     */
     public TabCell getCell(TabCell c)
     {	if(c==null) { return null; }
 		switch(c.rackLocation())
@@ -385,6 +455,8 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
         Init_Standard(gtype);
         allCells.setDigestChain(r);
         lastP = lastD = -1;
+        firstLastP = firstLastD = -1;
+        lastPlacedIndex = 1;
         moveNumber = 1;
         droppedDest = null;
         pickedSource = null;
@@ -412,6 +484,7 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
         case CONFIRM_SWAP_STATE:
         case CONFIRM_STATE:
         case CONFIRM_NOSWAP_STATE:
+        case CONFIRM_PASS_STATE:
         case DRAW_STATE:
         case RESIGN_STATE:
             moveNumber++; //the move is complete in these states
@@ -434,6 +507,7 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
         case CONFIRM_SWAP_STATE:
         case CONFIRM_STATE:
         case CONFIRM_NOSWAP_STATE:
+        case CONFIRM_PASS_STATE:
         case DRAW_STATE: 
             return (true);
 
@@ -519,8 +593,10 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
     {
     	if(droppedDest!=null) 
     	{	pickedObject = droppedDest.topChip();
-    		SetBoard(droppedDest,null); 
+    		SetBoard(droppedDest,capturedChip); 	// capturedChip is always null except in breakthru
+    		capturedChip = null;
     		droppedDest.lastDropped= lastD;
+    		lastPlacedIndex--;
     		lastD = -1;
     		droppedDest = null;
     	}
@@ -528,6 +604,12 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
     
     private int lastP = -1;
     private int lastD = -1;
+    // last move logic, as in checkers.  Each pick and drop is stamped with lastPlacedIndex,
+    // which advances with each drop and each done, so the two halves of a breakthru
+    // turn are distinguished.
+    int lastPlacedIndex = 1;
+    private int firstLastP = -1;	// lastP and lastD for the first half of a breakthru move
+    private int firstLastD = -1;
 
     // 
     // undo the pick, getting back to base state for the move
@@ -563,16 +645,15 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
     // pick something up.  Note that when the something is the board,
     // the board location really becomes empty, and we depend on unPickObject
     // to replace the original contents if the pick is cancelled.
-    private void pickFromBoard(char col, int row)
+    private void pickFromBoard(TabCell c)
     {
-       	TabCell c = getCell(col,row);
        	boolean wasDest = isDest(c);
        	unDropObject(); 
        	if(!wasDest)
        	{
         pickedSource = c;
         lastP = c.lastPicked;
-        c.lastPicked = moveNumber();
+        c.lastPicked = lastPlacedIndex;
        	pickedObject = c.topChip();
        	droppedDest = null;
 		lastPicked=pickedObject;
@@ -591,7 +672,39 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
     //
 
     private void setNextStateAfterDrop()
-    {
+    {	if(breakthru)
+    	{
+    	switch(board_state)
+    	{
+    	case PLAY_STATE:
+    	case PLAY_OR_SWAP_STATE:
+    		{
+    		TabCell dest = droppedDest;
+    		boolean wholeTurn = (capturedChip!=null) || (dest.topChip()==TabChip.GoldFlag);
+    		if(!wholeTurn && hasSecondMove(dest))
+    		{	// commit the first half of a two ship move
+    			firstMoved = dest;
+    			firstSource = pickedSource;
+    			firstState = board_state;
+    			firstLastP = lastP;
+    			firstLastD = lastD;
+    			lastP = lastD = -1;
+    			droppedDest = null;
+    			pickedSource = null;
+    			preDropState = null;
+    			setState(TablutState.PLAY2_STATE);
+    		}
+    		else 
+    		{ setState(board_state==TablutState.PLAY_OR_SWAP_STATE 
+    					? TablutState.CONFIRM_NOSWAP_STATE 
+    					: TablutState.CONFIRM_STATE); 
+    		}}
+    		return;
+    	case PLAY2_STATE:
+    		setState(TablutState.CONFIRM_STATE);
+    		return;
+    	default: break;
+    	}}
         switch (board_state)
         {
         default:
@@ -625,6 +738,7 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
     		break;
     	case CONFIRM_SWAP_STATE: 
     	case CONFIRM_NOSWAP_STATE:
+    	case CONFIRM_PASS_STATE:
     	case CONFIRM_STATE:
      	case PLAY_STATE:
     		setState(TablutState.PLAY_STATE);
@@ -644,6 +758,11 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
     private void doDone()
     {	
         acceptPlacement();
+        lastPlacedIndex++;
+        firstLastP = firstLastD = -1;
+        firstMoved = firstSource = null;
+        firstState = preDropState = null;
+        capturedChip = null;
 
         if (board_state==TablutState.RESIGN_STATE)
         {
@@ -696,22 +815,34 @@ void doSwap()
 	
     public boolean Execute(commonMove mm,replayMode replay)
     {	Tabmovespec m = (Tabmovespec)mm;
+        // the second half of a breakthru double move doesn't get its own icon in the game log
+        boolean secondHalf = breakthru && (board_state==TablutState.PLAY2_STATE);
+        m.chip = null;
 
         //G.print("E "+m+" for "+whoseTurn+" "+Digest());
         switch (m.op)
         {
         case MOVE_SETOPTION:
-        	setOptionValue(m.source,m.object);
+        	setOptionValue(m.option,m.optionValue);
         	break;
 		case MOVE_SWAP:	// swap colors with the other player
 			doSwap();
 			break;
+		case MOVE_PASS:	// breakthru, gold lets silver move first
+			switch(board_state)
+			{
+			default: throw G.Error("Not expecting pass in state %s",board_state);
+			case PLAY_OR_SWAP_STATE: setState(TablutState.CONFIRM_PASS_STATE); break;
+			case CONFIRM_PASS_STATE: setState(TablutState.PLAY_OR_SWAP_STATE); break;
+			}
+			break;
         case MOVE_DONE:
-        	doCaptures(droppedDest,replay);	// save capture info fo undo
+        	if(!breakthru) { doCaptures(droppedDest,replay); }	// custodial captures
          	doDone();
             break;
         case MOVE_MOVE:	// used by the robots
-        	pickFromBoard(m.from_col, m.from_row);
+        	pickFromBoard(getCell(m.from));
+        	if(!secondHalf) { m.chip = pickedObject; }
 			//$FALL-THROUGH$
 		case MOVE_DROPB:
 			switch(board_state)
@@ -720,7 +851,8 @@ void doSwap()
 			case REARRANGE_GOLD_STATE:
 			case REARRANGE_SILVER_STATE:
 				acceptPlacement(); 
-				pickFromPool(m.object);
+				pickFromPool(getCell(m.from).rackLocation());
+				m.chip = pickedObject;
 				break;
 			  case CONFIRM_NOSWAP_STATE:
 			  case CONFIRM_STATE: 
@@ -732,7 +864,7 @@ void doSwap()
 			default:
 				break;
 			}
-          	TabCell c = getCell(m.to_col, m.to_row);
+          	TabCell c = getCell(m.to);
           	if((m.op==MOVE_MOVE) ? (replay.animate) : (replay==replayMode.Single))
           	{
           		animationStack.push(pickedSource);
@@ -740,11 +872,20 @@ void doSwap()
           	}
           	if((revision>=101) && (c==pickedSource)) { unPickObject(); } 
           	else 
-          	{ 
+          	{ 	TabChip victim = null;
+          		if(breakthru 
+          				&& (c.topChip()!=null)
+          				&& ((board_state==TablutState.PLAY_STATE) || (board_state==TablutState.PLAY_OR_SWAP_STATE)))
+          		{	victim = c.topChip();		// breakthru capture by displacement
+          		}
+          		preDropState = board_state;
           		SetBoard(c,pickedObject);
+          		if(victim==TabChip.GoldFlag) { flagShipLocation = goldFlagPool; }
+          		capturedChip = victim;
           		droppedDest = c;
           		lastD = c.lastDropped;
-          		c.lastDropped = moveNumber();
+          		c.lastDropped = lastPlacedIndex;
+          		lastPlacedIndex++;
           		pickedObject = null;
           		setNextStateAfterDrop();
           	}
@@ -754,7 +895,35 @@ void doSwap()
         case MOVE_PICKB:
         	// come here only where there's something to pick, which must
         	// be a temporary p
-        	pickFromBoard(m.from_col, m.from_row);
+        	if(breakthru 
+        			&& (board_state==TablutState.PLAY2_STATE)
+        			&& (firstSource!=null)
+        			&& (getCell(m.from)==firstMoved))
+        	{	// picking up the first ship again undoes the first half of the move
+        		TabCell fc = firstMoved;
+        		pickedObject = lastPicked = fc.topChip();
+        		SetBoard(fc,null);
+        		pickedSource = firstSource;
+        		droppedDest = null;
+        		setState(firstState);
+        		fc.lastDropped = firstLastD;
+        		lastPlacedIndex--;
+        		lastP = firstLastP;
+        		lastD = -1;
+        		firstLastP = firstLastD = -1;
+        		firstMoved = firstSource = null;
+        		firstState = null;
+        		break;
+        	}
+        	pickFromBoard(getCell(m.from));
+        	if(!secondHalf) { m.chip = pickedObject; }
+        	if(breakthru && (preDropState!=null) && (pickedObject!=null)
+        			&& ((board_state==TablutState.CONFIRM_STATE)||(board_state==TablutState.CONFIRM_NOSWAP_STATE)))
+        	{	// undo the drop, back to whatever state we dropped in
+        		setState(preDropState);
+        		preDropState = null;
+        		break;
+        	}
         	switch(board_state)
         	{
         	case CONFIRM_SWAP_STATE:
@@ -777,7 +946,7 @@ void doSwap()
         case MOVE_PICK:
             unDropObject();
             unPickObject();
-            pickFromPool(m.source);
+            pickFromPool(getCell(m.from).rackLocation());
  
             break;
 
@@ -837,6 +1006,8 @@ void doSwap()
         	return(cell.rackLocation==TabId.SilverShipLocation);
         case REARRANGE_GOLD_STATE:
         	return(cell.rackLocation==TabId.GoldShipLocation);
+        case PLAY2_STATE:
+        case CONFIRM_PASS_STATE:
         case CONFIRM_STATE:
         case PLAY_OR_SWAP_STATE:
         case PLAY_STATE: return(false);
@@ -1006,15 +1177,73 @@ void doSwap()
    		  int dests = legalDests(pickedSource,pickedObject,tempDests);
    		  for(int i=0;i<dests;i++) { dd.put(tempDests[i],tempDests[i]); }
    	      returnTempDest(tempDests);
+   	      if(breakthru && capturesAllowed())
+   	      {	// diagonal captures
+   	    	  for(int dir=0; dir<pickedSource.nAdjacentCells(); dir+=2)
+   	    	  {	TabCell adj = pickedSource.exitTo(dir);
+   	    	  	if(contentsOwnedBy(nextPlayer[whoseTurn],adj)) { dd.put(adj,adj); }
+   	    	  }
+   	      }
     	}
     return(dd);
+    }
+    // breakthru, captures are allowed only as the first (and only) action of a turn
+    private boolean capturesAllowed()
+    {
+    	return((board_state==TablutState.PLAY_STATE) || (board_state==TablutState.PLAY_OR_SWAP_STATE));
+    }
+    // breakthru, true if the cell contains a ship that can make the second half of a two ship move
+    private boolean canMoveSecond(TabCell cell,TabCell first)
+    {	TabChip top = cell.topChip();
+    	return((cell!=first) 
+    			&& (top!=TabChip.GoldFlag) 
+    			&& contentsOwnedBy(whoseTurn,cell)
+    			&& (legalDests(cell,top,null)>0));
+    }
+    // breakthru, true if some other ship can make the second half of a two ship move
+    private boolean hasSecondMove(TabCell first)
+    {	for(TabCell c = allCells; c!=null; c=c.next)
+    	{	if(canMoveSecond(c,first)) { return(true); }
+    	}
+    	return(false);
+    }
+    // breakthru, true if a ship at cell can capture something
+    private boolean hasCapture(TabCell cell,int player)
+    {	for(int dir=0; dir<cell.nAdjacentCells(); dir+=2)
+    	{	if(contentsOwnedBy(nextPlayer[player],cell.exitTo(dir))) { return(true); }
+    	}
+    	return(false);
+    }
+    // breakthru, the number of silver ships that can capture the flagship
+    public int flagshipThreats()
+    {	TabCell flag = flagShipLocation;
+    	int n = 0;
+    	if(flag!=null && flag.onBoard)
+    	{
+    	for(int dir=0; dir<flag.nAdjacentCells(); dir+=2)
+    	{	TabCell adj = flag.exitTo(dir);
+    		if((adj!=null) && (adj.topChip()==TabChip.SilverShip)) { n++; }
+    	}}
+    	return(n);
+    }
+    // the state description to show the user.  Breakthru has different rules for the same states.
+    public String stateDescription()
+    {	if(breakthru)
+    	{	switch(board_state)
+    		{
+    		case PLAY_STATE: return(BreakthruMoveDescription);
+    		case PLAY_OR_SWAP_STATE: return(BreakthruFirstDescription);
+    		default: break;
+    		}
+    	}
+    	return(board_state.getDescription());
     }
     public Hashtable<TabCell,TabCell> droppedObjectCaptures()
     {	Hashtable<TabCell,TabCell> dd = new Hashtable<TabCell,TabCell>();
     	switch(board_state)
     	{
     	case CONFIRM_STATE:
-    	if((droppedDest!=null)&&(pickedObject==null))
+    	if(!breakthru && (droppedDest!=null)&&(pickedObject==null))
     	{ TabCell tempDests[]=getTempDest();
    		  int dests = dropCaptures(droppedDest,tempDests);
    		  for(int i=0;i<dests;i++) { dd.put(tempDests[i],tempDests[i]); }
@@ -1027,6 +1256,25 @@ void doSwap()
     }
     public boolean LegalToHitBoard(TabCell c)
     {	if(c==null) { return(false); }
+    	if(breakthru)
+    	{
+    	switch(board_state)
+    	{
+    	case PLAY_STATE:
+    	case PLAY_OR_SWAP_STATE:
+    	case PLAY2_STATE:
+    		if(pickedSource==null)
+    		{	// in the second half, the first ship can be picked up to undo the first half
+    			return(contentsOwnedBy(whoseTurn,c)
+    					&& ((board_state!=TablutState.PLAY2_STATE) 
+    							|| (c==firstMoved)
+    							|| (c.topChip()!=TabChip.GoldFlag)));
+    		}
+    		return((c==pickedSource) || (movingObjectDests().get(c)==c));
+    	case CONFIRM_PASS_STATE:
+    		return(false);
+    	default: break;
+    	}}
     	boolean cellContentsOk = (pickedSource==null) 
     							? ((c==pickedSource)||contentsOwnedBy(whoseTurn,c))
     							: (c.chip==null);
@@ -1069,6 +1317,7 @@ void doSwap()
     {
         m.state = board_state; //record the starting state. The most reliable
         // to undo state transistions is to simple put the original state back.
+        m.prevFirst = firstMoved;
         
         G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
 
@@ -1079,9 +1328,15 @@ void doSwap()
             }
             else if (DoneState())
             {	if(m.op==MOVE_MOVE) 
-            	{ m.capture_mask = doCaptures(getCell(m.to_col,m.to_row),replayMode.Replay);
+            	{ m.capture_mask = breakthru
+            			? ((capturedChip==null) ? 0 : capturedChip.index+1)
+            			: doCaptures(getCell(m.to),replayMode.Replay);
             	} else { m.capture_mask=0; }
                 doDone();
+            }
+            else if(breakthru && (board_state==TablutState.PLAY2_STATE))
+            {	// first half of a two ship move
+            	m.capture_mask = 0;
             }
             else
             {
@@ -1114,9 +1369,25 @@ void doSwap()
         	doSwap();
         	break;
         case MOVE_MOVE:
+        	if(breakthru)
         	{
-        	TabCell s = getCell(m.to_col,m.to_row);
-        	TabCell d = getCell(m.from_col,m.from_row);
+        	TabCell s = getCell(m.to);
+        	TabCell d = getCell(m.from);
+        	SetBoard(d,s.topChip());
+        	// restore the captured chip. SetBoard restores flagShipLocation if it was the flagship
+        	SetBoard(s,(m.capture_mask==0) ? null : TabChip.getChip(m.capture_mask-1));
+        	pickedSource = null;
+        	droppedDest=null;
+        	capturedChip = null;
+        	preDropState = null;
+        	firstMoved = getCell(m.prevFirst);
+        	firstSource = null;
+        	firstState = null;
+        	}
+        	else
+        	{
+        	TabCell s = getCell(m.to);
+        	TabCell d = getCell(m.from);
         	undoCaptures(s,m.capture_mask);
         	SetBoard(d,s.topChip());
         	SetBoard(s,null);
@@ -1141,6 +1412,7 @@ void doSwap()
 		{	if(contentsOwnedBy(player,cell))
 				{
 				if(legalDests(cell,cell.topChip(),null)>0) { return(false); }
+				if(breakthru && hasCapture(cell,player)) { return(false); }
 				}
 		}
 	 return(true);
@@ -1150,16 +1422,21 @@ void doSwap()
  {	all.clear();
  	switch(board_state)
  	{
+ 	case PLAY2_STATE:
+ 		if(breakthru) { addBreakthruMoves(all,true); }
+ 		break;
  	case PLAY_OR_SWAP_STATE:
- 		all.addElement(new Tabmovespec(SWAP,whoseTurn));
+ 		if(breakthru) { addBreakthruMoves(all,false); break; }
+ 		all.addElement(new Tabmovespec(this,SWAP,whoseTurn));
  		// and all the other moves too
 		//$FALL-THROUGH$
 	case PLAY_STATE:
+		if(breakthru) { addBreakthruMoves(all,false); break; }
  		{	TabCell temp[] = getTempDest();
  		    if(playerChip[whoseTurn]==TabChip.SilverShip)
  		    {	int minships = Flagship_Four_Sided_Capture ? 3 : 2;
  		    	if(silver_ships<minships)
- 		    	{	all.addElement(new Tabmovespec(RESIGN,whoseTurn));
+ 		    	{	all.addElement(new Tabmovespec(this,RESIGN,whoseTurn));
  		    		return(all);
  		    	}
  		    }
@@ -1169,7 +1446,7 @@ void doSwap()
  				int num = legalDests(cell,cell.topChip(),temp);
  				for(int i=0; i<num; i++) 
  				{ TabCell dest = temp[i];
- 				  all.addElement(new Tabmovespec(MOVE_MOVE,cell.col,cell.row,dest.col,dest.row,whoseTurn));
+ 				  all.addElement(new Tabmovespec(MOVE_MOVE,cell,dest,whoseTurn));
  				}
  				}
  			}
@@ -1179,6 +1456,34 @@ void doSwap()
  	default: 
  	}
  	return(all);
+ }
+ // breakthru moves.  For the first half of a turn, all moves and captures.
+ // for the second half, moves by ships other than the flagship and the first ship.
+ private void addBreakthruMoves(CommonMoveStack all,boolean second)
+ {	TabCell temp[] = getTempDest();
+ 	int next = nextPlayer[whoseTurn];
+	for(TabCell cell = allCells; cell!=null; cell=cell.next)
+	{	if(contentsOwnedBy(whoseTurn,cell))
+		{
+		TabChip top = cell.topChip();
+		if(second && ((cell==firstMoved) || (top==TabChip.GoldFlag))) { continue; }
+		int num = legalDests(cell,top,temp);
+		for(int i=0; i<num; i++) 
+			{ TabCell dest = temp[i];
+			  all.addElement(new Tabmovespec(MOVE_MOVE,cell,dest,whoseTurn));
+			}
+		if(!second)
+		{
+		for(int dir=0; dir<cell.nAdjacentCells(); dir+=2)
+			{	TabCell adj = cell.exitTo(dir);
+				if(contentsOwnedBy(next,adj))
+				{
+				all.addElement(new Tabmovespec(MOVE_MOVE,cell,adj,whoseTurn));
+				}
+			}
+		}}
+	}
+	returnTempDest(temp);
  }
  // classify the squares by the number of rook moves to get to the edge
  public void classify()
