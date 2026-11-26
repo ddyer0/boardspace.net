@@ -607,9 +607,8 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		  	else if((sub==null)||("".equals(sub.trim())))
 		  	{	// none but leading spaces found, and still doesn't fit
 		  		if(nextSplit.length()>1)
-		  		{
-		  		do { nextSplit = nextSplit.substring(0,nextSplit.length()-1); } 
-		  		while(fm.stringWidth(nextSplit)>=linew && nextSplit.length()>1);
+		  		{	// longest prefix narrower than linew, at least one character
+		  		nextSplit = nextSplit.substring(0,TextChunk.fitLength(nextSplit,"",fm,linew-1,1,nextSplit.length()-1));
 		  		}
 		  		sub = nextSplit;
 		  		splitw = nextSplit.length();

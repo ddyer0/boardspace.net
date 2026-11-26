@@ -20,6 +20,7 @@ import java.io.*;
 import java.util.*;
 
 import bridge.Utf8OutputStream;
+import bridge.WebSocket;
 import bridge.Utf8Printer;
 
 public class ConnectionManager
@@ -318,6 +319,21 @@ public class ConnectionManager
 		myNetConn.readSingle = false;
 		state = State.fullyconnected;
         synchronized (myNetConn) { myNetConn.wakeUp(); myNetConn.notify(); }
+        // if TLS failed and we connected without it, keep the reason until the
+        // client's normal setup is done; see sendSslFallbackNote
+        sslFallback = myNetConn.takeSslFallback();
+    }
+    private volatile String sslFallback = null;		// why TLS failed on this connection, not yet reported
+    /**
+     * call when the client's normal connection setup is complete.  If TLS failed and
+     * we connected without it, leave a note in the server log saying why.
+     */
+    public void sendSslFallbackNote()
+    {	String fallback = sslFallback;
+    	sslFallback = null;
+    	if(fallback!=null)
+    	{	sendMessage(NetConn.SEND_NOTE+"TLS connection failed, connected without it: "+fallback);
+    	}
     }
     public String getLocalAddress()
     {
@@ -373,7 +389,9 @@ public class ConnectionManager
         return (false);
     }
 
-    private int serverPort;
+    private int serverPort;			// raw socket port
+    private int serverWebsocketPort;	// websocket port, for clients that connect with websockets
+    private boolean serverSsl;		// connect with TLS
     private String serverName;
     private String clientId;
 	public static final String UID = "uid";					// user's unique userid
@@ -385,10 +403,12 @@ public class ConnectionManager
 	public static final String LAUNCHUSERS = "launchusers";
 	public static final String LAUNCHUSER = "launchuser"; 
 	
-    public void Connect(String id, String server, int port)
+    public void Connect(String id, String server, int port,int websocketPort,boolean ssl)
     {  	clientId = id;
     	serverName = server;
     	serverPort = port;
+    	serverWebsocketPort = websocketPort;
+    	serverSsl = ssl;
      }
     public void closeConn() { myNetConn.closeConn(); }
     public void setInputSemaphore(Object o) { myNetConn.setInputSemaphore(o); }
@@ -404,7 +424,20 @@ public class ConnectionManager
             errors = 0;
             errstring = null;
             myNetConn.setMachineName(serverName);
-            myNetConn.setMachinePort(serverPort);
+            // the game server connection.  The browser always uses a websocket (wss
+            // when the page is https).  Elsewhere, with usessl, use wss where the
+            // platform has websockets (codename1 devices), otherwise TLS on a raw
+            // socket (the desktop app, the simulator).  Without usessl, a plain socket.
+            boolean browser = G.isCheerpj() || G.isJS();
+            if(browser || (serverSsl && WebSocket.isSupported()))
+            {
+            boolean secure = serverSsl || (browser && "https:".equalsIgnoreCase(Http.getDefaultProtocol()));
+            myNetConn.setMachineTransport(secure ? CommonNetConn.Transport.Wss : CommonNetConn.Transport.Ws,serverWebsocketPort);
+            }
+            else
+            {
+            myNetConn.setMachineTransport(serverSsl ? CommonNetConn.Transport.Tls : CommonNetConn.Transport.Plain,serverPort);
+            }
     		myNetConn.readSingle = false;
             myNetConn.setRequestConn();
             state = State.requesting;

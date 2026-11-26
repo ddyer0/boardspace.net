@@ -35,7 +35,15 @@ void ExitWith(int v)
 {
   static int once = 0;
   killThreads=TRUE;
-  usleep(2*THREADSLEEP_US);
+  {	// wait for the status thread to actually stop, so it isn't writing the
+	// logs while we close them.  Bounded, in case we are the status thread.
+	int waited = 0;
+	usleep(THREADSLEEP_US/10);
+	while(statusThreadRunning && (waited < 5*THREADSLEEP_US))
+	{ usleep(THREADSLEEP_US/10);
+	  waited += THREADSLEEP_US/10;
+	}
+  }
   if(once++==0) 
 	{ flushLog(&mainLog); flushLog(&chatLog); flushLog(&securityLog); 
       closeLog(&mainLog); closeLog(&chatLog); closeLog(&securityLog);
@@ -43,7 +51,11 @@ void ExitWith(int v)
 #if WIN32
 	if(Winsock_Started) { WSACleanup(); }
 #endif
-	exit(v);
+	// _exit rather than exit: exit() runs atexit handlers (OpenSSL cleanup)
+	// and stdio teardown while other threads may still hold locks, which can
+	// deadlock and leave a live process still holding the listening sockets.
+	fflush(NULL);
+	_exit(v);
 }
 
 
@@ -409,6 +421,7 @@ typedef struct headGuard
 	size_t size;
 } headGuard;
 #define GUARDINT 0x5927531e
+#define FREEDINT 0x0DEAD0FF		// guards of freed memory
 
 
 void *ALLOC_actual(size_t size,char *purpose)
@@ -460,6 +473,11 @@ void FREE_actual(void *obj,size_t size,char *from)
 	assert((head->size==size) && (head->data==GUARDINT));
 	assert((tail->size==size) && (tail->data==GUARDINT));
 	assert((head->purpose == tail->purpose));
+	// make the freed memory unusable: a later CHECK or FREE of it fails its
+	// assert (until malloc reuses it), and a stale read sees obvious garbage
+	head->data = FREEDINT;
+	tail->data = FREEDINT;
+	memset(obj,0xDF,size);
 	allocations--;
 	allocatedSize -= size;
 	if(logging>=log_all)

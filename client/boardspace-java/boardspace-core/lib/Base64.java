@@ -194,7 +194,8 @@ public class Base64 implements CommonConfig {
    }
 /**
  * a simple http-safe encoding for strings that may contain unexpected characters
- * decode with {@link G#decodeAlphaNumeric}
+ * decode with {@link G#decodeAlphaNumeric}.  The purpose of this is to armor
+ * things like usernames so Tokenizer.nextToken() won't break an unexpected places.
  *
  * @param s
  * @return the encoded string
@@ -221,12 +222,15 @@ public static String encodeAlphaNumeric(String s)
 public static String decodeAlphaNumeric(String s)
 {
 	StringBuilder out = new StringBuilder();
-	for(int i=0;i<s.length();i++)
+	for(int i=0,len=s.length();i<len;i++)
 	{	int ch = s.charAt(i);
 		if(ch=='%') 
 		{	char nextCh;
 			ch = 0;
-			while((nextCh=s.charAt(++i))!='%') { ch = ch*10+(nextCh-'0'); }
+			i++;
+			// be defensive about malformed strings, but don't worry
+			// too much about what character is produced.
+			while(i<len && (nextCh=s.charAt(i))!='%') { ch = ch*10+(nextCh-'0'); i++; }
 		}
 		out.append((char)ch);
 	}

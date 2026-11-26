@@ -210,4 +210,25 @@ public class NativeServerSocketImpl implements bridge.NativeServerSocket
     	} catch (Exception err)	{ errorCode(err.toString()); 	}    	
     	return(-1);
     }
+
+    //
+    // a TLS connection, the same as connect but starting with a TLS handshake.  The
+    // socket is an SSLSocket, which is a Socket, so the handle-based I/O works on it
+    // unchanged.  SSLSocket doesn't check the host name by itself, so turn on
+    // endpoint identification.
+    //
+    public int connectSsl(String host, int port) {
+    	try {
+    	javax.net.ssl.SSLSocketFactory f = (javax.net.ssl.SSLSocketFactory)javax.net.ssl.SSLSocketFactory.getDefault();
+    	javax.net.ssl.SSLSocket s = (javax.net.ssl.SSLSocket)f.createSocket(host, port);
+    	try {
+    		javax.net.ssl.SSLParameters p = s.getSSLParameters();
+    		p.setEndpointIdentificationAlgorithm("HTTPS");	// the certificate must match host
+    		s.setSSLParameters(p);
+    		s.startHandshake();
+    	}
+    	catch (Exception e) { s.close(); throw e; }
+    	return(remember(s));
+    	} catch (Exception err)	{ return(errorCode(err.toString())); }
+    }
 }

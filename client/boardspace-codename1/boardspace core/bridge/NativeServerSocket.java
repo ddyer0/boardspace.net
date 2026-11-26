@@ -32,6 +32,10 @@ public interface NativeServerSocket extends com.codename1.system.NativeInterface
 	public int unBind();
 	// listen for a connection on the socket, waiting forever
 	public int connect(String host,int port);
+	// like connect, but the connection starts with a TLS handshake.  The certificate
+	// must be trusted and must match host.  Where TLS isn't available this returns
+	// an error code, and the caller falls back to a plain connection.
+	public int connectSsl(String host,int port);
 	public int listen();
 	// get handles for the input and output streams associated
 	// with the new connection.  These will be used to construct

@@ -210,4 +210,26 @@ public class NativeServerSocketImpl implements bridge.NativeServerSocket
     	} catch (Exception err)	{ errorCode(err.toString()); 	}    	
     	return(-1);
     }
+
+    //
+    // a TLS connection, the same as connect but starting with a TLS handshake.  The
+    // socket is an SSLSocket, which is a Socket, so the handle-based I/O works on it
+    // unchanged.  Android's SSLSocket doesn't check that the certificate matches
+    // the host, and endpoint identification needs API 24, so use the platform's
+    // default host name verifier, which on android really checks.
+    //
+    public int connectSsl(String host, int port) {
+    	try {
+    	javax.net.ssl.SSLSocketFactory f = (javax.net.ssl.SSLSocketFactory)javax.net.ssl.SSLSocketFactory.getDefault();
+    	javax.net.ssl.SSLSocket s = (javax.net.ssl.SSLSocket)f.createSocket(host, port);
+    	try {
+    		s.startHandshake();
+    		if(!javax.net.ssl.HttpsURLConnection.getDefaultHostnameVerifier().verify(host, s.getSession()))
+    		{	throw new javax.net.ssl.SSLPeerUnverifiedException("certificate does not match "+host);
+    		}
+    	}
+    	catch (Exception e) { s.close(); throw e; }
+    	return(remember(s));
+    	} catch (Exception err)	{ return(errorCode(err.toString())); }
+    }
 }

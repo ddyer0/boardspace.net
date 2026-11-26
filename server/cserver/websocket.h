@@ -1,6 +1,6 @@
 #include "migs-declarations.h"
 
-#define INCLUDE_SSL !WIN32
+#define INCLUDE_SSL TRUE
 
 #if INCLUDE_SSL
 #include <openssl/ssl.h>
@@ -42,8 +42,10 @@ typedef struct {
     ws_phase phase;
 
 #if INCLUDE_SSL
-    SSL_CTX   *ssl_ctx;
+    SSL_CTX   *ssl_ctx;     // per-connection context (now unused, connections share one)
     SSL       *ssl;
+    int        ssl_want_write;  // SSL handshake is waiting for the socket to be writable
+    int        rawtls;          // TLS on the standard port: the plain line protocol, no websocket layer
 #endif
 #if SUPPORT_HIXIE
     int        hixie;

@@ -14,7 +14,57 @@
 	You should have received a copy of the GNU General Public License along with Boardspace.
 	If not, see https://www.gnu.org/licenses/.
  */
+/*
+  TWO IMPLEMENTATIONS
+
+  This server exists twice: in C (migs.c, migs-lib.c, savegame.c, websocket.c, in the
+  tantrix-server project) and in Java (Migs.java, Migs0.java, Migs1.java, Connection.java
+  and friends, in the migs project).  The two are meant to be interchangeable:
+
+  - the same config file, read the same way
+  - the same wire protocol, byte for byte: line messages, checksums, sequence numbers,
+    the obfuscation cipher, websockets with and without TLS, and TLS on the standard port
+  - the same game cache files; each server reads the other's, so a live site can switch
+    back and forth with games in progress
+  - the same logs in the same formats, and the same status page
+
+  The Java code follows the C function by function and keeps its names (process_send_intro,
+  closeClient, markAsDirty...), so a change in one can be found and made in the other.
+  Every change should be made in both.  tools/compare.py in the migs project runs the same
+  client scripts against both servers and compares what each client receives; the Java
+  README lists the few deliberate differences.
+
+  Merits of each:
+
+  C
+  + speed and small size: a small memory footprint, nothing between the protocol and
+    the sockets, and no garbage collector.
+  + known reliability: it has run boardspace.net and tantrix.com for decades.  Its
+    behavior under real load, bad networks and hostile clients is known, not predicted.
+  + few dependencies: gcc and OpenSSL; no runtime to install or keep updated.
+  - memory safety is up to the programmer.  Fixed-size buffers, manual frees and pointer
+    arithmetic are where the bugs have been (buffer overruns, use after free); the
+    defenses here (poisoned frees, deferred frees, guard words) catch them but don't
+    prevent them.
+  - harder to read and to extend: fixed buffers and their sizes thread through everything,
+    and a mistake shows up as a crash or as quietly wrong data.
+
+  Java
+  + easier to understand and to extend: strings and collections instead of fixed buffers,
+    exceptions instead of error codes, and a mistake is an exception with a stack trace,
+    not memory corruption.
+  + memory safe: no overruns or use after free by construction.  An internal consistency
+    failure closes only the client involved, and the server carries on.
+  + TLS, certificate handling and non-blocking I/O come from the standard library.
+  - more memory: the JVM's baseline is tens of megabytes, and each connection costs more.
+  - somewhat lower performance, and garbage collection pauses; both well within what the
+    current load needs, but not free.
+  - needs a Java runtime on the server, kept up to date, and starts more slowly.
+  - new: it has passed the comparison tests but hasn't yet had the C version's years of
+    service.
+*/
 #include <stdlib.h>
+#include <ctype.h>
 #include "migs-declarations.h"
 
 
@@ -108,11 +158,14 @@ static int ngametypes=0;		//number of game types
 static int nroomtypes=0;		//number of room types
 static int use_threads=0;
 static int crash_test=0;				//if nonzero, include doomsday code for crash testing
+int listenBacklog=128;					// listen() backlog for both ports, config "listen-backlog"
 
 loglevel logging=0;
 
 #if WEBSOCKET
 static int websocketPortNum = 0;
+BOOLEAN stdPortTls = FALSE;			// the standard port also accepts TLS (the key and cert are configured)
+BOOLEAN sslRequired = FALSE;			// config "sslrequired": the standard port refuses plain connections
 char* websocketSslKey = NULL;
 char* websocketSslCert = NULL;
 #endif
@@ -153,6 +206,8 @@ void closeProxyClient(User *u,int sub);
 int safe_scanstr(char *cmd,char *dest,unsigned int destsize,int line);
 #define scanstr(cmd,dest,destsize) safe_scanstr(cmd,dest,destsize,__LINE__)
 int safe_scanint(char *cmd,int *dest);
+void truncateTempBuf(char* buffer, size_t size);
+char *encodeName(const char *in,char *out,size_t outsize);
 void freeGameBuffer(GameBuffer *rval);
 
 
@@ -482,7 +537,8 @@ void init_rng_in(User *u,char *instr)
 //
 void init_rng_out(User *u,char *outstr)
 {	u->rng_out_chars = 0;
-	u->rng_out_seq = 1;			// first sequence number will be 1
+	// rng_out_seq is not reset here: it was set to 1 when the connection started,
+	// and the 201 that precedes this has already used it
 	if(!(outstr && *outstr))
 	{
 		u->m_w_out = u->m_z_out = u->use_rng_out = 0;
@@ -1052,6 +1108,46 @@ void increaseInputBufferSize(User *u,int min)
 }
 
 
+//
+// buffers of a user who is closed (ClearUser) or replaced (CopyUser) are made
+// unusable at once (pointer NULL, size 0) but not freed until the main loop is
+// back at its top.  A user can be closed from deep inside message handling: a
+// send to it fails, or a subcommand closes it, while callers further up are
+// still holding pointers into its input buffer (the command being processed)
+// or temp buffer (the message being broadcast).  Freeing at once turned those
+// into reads and writes of freed memory.
+//
+typedef struct DeferredFree
+{	void *ptr;
+	size_t size;
+	struct DeferredFree *next;
+} DeferredFree;
+static DeferredFree *deferredFrees = NULL;
+
+static void deferFree(void *ptr,size_t size)
+{	if(ptr!=NULL)
+	{
+	DeferredFree *d = (DeferredFree *)malloc(sizeof(DeferredFree));
+	CHECK(ptr,size);
+	if(d==NULL) { FREE(ptr,size); return; }	// out of memory, take the risk
+	d->ptr = ptr;
+	d->size = size;
+	d->next = deferredFrees;
+	deferredFrees = d;
+	}
+}
+
+// called at the top of the main loop, when nothing can be pointing into these
+static void freeDeferred()
+{	while(deferredFrees)
+	{
+	DeferredFree *d = deferredFrees;
+	deferredFrees = d->next;
+	FREE(d->ptr,d->size);
+	free(d);
+	}
+}
+
 static void ClearUser(User *u)
 {		u->socket = -1;
 		u->ip=0;
@@ -1094,6 +1190,7 @@ static void ClearUser(User *u)
 		u->websocket = FALSE;
 		u->websocket_errno = 0;
 		u->websocket_data = NULL;	// just to be sure
+		u->tlsUndecided = FALSE;
 #endif
 		u->oopsCount=0;
 		u->injectedOutput = 0;
@@ -1115,22 +1212,27 @@ static void ClearUser(User *u)
 		u->clientOrder=-1;
 		u->clientRev=-1;
 		u->clientTime=0;
-		FREE(u->outbufPtr,u->outbufSize);
+		deferFree(u->outbufPtr,u->outbufSize);
 		// make sure the buffer appears to be empty when it has been freed.
 		u->outbuf_put_index = u->outbuf_take_index = 0;
 		u->outbufPtr = NULL;
 		u->outbufSize = 0;
 
-		FREE(u->tempBufPtr,u->tempBufSize);
+		deferFree(u->tempBufPtr,u->tempBufSize);
 		u->tempBufPtr = NULL;
 		u->tempBufSize = 0;
 
-		FREE(u->inbufPtr,u->inbufSize);
+		deferFree(u->inbufPtr,u->inbufSize);
 		// make sure the buffer appears to be empty when it has been freed.
 		u->inbuf_put_index = u->inbuf_take_index = 0;
 		u->inbufPtr = NULL;
 		u->inbufSize = 0;
 		u->cookie[0]=0;
+		// sequence numbers start fresh for every connection.  Previously only
+		// init_rng_in (obfuscation on) reset them, so a reused slot kept stale values.
+		u->rng_in_seq = 1;
+		u->rng_in_seq_errors = 0;
+		u->rng_out_seq = 1;
 		// don't touch session or next in session
 		// don't clear deadFromSession either
 		// u->deadFromSession=NULL;
@@ -1160,7 +1262,7 @@ static void CopyUser(User *from,User *to)
 		 to->inputClosed = FALSE;
 		 to->outputClosed = FALSE;
 
-		 FREE(to->outbufPtr,to->outbufSize);
+		 deferFree(to->outbufPtr,to->outbufSize);
 		 CHECK(from->outbufPtr,from->outbufSize);
 		 to->outbufSize = from->outbufSize;
 		 to->outbufPtr = from->outbufPtr;
@@ -1171,7 +1273,7 @@ static void CopyUser(User *from,User *to)
 		 from->outbuf_take_index = 0;
 		 from->outbuf_put_index = 0;
 
-		 FREE(to->inbufPtr,to->inbufSize);
+		 deferFree(to->inbufPtr,to->inbufSize);
 		 CHECK(from->inbufPtr,from->inbufSize);
 		 to->inbufSize = from->inbufSize;
 		 to->inbufPtr = from->inbufPtr;
@@ -1189,8 +1291,10 @@ static void CopyUser(User *from,User *to)
 		 to->websocket = from->websocket;
 		 to->websocket_data = from->websocket_data;
 		 to->websocket_errno = from->websocket_errno;
+		 to->tlsUndecided = from->tlsUndecided;
 		 from->websocket = FALSE;
 		 from->websocket_data = NULL;
+		 from->tlsUndecided = FALSE;
 #endif
 		 from->requestingLock = FALSE;
 		 from->oopsCount = 0;
@@ -1220,7 +1324,7 @@ static void CopyUser(User *from,User *to)
 		 from->m_w_out = 0;
 		 from->rng_out_seq = 0;
 
-		 FREE(to->tempBufPtr,to->tempBufSize);
+		 deferFree(to->tempBufPtr,to->tempBufSize);
 		 CHECK(from->tempBufPtr,from->tempBufSize);
 		 to->tempBufPtr = from->tempBufPtr;
 		 to->tempBufSize = from->tempBufSize;
@@ -1619,6 +1723,19 @@ void error1(char *inStr)
 {
 	error2(inStr,NULL);
 }
+void error3(char* inStr, char* inStr2, int l)
+{
+	fileBuffer* B = &mainLog;
+	if (B->logStream == NULL) { B->logStream = stderr; }
+	if (inStr == NULL) { inStr = ""; }
+	if (inStr2 == NULL) { inStr2 = ""; }
+
+	logEntry(B, "[%s] %s %s %d.\n", timestamp(), inStr, inStr2,l);
+#if HISTORY
+	if (logging >= log_errors) { DumpHistory(); }
+#endif
+	ExitWith(1);
+}
 
 /*-----------------------------------------------------------------*/
 
@@ -1795,7 +1912,7 @@ static void client_socket_init(int portNum)
   if (bind(serversd,(struct sockaddr *)&iclient,sizeof(iclient)) == -1)
     {error("Failed bind for main port",ErrNo());
     };
-  if (listen(serversd,4) == -1)
+  if (listen(serversd,listenBacklog) == -1)
     {error("Failed listen on main port",ErrNo());
     }
   {
@@ -1892,8 +2009,8 @@ void realSaveConfig()
 		   playerindex+=lsprintf(sizeof(playerbuf)-playerindex,playerbuf+playerindex,">%s</a>",clientname);
 		  }
 		}
-	    if((playerindex+1000)>sizeof(playerbuf))
-	      { // allow lots of slop, prevent buffer overflow
+	    if((playerindex+3*CLIENTPUBLICNAMESIZE+400)>sizeof(playerbuf))
+	      { // allow lots of slop, prevent buffer overflow: an entry holds the name twice plus the url
 			fprintf(tempfp,"%s",playerbuf);
 			playerbuf[0]=(char)0;
 	        playerindex=0;
@@ -2141,12 +2258,16 @@ void simpleCloseClient(User *u,char *cxt)
 		}	
 	 if(STRICMP("guest",u->clientRealName)==0)
 	 {//preserve the identity of guests
-	  char nam[CLIENTPUBLICNAMESIZE+13];
+	  char nam[CLIENTPUBLICNAMESIZE+16];
 	  lsprintf(sizeof(nam),&nam[0],"(%s#%d)",&u->clientPublicName[0],u->clientUid);
+	  truncateTempBuf(nam,sizeof(u->clientPublicName));		// at a character boundary
 	  MyStrncpy(u->clientPublicName,&nam[0],sizeof(u->clientPublicName));
 	 }else
 	 {
-	 lsprintf(sizeof(u->clientPublicName),&u->clientPublicName[0],"(%s)",u->clientRealName);
+	 char nam[CLIENTPUBLICNAMESIZE+16];
+	 lsprintf(sizeof(nam),&nam[0],"(%s)",u->clientRealName);
+	 truncateTempBuf(nam,sizeof(u->clientPublicName));		// at a character boundary
+	 MyStrncpy(u->clientPublicName,&nam[0],sizeof(u->clientPublicName));
 	 }
 	 u->checksums=FALSE;
 	 u->sequencenumbers = FALSE;
@@ -2436,9 +2557,9 @@ void HandleDeadUsers()
 }
 
 void HandleKill(User *U)
-{	
-	lsprintf(U->tempBufSize,U->tempBufPtr,ECHO_PLAYER_QUIT "%d server",U->userNUM);	//yes, both are sent as 223, so the luser thinks
-    doEchoAll(U,U->tempBufPtr,1);
+{	char kB[SMALLBUFSIZE];	// not U's temp buffer: the echo includes U, and a failed send to U clears it
+	lsprintf(sizeof(kB),kB,ECHO_PLAYER_QUIT "%d server",U->userNUM);	//yes, both are sent as 223, so the luser thinks
+    doEchoAll(U,kB,1);
 }
 
 /* hash a string */
@@ -2478,7 +2599,7 @@ int checksumInputString(User *u,char *instr)
 	int i=0;
 	int ch;
 	while((ch=*str)!=0 && (ch!='\r') && (ch!='\n'))
-	{	sum+=(ch)^i;
+	{	sum+=(ch&0xff)^i;		// unsigned, as the client computes it
 		if(u->use_rng_in)
 		{	// this is the actual decryption/unobfuscation
 			// characters are expected to be in 32-127 both before and after
@@ -2682,8 +2803,13 @@ void unpreserveGame(GameBuffer *game)
 // protect the hash table by throwing things over the side.
 // this ought to happen rarely or never
 void gameHashCleanup()
-{	while(games_cached>=MAXGAMES)
+{	int passes = 0;
+	while(games_cached>=MAXGAMES)
 	{	GameBuffer *all = all_gamebuffers;
+		int before = games_cached;
+		passes++;
+		logEntry(&mainLog,"[%s] gameHashCleanup pass %d, games_cached=%d n_gamebuffers=%d\n",
+				timestamp(),passes,games_cached,n_gamebuffers);
 		GameBuffer *min_game = NULL;
 		DAYS now = DaysSinceForever();
 		DAYS min_time = 0;
@@ -2722,6 +2848,14 @@ void gameHashCleanup()
 				timestamp(),THREAD_READ(min_game,refCount),min_game->idString,min_game->uid);
 			}			
 			unpreserveGame(min_game);
+		}
+		if(games_cached>=before)
+		{	// no progress: nothing left that can be evicted, so games_cached
+			// must disagree with the hash table.  Previously this spun forever.
+			unusual_events++;
+			logEntry(&mainLog,"[%s] UNUSUAL: gameHashCleanup made no progress, games_cached=%d n_gamebuffers=%d\n",
+					timestamp(),games_cached,n_gamebuffers);
+			break;
 		}
 	}
 }
@@ -2843,6 +2977,9 @@ BOOLEAN saveDirtyGames()
 	}
 	if(!use_threads)
 	{ saveDirtyGamesNow(&saveGameInfo);
+#if WEBSOCKET
+	  sslFileCheck();		// the save-game thread does this when there is one
+#endif
 	}
 	return(progress);
 }
@@ -3014,12 +3151,45 @@ BOOLEAN reloadOneFile(char *name)
 	return(result);
 }
 
+//
+// check the game cache directory at startup, so a missing or unwritable one is
+// reported once, plainly, instead of only as failures when games are saved.
+//
+static void checkGameCacheDir(char *dir)
+{	size_t len = strlen(dir);
+	char last = dir[len-1];
+	char probe[SMALLBUFSIZE];
+	FILE *f;
+	if((last!='/') && (last!='\\'))
+	{	// file names are made by appending to the directory name
+		logEntry(&mainLog,"[%s] UNUSUAL: gamecachedir %s doesn't end with a / so cached games are written beside it, as %sG<name>." GAMESUFFIX "\n",
+				 timestamp(),dir,dir);
+	}
+	lsprintf(sizeof(probe),probe,"%smigs-write-test.tmp",dir);
+	f = fopen(probe,"wb");
+	if(f==NULL)
+	{	logEntry(&mainLog,"[%s] UNUSUAL: can't write in gamecachedir %s (%s); games will not be saved\n",
+				 timestamp(),dir,strerror(errno));
+	}
+	else
+	{	fclose(f);
+		UNLINK(probe);
+	}
+}
+
 void reloadGames()
 {	SaveGameInfo *G = &saveGameInfo;
+	if(THREAD_READ(G,gameCacheDir)==NULL || *THREAD_READ(G,gameCacheDir)==0)
+	{	logEntry(&mainLog,"[%s] gamecachedir is empty, games will not be cached\n",timestamp());
+	}
+	else if(THREAD_READ(G,gameCacheRate)<=0)
+	{	logEntry(&mainLog,"[%s] gamecacherate is %d, games will not be cached\n",timestamp(),THREAD_READ(G,gameCacheRate));
+	}
 	if(THREAD_READ(G,gameCacheDir)
 		&& *THREAD_READ(G,gameCacheDir))
 	{
 	int reloaded = 0;
+	checkGameCacheDir(THREAD_READ(G,gameCacheDir));
 #if WIN32
 	WIN32_FIND_DATAA find_data;
 	char gameDir[SMALLBUFSIZE];
@@ -3332,8 +3502,10 @@ static int escapedStringSize(char *str0)
 		if(ch=='\\') 
 			{ i+=2;
 			}	// double up
-		else if ((ch<' ') || (ch>129))
-			{	// encode as three char sequence
+		else if ((ch<' ') || (ch>126))
+			{	// encode as three char sequence.  This must cover everything the
+				// client escapes (>=127): raw bytes 127-129 used to go out unescaped,
+				// and the signed/unsigned checksum difference made the client reject them
 				i+= 4;
 			}
 		else 
@@ -3370,8 +3542,8 @@ static int escapeAndFilterString(int outsize,char *out,char *str0,BOOLEAN filter
 			  out[i++] = (char)ch;
   			  out[i++] = (char)ch;
 			}	// double up
-		else if ((ch<' ') || (ch>129))
-			{	// encode as three char sequence
+		else if ((ch<' ') || (ch>126))
+			{	// encode as three char sequence (see escapedStringSize)
 			  char hundreds = '0'+ch/100;
 			  char tens = '0'+(ch%100)/10;
 			  char ones = '0'+ch%10;
@@ -3423,7 +3595,7 @@ static int localStringCopy(User *u,size_t outsize,char *out,char *inseq,char *in
 					
 				}
 			  }
-			  sum+=(ch)^i;
+			  sum+=(ch&0xff)^i;		// unsigned, as the client computes it
 			  out[i++] = (char)ch;
 			}
 
@@ -3442,7 +3614,7 @@ static int localStringCopy(User *u,size_t outsize,char *out,char *inseq,char *in
 					
 				}
 			  }
-			  sum+=(ch)^i;
+			  sum+=(ch&0xff)^i;		// unsigned, as the client computes it
 			  out[i++] = (char)ch;
 			}
 	out[i++]='\n';
@@ -3611,10 +3783,11 @@ int startOutput(User *u)
 	  else { err=len; }
 	}
 
-	if (u->outputClosed && (u->outbuf_put_index == u->outbuf_take_index))
-	{
-		closeClient(u,"internal close request",grace_forbidden);
-	}
+	// a user marked for closure (markForClosure) whose output has drained used to be
+	// closed right here.  But startOutput runs inside lsend, called from message
+	// handlers, and closing a user who isn't a player frees its buffers, which the
+	// caller was still using (lsend records the message it just sent).  The main
+	// loop now closes such users after it has finished with them.
 	return(err);
 }
 
@@ -3911,9 +4084,12 @@ void doEchoAll(User *ru, char *toOthers, int ignoreF)
 	  }
 	  nfound++;
 	  su=next;
+	  // closing a user can clear the whole session (when no active client is left),
+	  // which moves the rest of the list elsewhere; stop rather than walk that list.
+	  if((su!=NULL) && (su->session!=S)) { break; }
 	  assert(nfound<=pop);
 	}
-	assert(nfound==pop);
+	assert((su!=NULL) || (nfound==pop));
   }  
 }
 
@@ -3952,9 +4128,12 @@ void doEchoOthers(User *ru, char *toOthers, int ignoreF)
 	  }
 	  nfound++;
 	  su=next;
+	  // closing a user can clear the whole session (when no active client is left),
+	  // which moves the rest of the list elsewhere; stop rather than walk that list.
+	  if((su!=NULL) && (su->session!=S)) { break; }
 	  assert(nfound<=pop);
 	}
-	assert(nfound==pop);
+	assert((su!=NULL) || (nfound==pop));
   }  
 }
 
@@ -4045,9 +4224,11 @@ void sendMulti(char *inStr,Session *s)
 		}
 	U=next;
 	nfound++;
+	// closing a user can clear the whole session; stop rather than walk the list it moved to
+	if((U!=NULL) && (U->session!=s)) { break; }
 	assert(nfound<=pop);
 	}
-	assert(nfound==pop);
+	assert((U!=NULL) || (nfound==pop));
 	}
 
 }
@@ -4412,7 +4593,7 @@ static void doSupervisor(User *SU,char *buf)
 			  {	User *next = u->next_in_session;
 				assert(u->session==s);
 			    if(userNameMatches(u,uname))
-				{ char obuf[SMALLBUFSIZE];
+				{ char obuf[SMALLBUFSIZE+CLIENTPUBLICNAMESIZE];		// holds a name
 				  char name[sizeof(u->clientRealName)+1];
 				  strcpy(name,u->clientRealName);
 				  lsprintf(sizeof(obuf),obuf,ECHO_PLAYER_QUIT "%d killed by supervisor",u->userNUM);
@@ -4442,9 +4623,11 @@ static void doSupervisor(User *SU,char *buf)
 				}
 				 u=next;
 				 nfound++;
+				 // the echoes above can close users and clear the session
+				 if((u!=NULL) && (u->session!=s)) { break; }
 				 assert(nfound<=pop);
 			  }
-			  assert(nfound==pop);
+			  assert((u!=NULL) || (nfound==pop));
 			}
 
 	}}
@@ -4838,6 +5021,9 @@ static User *process_takeover(char *data,User *u,char *seq)
 		// tell us
 		lsprintf(u->tempBufSize,u->tempBufPtr,ECHO_I_QUIT "%s%s",seq,data);
 		doEchoSelf(u,u->tempBufPtr,1);
+		// if that send failed, u has been closed (and, not being a player, cleared
+		// and moved to the idle list); there is no connection left to hand over.
+		if(!isRealSocket(u->socket)) { return(u); }
 
 		if(logging>=log_connections)
 			{logEntry(&mainLog,"[%s] spectator C%d (%s#%d) S%d in session %d is now C%d\n",
@@ -4890,6 +5076,10 @@ static User *process_takeover(char *data,User *u,char *seq)
 		// then tell us
 		lsprintf(u->tempBufSize,u->tempBufPtr,ECHO_I_QUIT "%s%s",seq,data);
 		doEchoSelf(u,u->tempBufPtr,1);
+		// if that send failed, u has been closed, cleared and put at the head of the
+		// idle list, so findAslot would hand back u itself: its socket (-1) would be
+		// "moved" to itself and its names copied onto themselves.  Nothing to do.
+		if(!isRealSocket(u->socket)) { return(u); }
 		{
 		User *newu=findAslot(u->session);
 
@@ -4997,7 +5187,10 @@ static void process_fetch_active_game_f(char *data,User *u,char *seq,BOOLEAN fil
   GameBuffer *g=findNamedGame(u,"*");
   if((g!=NULL)) 
 	{
-	char tb[SMALLBUFSIZE];
+	// room for every player's name.  This was SMALLBUFSIZE, which a couple of long guest
+	// names overflowed, cutting the player list (and the game status) short.
+	char tb[SMALLBUFSIZE + 24*(ENCODEDNAMESIZE+64)];
+	char enc[ENCODEDNAMESIZE];
 	int tbidx = lsprintf(sizeof(tb),tb,"%s%d ",(filter ? ECHO_ACTIVE_GAME_FILTERED : ECHO_ACTIVE_GAME),g->uid);
 	 Session *s = u->session;
 	 User *su = s->first_user;
@@ -5012,7 +5205,7 @@ static void process_fetch_active_game_f(char *data,User *u,char *seq,BOOLEAN fil
 				su->clientOrder,
 				su->clientUid,
 				(su->isARobot? 'R' : (isRealSocket(su->socket)?'P':'Q')),
-				su->clientRealName
+				encodeName(su->clientRealName,enc,sizeof(enc))
 				);
 		}
 	 su = su->next_in_session;
@@ -5129,13 +5322,14 @@ void doSessionIntro(User* to)
 	{
 		if (u != to)
 		{
-			char xB[SMALLBUFSIZE];
+			char xB[SMALLBUFSIZE+ENCODEDNAMESIZE];		// holds a name
+			char enc[ENCODEDNAMESIZE];
 			lsprintf(sizeof(xB), xB, ECHO_INTRO_OTHERS "%d %d %d %d %s %d %d",
 				u->userNUM,
 				(u->isARobot ? 2 : u->isAPlayer ? 1 : 0),				// 1 for a player 0 for a spectator
 				u->clientSeat,
 				u->clientUid,
-				u->clientRealName,
+				encodeName(u->clientRealName,enc,sizeof(enc)),
 				u->clientOrder,
 				u->clientRev);			// play order is of interest only to the other players
 			sendSingle(xB, to);
@@ -5408,6 +5602,15 @@ void process_send_intro(char *data,User *u,char *seq)
 				{ nowtime |= 1; lowtime |= 1; }
 				 else { nowtime &= ~1; lowtime &= ~1;  }
 
+#if WEBSOCKET
+			  if (stdPortTls)
+			  {	// server level 20: this port also accepts TLS connections
+			  lsprintf(u->tempBufSize,u->tempBufPtr,ECHO_INTRO_SELF "%d %d %d %d.%d.%d.%d %d.%d.%d.%d %d%06d %d %d %d",
+				  sessionNum,u->userNUM,SERVERID_SSL,
+				  r1,r2,r3,r4,b1,b2,b3,b4,hitime,lowtime,MAX_INPUT_BUFFER_SIZE,s->population,passw);
+			  }
+			  else
+#endif
 			  lsprintf(u->tempBufSize,u->tempBufPtr,ECHO_INTRO_SELF "%d %d %d %d.%d.%d.%d %d.%d.%d.%d %d%06d %d %d %d",
 				  sessionNum,u->userNUM,SERVERID,
 				  r1,r2,r3,r4,b1,b2,b3,b4,hitime,lowtime,MAX_INPUT_BUFFER_SIZE,s->population,passw);
@@ -5426,12 +5629,13 @@ void process_send_intro(char *data,User *u,char *seq)
 				  init_rng_out(u,rngbuf);
 			  }
 
+			  char enc[ENCODEDNAMESIZE];
 			  lsprintf(u->tempBufSize,u->tempBufPtr,ECHO_INTRO_OTHERS "%d %d %d %d %s %d %d",
 					u->userNUM,
 					u->isARobot?2:passw ? 1 : 0,				// 1 for a player 0 for a spectator
 					u->clientSeat,
 					u->clientUid,
-					u->clientRealName,
+					encodeName(u->clientRealName,enc,sizeof(enc)),
 					u->clientOrder,
 					u->clientRev);			// play order is of interest only to the other players
 
@@ -5825,6 +6029,7 @@ void process_ask_detail(char *data,User *u,char *seq)
 	if((!tu->gagged)									//make the gagees disappear
 		&& (tu->clientPublicName[0]!=(char)0))
 		{
+		char enc[ENCODEDNAMESIZE];			// the name as sent
 		totalC++;
 
 		if(sessionNum==0)
@@ -5833,7 +6038,7 @@ void process_ask_detail(char *data,User *u,char *seq)
 			sessionNum,
 			tu->userNUM,
 			0,	// no information here
-			tu->clientPublicName,
+			encodeName(tu->clientPublicName,enc,sizeof(enc)),
 			tu->clientUid,
 			&tu->lobbyInfo);
 		}
@@ -5845,7 +6050,7 @@ void process_ask_detail(char *data,User *u,char *seq)
 			((tu->clientSeat>=0)
 					?(100+tu->clientSeat)	//100 + seat code
 					:tu->isAPlayer),	//just "present"
-			&tu->clientPublicName[0],
+			encodeName(tu->clientPublicName,enc,sizeof(enc)),
 			tu->clientUid);
 		}
 		err=sendSingle(u->tempBufPtr, u);
@@ -5912,7 +6117,7 @@ void process_register_player(char *data,User *u,char *seq)
 	  int order;
 	  int uid = 0;
 	  int seat;
-	  char name[CLIENTPUBLICNAMESIZE];
+	  char name[NAMESCANSIZE];		// scanned at full length, then truncated at a character boundary
 	  int chan = 0;
 	  int rev = -1;
 	  int orderidx = safe_scanint(data,&order);
@@ -5926,6 +6131,7 @@ void process_register_player(char *data,User *u,char *seq)
 	  if(nameidx>0)
 	  { 
 	    User *newu = NULL;
+		truncateTempBuf(name,CLIENTPUBLICNAMESIZE);	// previously a name too long for the field failed to scan at all
 		if((chanidx>0)  && (chan>0))
 			{ newu = s->first_user;
 	  		  while((newu!=NULL)&& (newu->userNUM!=chan)) { newu = newu->next_in_session; } 
@@ -5949,12 +6155,13 @@ void process_register_player(char *data,User *u,char *seq)
 		newu->clientOrder=order;
 		newu->clientRev = rev;
 		newu->isAPlayer=TRUE;
+		char enc[ENCODEDNAMESIZE];
 		lsprintf(u->tempBufSize,u->tempBufPtr,ECHO_INTRO_OTHERS "%d %d %d %d %s %d %d",
 			newu->userNUM,
 			newu->isARobot?2:1,				// 1 for a player 2 as code for robot players
 			newu->clientSeat,
 			newu->clientUid,
-			newu->clientRealName,
+			encodeName(newu->clientRealName,enc,sizeof(enc)),
 			newu->clientOrder,				// play order is of interest only to the other players
 			newu->clientRev					// client per-game revision level
 			);	
@@ -6031,8 +6238,17 @@ void lockSomeOtherUserForSession(Session *S)
 	// iterate over the other users in the session, grant the lock
 	// to the next (in round robin fashion) who is asking.
 	{User *candidate = U;
+	int guard = 0;
 	do
-	{	if(candidate->requestingLock)
+	{	if(++guard > MAXCLIENTS)
+		{	// U is not in this session's user list, so the walk would never get
+			// back to it.  This "can't happen", but if it does, don't spin forever.
+			unusual_events++;
+			logEntry(&mainLog,"[%s] UNUSUAL: lock holder C%d not found in session %d, lock released\n",
+				timestamp(),U->userNUM,S->sessionNUM);
+			return;
+		}
+		if(candidate->requestingLock)
 		{
 			lsprintf(candidate->tempBufSize,candidate->tempBufPtr,"%s",LOCK_GAME "1");	//yes we have it
 			sendSingle(candidate->tempBufPtr,candidate);
@@ -6211,31 +6427,115 @@ void process_sendmessageto(char *data,User *u,char *seq)
 
 	}
 
+//
+// the length in the escaped text of the character at s[i], and the byte value it stands for.
+// Text from the client is escaped: \\ for a backslash, \nnn for a control character, and
+// \#hhhh for each byte of a multibyte utf-8 character (so one CJK character is
+// \#00e4\#0093\#009f).  Raw bytes count as themselves.
+//
+static int escapedCharAt(const char *s,size_t i,int *value)
+{	int c = (unsigned char)s[i];
+	if(c=='\\')
+	{	int n = (unsigned char)s[i+1];
+		if(n=='#')
+		{	int v = 0;
+			int k = 2;
+			while((k<6) && isxdigit((unsigned char)s[i+k]))
+			{	int d = (unsigned char)s[i+k];
+				v = v*16 + (isdigit(d) ? d-'0' : (tolower(d)-'a'+10));
+				k++;
+			}
+			*value = v;
+			return(k);
+		}
+		if((n>='0') && (n<='9'))
+		{	int v = 0;
+			int k = 1;
+			while((k<4) && isdigit((unsigned char)s[i+k])) { v = v*10 + (s[i+k]-'0'); k++; }
+			*value = v;
+			return(k);
+		}
+		if(n!=0) { *value = n; return(2); }	// \\ and any other quoted character
+	}
+	*value = c;
+	return(1);
+}
+
+//
+// truncate an escaped string to fit in a buffer of size bytes (including the null),
+// cutting only at a character boundary: never inside an escape sequence, and never
+// between the bytes of a utf-8 character.  Previously this only removed the last
+// character and then looked for a doubled backslash, so a long name was cut wherever
+// the copy into the field stopped, often in the middle of a \#hhhh sequence, and the
+// clients decoding the broken escape lost the field separator after it.
+//
 void truncateTempBuf(char* buffer, size_t size)
 {
 	size_t len = strlen(buffer);
 	if (len >= size)
-	{	// the temp string is longer than the buffer, so it must be truncated.
-		// a subtle additional point is that the string may be utf8 encoded, and
-		// if the trailing chars are encoded, we have to back off all the way back
-		// to the beginning of the real character
-		buffer[len - 1] = (char)0;
-		int steps = 1;
-		while (steps < 7)
-		{
-			if (buffer[len - steps] == '\\' && buffer[len - steps - 1] == '\\')
-			{
-				buffer[len - steps - 1] = (char)0;
-				steps = 7;
-			}
-			steps++;
+	{
+		size_t limit = size-1;
+		size_t i = 0;
+		size_t charStart = 0;		// where the character containing position i starts
+		while(i<len)
+		{	int value;
+			int n = escapedCharAt(buffer,i,&value);
+			BOOLEAN continuation = (value>=0x80) && (value<0xc0);	// utf-8 continuation byte
+			if(!continuation) { charStart = i; }
+			if((i+n)>limit) { break; }
+			i += n;
+		}
+		// i is the first piece that doesn't fit.  If it starts a character, everything
+		// before it is whole; if it continues one, that whole character goes too.
+		// Either way the cut is at charStart.
+		buffer[charStart] = (char)0;
+	}
+}
+
+//
+// encode a name for sending to clients, as the client's Base64.encodeAlphaNumeric does:
+// ascii letters and digits as themselves, anything else as %nnn% (its decimal code), so
+// whatever a name contains stays one token, and the client decodes it with
+// decodeAlphaNumeric.  The \\, \nnn and \#hhhh escapes of the transport are passed
+// through unchanged: the receiving client undoes those before it decodes the name.
+// Names are kept as received; this is applied only where a name goes out.
+// out needs ENCODEDNAMESIZE bytes for any name that fits CLIENTPUBLICNAMESIZE.
+//
+char *encodeName(const char *in,char *out,size_t outsize)
+{	size_t o = 0;
+	size_t i = 0;
+	while((in[i]!=0) && ((o+8)<outsize))
+	{	int c = (unsigned char)in[i];
+		if(((c>='a')&&(c<='z')) || ((c>='A')&&(c<='Z')) || ((c>='0')&&(c<='9')))
+		{	out[o++] = (char)c;
+			i++;
+		}
+		else if((c=='\\') && (in[i+1]!=0))
+		{	int value;
+			int n = escapedCharAt(in,i,&value);
+			if((o+n+1)>=outsize) { break; }
+			memcpy(out+o,in+i,n);
+			o += n;
+			i += n;
+		}
+		else
+		{	char num[8];
+			int k = 0;
+			int v = c;
+			do { num[k++] = (char)('0'+(v%10)); v /= 10; } while(v>0);
+			out[o++] = '%';
+			while(k>0) { out[o++] = num[--k]; }
+			out[o++] = '%';
+			i++;
 		}
 	}
+	out[o] = (char)0;
+	return(out);
 }
 
 void process_send_name( char *data,User *u,char *seq)
 {	//remember the client names
- char tempString[SMALLBUFSIZE];
+ char tempString[NAMESCANSIZE];
  int uid=0;
  int color=0;
  int order=0;
@@ -6243,7 +6543,9 @@ void process_send_name( char *data,User *u,char *seq)
  int uididx = (nameidx>0) ? safe_scanint(data+nameidx,&uid) : -1;
  if(nameidx>0)
   { 
-	lsprintf(u->tempBufSize,u->tempBufPtr,ECHO_NAME "%s",tempString);
+	{ char enc[ENCODEDNAMESIZE];
+	  lsprintf(u->tempBufSize,u->tempBufPtr,ECHO_NAME "%s",encodeName(tempString,enc,sizeof(enc)));
+	}
 	truncateTempBuf(tempString, sizeof(u->clientPublicName));
 	MyStrncpy(u->clientPublicName,tempString,sizeof(u->clientPublicName));	//record his name
 	if(u->clientRealName[0]==(char)0)
@@ -6315,8 +6617,15 @@ void process_multiple(char *cmd,User *u,char *seq)
 			size_t nextidx = cindex+skip_escaped_text(cmd+idx+cmdidx,len);
 			char saved = cmd[nextidx];
 			cmd[nextidx]=(char)0;
+			char *inbuf = u->inbufPtr;	// cmd is in this buffer
 			if(cmd[cindex]==' ') { cindex++; }	// skip a space if its there 
 			u = processCheckSummedMessages(cmd+cindex,u,NULL,seq);
+			// a subcommand can close the user ("220 suicide", a failed send, too many
+			// errors), and closing a user who isn't a player frees its input buffer,
+			// which holds cmd.  Previously the loop went on to write to and read from
+			// the freed buffer.  A takeover moves the same buffer to the new user, so
+			// that case continues.
+			if(!isRealSocket(u->socket) || (u->inbufPtr!=inbuf)) { return; }
 			cmd[nextidx]=saved;
 			cmdidx = nextidx;
 			}
@@ -6390,7 +6699,7 @@ void doSocketConnected(User *pu)
 	pu->connecting = FALSE;
 	if(u && isRealSocket(sock))
 	{
-	char xb[SMALLBUFSIZE];
+	char xb[SMALLBUFSIZE+CLIENTPUBLICNAMESIZE];		// holds a name
 	lsprintf(sizeof(xb),xb,ECHO_PROXY_OP "connect %d %s",sock,pu->clientRealName);
 	sendSingle(xb,u);
 	}
@@ -6867,6 +7176,43 @@ int socketRecv(User *u,SOCKET sock, char* buf, int len)
 // the end, shuffle the buffer (this should happen rarely).  In
 // any case, lines in the completed buffer are always in one piece.
 //
+#if WEBSOCKET
+//
+// the standard port accepts both plain and TLS connections.  The client always speaks
+// first: a TLS client with a handshake record (0x16, or 0x80 for an old style hello),
+// a plain client with a protocol line, which starts with a digit.  So the first byte
+// decides, and is left in place for whoever reads next.  A TLS connection then goes
+// as TLS with no websocket layer.
+// returns FALSE if the connection was refused and closed.
+//
+static BOOLEAN decideTls(User *u)
+{	unsigned char b;
+	int n = recv(u->socket,(char *)&b,1,MSG_PEEK);
+	if(n!=1) { return(TRUE); }		// nothing yet, or eof or an error: the normal read reports it
+	u->tlsUndecided = FALSE;
+	if((b==0x16) || (b==0x80))
+	{
+		u->websocket = TRUE;		// the TLS layer lives in the websocket code
+		markRawTls(u);				// TLS, with no websocket layer
+		if(logging>=log_connections)
+		{	logEntry(&mainLog,"[%s] C%d S%d using TLS on the standard port\n",timestamp(),u->userNUM,u->socket);
+		}
+		return(TRUE);
+	}
+	if(sslRequired && (u->ip!=0x7f000001))	// local connections, such as scripts on this machine, may be plain
+	{
+		if(logging>=log_connections)
+		{	int ip = u->ip;
+			logEntry(&mainLog,"[%s] C%d S%d from %d.%d.%d.%d refused, plain connection and sslrequired is set\n",
+				timestamp(),u->userNUM,u->socket,(ip>>24)&0xff,(ip>>16)&0xff,(ip>>8)&0xff,ip&0xff);
+		}
+		simpleCloseClient(u,"plain connection refused");
+		return(FALSE);
+	}
+	return(TRUE);
+}
+#endif
+
 static int fillBuffer(User *u)
 {
 	int doneReading=0;
@@ -6903,10 +7249,13 @@ static int fillBuffer(User *u)
 	  // kill any socket the tries to overstuff the buffer.
 	  if(siz <=0)
 		{ 
-		  lsprintf(u->tempBufSize,u->tempBufPtr,ECHO_I_QUIT "tooMuchData %d",put);
-		  doEchoSelf(u,u->tempBufPtr,1);
-		  lsprintf(u->tempBufSize,u->tempBufPtr,ECHO_PLAYER_QUIT "%d tooMuchData %d",u->userNUM,put);
-		  doEchoAll(u,u->tempBufPtr,1);
+		  // a local buffer, not u's temp buffer: if the echo to u fails, u is
+		  // cleared and its temp buffer is gone (lsprintf would assert on it)
+		  char tB[SMALLBUFSIZE];
+		  lsprintf(sizeof(tB),tB,ECHO_I_QUIT "tooMuchData %d",put);
+		  doEchoSelf(u,tB,1);
+		  lsprintf(sizeof(tB),tB,ECHO_PLAYER_QUIT "%d tooMuchData %d",u->userNUM,put);
+		  doEchoAll(u,tB,1);
 		  put=0;
 		  doneReading=1;
 		  u->wasZapped=TRUE;
@@ -6920,6 +7269,13 @@ static int fillBuffer(User *u)
 	  else {
 	  char *buffer = u->inbufPtr;
 	  buffer[put]=(char)0;
+#if WEBSOCKET
+	  if(u->tlsUndecided && !decideTls(u))
+	  {	// refused and closed
+		  doneReading = 1;
+		  break;
+	  }
+#endif
 	  {
 	  SOCKET sock = u->socket;
 	  int readResult = u->websocket
@@ -7059,6 +7415,7 @@ void closePendingConnections(unsigned int ip)
 }
 static void acceptNewConnections(SOCKET insoc,BOOLEAN websock)
 {	 
+	char *kind = websock ? "websocket " : "";
 	socklen_t fl=sizeof(iclient);
 	SOCKET newsocket = accept(insoc,(struct sockaddr *)&iclient,&fl);
 	 unsigned int ip = htonl(iclient.sin_addr.s_addr);
@@ -7067,7 +7424,7 @@ static void acceptNewConnections(SOCKET insoc,BOOLEAN websock)
 	 {
 	   if(logging>=log_errors)
 			{ logEntry(&mainLog,"[%s] Connection attempted, %saccept failed, code %d errno %d.\n",
-				  timestamp(),websock?"websocket ":"",newsocket, ErrNo());
+				  timestamp(),kind,newsocket, ErrNo());
 			}
 	 }
 	 else if (checkBannedIP(ip,websock)) {
@@ -7090,6 +7447,10 @@ static void acceptNewConnections(SOCKET insoc,BOOLEAN websock)
 	 u->websocket = websock;
 	 u->websocket_data = NULL;
 	 u->websocket_errno = 0;
+#if WEBSOCKET
+	 // standard port: plain or TLS, decided by the first byte the client sends
+	 u->tlsUndecided = (!websock && stdPortTls) ? TRUE : FALSE;
+#endif
 	 u->ip = ip;
 	 u->clientTime = Uptime();
 	 sockets_open++;
@@ -7111,7 +7472,7 @@ static void acceptNewConnections(SOCKET insoc,BOOLEAN websock)
 			 int b1 = (ip>>24)&0xff;
 			  logEntry(&mainLog,"[%s] Call C%d S%d from %d.%d.%d.%d queued to join a %ssession.\n",
 			  timestamp(),u->userNUM,u->socket,
-			  b1,b2,b3,b4,websock?"websocket ":"");
+			  b1,b2,b3,b4,kind);
 			}
 
            // succeeded
@@ -7127,7 +7488,7 @@ static void acceptNewConnections(SOCKET insoc,BOOLEAN websock)
 	         int b1 = (ip>>24)&0xff;
 		 logEntry(&mainLog,"[%s] Call from %d.%d.%d.%d refused %s(no room or iofail)\n",
 			  timestamp(),b1,b2,b3,b4,
-			 websock?"websocket ":"");
+			 kind);
 		}
 	  simpleCloseSocket(newsocket);
 
@@ -7196,7 +7557,7 @@ char *save_string(char *str)
 
 	if((len+pairidx+1)>=sizeof(pairbuf)) 
 		{
-		error1("config file too long"); 
+		error3("config file too long, string is %s : %d",str,(int)len); 
 		}
 	pairidx += len+1;
 	strcpy(start,str);
@@ -7311,6 +7672,8 @@ static void changelim_max(int which,char *name)
 
 #endif
 
+static BOOLEAN sslInputPending = FALSE;	// set by setSessionSocks, some SSL socket has buffered input
+
 int setSessionSocks(Session *S,int nActive)
 {	User *u=S->first_user;
 	int nfound=0;
@@ -7328,9 +7691,17 @@ int setSessionSocks(Session *S,int nActive)
 #if PROXY
 	   || u->connecting
 #endif
+#if WEBSOCKET
+	   || (u->websocket && websocketWantsWrite(u))
+#endif
 	   )
 		{ FD_SET(sock,&wfds);
 		}
+#if WEBSOCKET
+		// decrypted input already buffered inside SSL is invisible to select,
+		// so don't let select sleep while any exists.
+		if(u->websocket && websocketPending(u)) { sslInputPending = TRUE; }
+#endif
         FD_SET(sock,&efds);
       }
 	  u=next;
@@ -7352,6 +7723,11 @@ void main_thread()
 		for (loopCtr=0;loopCtr<MAXCLIENTS;loopCtr++) { ClearUser(&Users[loopCtr]); };
 	}
 
+#if WEBSOCKET
+  if ((websocketPortNum > 0) || stdPortTls)
+  {	sslContextInit();		// read the key and cert now, before the save-game thread starts checking them
+  }
+#endif
   if(use_threads)
 	{
 #if WIN32
@@ -7383,11 +7759,13 @@ void main_thread()
   idle_time=0;
   for(;;) 
   {	int nActive=0;
+	freeDeferred();		// buffers of users closed during the last pass
 	/* we keep track of the sockets involved in the main select, so changes in their
 	status while processing don't confuse us */
     FD_ZERO(&rfds);
     FD_ZERO(&wfds);
     FD_ZERO(&efds);
+    sslInputPending = FALSE;
     maxfd=serversd;
     if(serversd!=0)
 	{FD_SET(serversd,&rfds);
@@ -7419,7 +7797,7 @@ void main_thread()
 	
 	{ 
 	struct timeval waittime;
-	  waittime.tv_sec = MAXWAITTIME;
+	  waittime.tv_sec = sslInputPending ? 0 : MAXWAITTIME;
 	  waittime.tv_usec=0;
     while (select((unsigned int)maxfd+1,&rfds,&wfds,&efds,(struct timeval *)&waittime) == -1) 
 	{
@@ -7468,7 +7846,11 @@ void main_thread()
 			}
  		  HandleReadError(u,errval);
         } 
-		else if (FD_ISSET(sock,&rfds) != 0) 
+		else if ((FD_ISSET(sock,&rfds) != 0)
+#if WEBSOCKET
+				|| (u->websocket && websocketPending(u))
+#endif
+				)
 			{	//read data from a socket
 				int newline=0;
 				if((newline=fillBuffer(u))!=0)
@@ -7503,6 +7885,13 @@ void main_thread()
 			}
 			else
 #endif
+#if WEBSOCKET
+			if(u->websocket && websocketWantsWrite(u))
+			{
+			websocketContinueHandshake(u);	// SSL handshake or a partly sent frame was waiting to write
+			}
+			if(isRealSocket(u->socket) && (u->outbuf_put_index!=u->outbuf_take_index))
+#endif
 			{
 			  if((restartOutput(u))>0)
 			    {
@@ -7520,7 +7909,7 @@ void main_thread()
 		{ 
 			 if (S != WAITINGSESSION)
 			 {
-				 char buf[SMALLBUFSIZE];
+				 char buf[SMALLBUFSIZE+CLIENTPUBLICNAMESIZE];		// the last use holds a name
 				 lsprintf(sizeof(buf), buf, ECHO_PLAYER_QUIT "%d timeout", u->userNUM);
 				 doEchoOthers(u, buf, 1);
 				 lsprintf(sizeof(buf), buf, ECHO_I_QUIT "timeout");
@@ -7538,6 +7927,11 @@ void main_thread()
           
         }}
 #endif
+		// a user marked for closure is closed once its output has drained.  This
+		// used to happen inside startOutput, in the middle of whatever was sending.
+		if(isRealSocket(u->socket) && u->outputClosed && (u->outbuf_put_index==u->outbuf_take_index))
+		{	closeClient(u,"internal close request",grace_forbidden);
+		}
       }
 	}}}
     if ((serversd!=0) && FD_ISSET(serversd,&rfds))	
@@ -7651,6 +8045,11 @@ int main(int argc, char **argv)
   }
 #endif
 
+  // connections the kernel will hold for accept().  A small value drops real clients
+  // during bursts; the kernel caps large values at net.core.somaxconn.
+  listenBacklog = atoi(GetOptionalParm("listen-backlog","128"));
+  if(listenBacklog<=0) { listenBacklog = 128; }
+  logEntry(&mainLog,"[%s] listen backlog %d\n",timestamp(),listenBacklog);
   client_socket_init(portNum);
 #if WEBSOCKET
   websocketPortNum = atoi(GetParm("websocket"));
@@ -7660,6 +8059,14 @@ int main(int argc, char **argv)
   }
   websocketSslKey = GetOptionalParm("websocketsslkey",NULL);
   websocketSslCert = GetOptionalParm("websocketsslcert",NULL);
+  // with a key and cert, the standard port accepts TLS as well as plain connections.
+  // sslrequired makes TLS mandatory there.
+  stdPortTls = (websocketSslKey && websocketSslCert) ? TRUE : FALSE;
+  sslRequired = atoi(GetOptionalParm("sslrequired","0"))!=0;
+  if(sslRequired && !stdPortTls)
+  {	error1("sslrequired needs websocketsslkey and websocketsslcert");
+  }
+
 #endif
   //
   // get here (past the socket init) only if we actually get the socked.
@@ -7670,6 +8077,10 @@ int main(int argc, char **argv)
 
   logFilesEnabled=TRUE;
   logEntry(&mainLog,"[%s] started\n",timestamp());
+#if WEBSOCKET
+  logEntry(&mainLog,"[%s] port %d accepts %s connections\n",timestamp(),portNum,
+		  !stdPortTls ? "plain" : sslRequired ? "only TLS" : "plain and TLS");
+#endif
 #if X64
   {
   char *p = NULL;

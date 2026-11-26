@@ -1689,6 +1689,8 @@ static final public boolean isCheerpj()
  *		"localIP"		your IP address as seen by the server
  *		serverKey		permission key to connect to the server
  *		lobbyportnumber port number to connect to the server
+ *		usessl			"true" to connect to the server with TLS
+ *		websocketportnumber	port for clients that connect with websockets (default lobbyportnumber)
  *		robotlobby 		hook for connecting a remote robot as a player
  *		time-correction time correction (milliseconds) from your clock to the system clock
  *		uid				logged in player uid

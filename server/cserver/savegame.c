@@ -89,8 +89,8 @@ static void saveDirtyGameWriteStep(SaveGameInfo *G)
 			size_t len = (len1!=goff) ? 0 : fwrite(g->gamePtr,1,g->gamePtrSize,of);			// write the actual game data
 			if(len!=g->gamePtrSize)
 			{
-			logEntry(&mainLog,"[%s] write for save GameBuffer failed file %s\n",
-					timestamp(),gameName);
+			logEntry(&mainLog,"[%s] write for save GameBuffer failed file %s (%s)\n",
+					timestamp(),gameName,strerror(errno));
 			THREAD_INCREMENT(G,n_dirty_problems);
 			}
 			else
@@ -101,8 +101,8 @@ static void saveDirtyGameWriteStep(SaveGameInfo *G)
 			else
 			{
 			THREAD_INCREMENT(G,n_dirty_problems);
-			logEntry(&mainLog,"[%s] open for save GameBuffer failed file %s\n",
-					timestamp(),gameName);
+			logEntry(&mainLog,"[%s] open for save GameBuffer failed file %s (%s)\n",
+					timestamp(),gameName,strerror(errno));
 			}
 		}
 		else
@@ -116,8 +116,8 @@ static void saveDirtyGameWriteStep(SaveGameInfo *G)
 		if(val!=0)  
 		{
 			THREAD_INCREMENT(G,n_dirty_problems);
-			logEntry(&mainLog,"[%s] unlink for GameBuffer failed file %s\n",
-					timestamp(),gameName);
+			logEntry(&mainLog,"[%s] unlink for GameBuffer failed file %s (%s)\n",
+					timestamp(),gameName,strerror(errno));
 
 		}
 		}
@@ -155,6 +155,9 @@ void *saveDirtyGameThread(void *args)
 	{
 	usleep(THREADSLEEP_US);
 	saveDirtyGamesNow(G);
+#if WEBSOCKET
+	sslFileCheck();			// daily: rebuild the SSL context if the certificate was renewed
+#endif
 	}
 #if !WIN32
 	return(0);

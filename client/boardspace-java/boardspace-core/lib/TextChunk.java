@@ -334,6 +334,45 @@ public void colorize(InternationalStrings s,Text... coloredChunks)
 	}
 
 	// tweaked 2/5/2020 using euphoria decorations as a model
+	/**
+	 * the longest leading part of s that fits width when followed by "..."
+	 */
+	static String ellipsize(String s,FontMetrics myFM,int width)
+	{	String dots = "...";
+		return(s.substring(0,fitLength(s,dots,myFM,width,0,s.length()-1))+dots);
+	}
+	/**
+	 * binary search for the longest prefix of s, between min and max chars long, whose
+	 * width followed by suffix is at most width.  The cut never splits a surrogate pair.
+	 * If nothing longer than min fits, the result is min (adjusted to a character boundary).
+	 * 
+	 * @param s the string to cut
+	 * @param suffix appended when measuring, for example "..." or ""
+	 * @param fm the font metrics to measure with
+	 * @param width the available width
+	 * @param min the shortest acceptable prefix
+	 * @param max the longest candidate prefix
+	 * @return the length of the prefix
+	 */
+	public static int fitLength(String s,String suffix,FontMetrics fm,int width,int min,int max)
+	{	int lo = min;
+		int hi = max;
+		while(lo<hi)
+		{	int mid = (lo+hi+1)/2;
+			if(fm.stringWidth(s.substring(0,charBoundary(s,mid))+suffix)<=width) { lo = mid; }
+			else { hi = mid-1; }
+		}
+		return(charBoundary(s,lo));
+	}
+	// adjust a cut point so it doesn't fall between the halves of a surrogate pair.
+	// back up one, unless that would leave nothing, in which case keep the whole pair.
+	private static int charBoundary(String s,int n)
+	{	if(n>0 && n<s.length())
+		{	char ch = s.charAt(n-1);
+			if(ch>=0xD800 && ch<=0xDBFF) { return(n>1 ? n-1 : n+1); }
+		}
+		return(n);
+	}
 	public Font selectFontSize(Graphics inG,int inWidth,int inHeight)
     {	if(inG!=null)
     	{
@@ -445,6 +484,13 @@ public void colorize(InternationalStrings s,Text... coloredChunks)
 		int lh = 9*(myFM.getAscent() + myFM.getDescent())/10;	// 90% of the standard size, squeeze the lines a little
        	int lcenter = ((inHeight + lh) / 2);
        	neww = width(myFM);
+       	if(fit && (inWidth>0) && (neww>inWidth) && (nlines==1) && (line==this) && (down==null)
+       			&& (getClass()==TextChunk.class))
+       	{	// still too wide at the smallest font selectFontSize will use: cut the text at a
+       		// character boundary and end it with "...", instead of spilling outside the box
+       		line = new TextChunk(ellipsize(data,myFM,inWidth),dataColor,false);
+       		neww = line.lineWidth(myFM);
+       	}
        	int drawY = inY +
            			((nlines > 1) 
             				? Math.max(0,lcenter-(nlines-1)*lh/2)

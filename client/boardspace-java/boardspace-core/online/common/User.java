@@ -194,13 +194,14 @@ public class User implements LobbyConstants,CompareTo<User>
     { boolean mas = waitingForMaster;
       int as = sortscore(mas);
       int bs = b.sortscore(mas);
-      int val = (as<bs) 
-    		  ? -1
-    		  : as>bs 
-    		  	? 1   
-    		  	: name.compareToIgnoreCase(b.prettyName())<=0
-    		  		? -1
-    		  		: 1;
+      if(as!=bs) { return(as<bs ? -1 : 1); }
+      // tie on score: order by name, then by server index, so the
+      // order is total and the result doesn't depend on the prior order
+      String an = prettyName();
+      String bn = b.prettyName();
+      int val = an.compareToIgnoreCase(bn);
+      if(val==0) { val = an.compareTo(bn); }
+      if(val==0) { val = Integer.compare(serverIndex,b.serverIndex); }
       return(val);
     }
 

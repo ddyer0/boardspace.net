@@ -34,10 +34,13 @@ public class WebSocket implements SocketProxy
   public native void send(int sock,String message);
   public native boolean isConnected(int socket);   
   public native  int connect(String host,int socket);
-  public WebSocket(String host,int port)
+  /** true where the game server connection uses websockets: in the browser */
+  public static boolean isSupported() { return G.isCheerpj() || G.isJS(); }
+
+  /** connect with wss if secure, otherwise ws */
+  public WebSocket(String host,int port,boolean secure) throws IOException
   {	 
-	  boolean wss = lib.Http.getDefaultProtocol().equals("https:");
-	  String finalurl = (wss ? "wss://" : "ws://")+host;
+	  String finalurl = (secure ? "wss://" : "ws://")+host;
 	  G.print("create websocket for ",host,":",port);
 	  socket = connect(finalurl,port);
 	  while(!isConnected(socket)) { G.print("waiting for connection"); G.doDelay(500); }

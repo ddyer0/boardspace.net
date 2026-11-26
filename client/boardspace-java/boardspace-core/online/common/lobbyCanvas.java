@@ -700,7 +700,6 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		int polyXoffset=six+(USERIMAGEWIDTH-six)/2;  
 		int polyYoffset = positionCtr*USERHEIGHT+USERHEIGHT/2+two /* PLAYERHALFHEIGHT+6*/;
 			{ // drawn relative to the player polygon
-			  int ypos=myFM.getMaxAscent()/2;
 			  boolean high = (highlightedUser==user);
 			  GC.translate(inG,polyXoffset, polyYoffset);
 			  widePoly.fillPolygon(inG);
@@ -708,9 +707,9 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 			  widePoly.framePolygon(inG);
 			  GC.setColor(inG,nameColor);
 				  {String str=name+rank;
-				  int xpos = -myFM.stringWidth(str)/2;
-				  // draw the name
-				  GC.Text(inG,str,xpos,ypos);
+				  // draw the name, centered in the player polygon and shrunk if necessary
+				  // to fit; long names (such as unicode guest names) used to spill outside it
+				  GC.Text(inG,true,G.Left(R)+two,G.Top(R),G.Width(R)-2*two,G.Height(R),nameColor,null,str);
 				  }
 				  if(high)
 				  {	

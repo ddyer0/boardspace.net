@@ -162,6 +162,7 @@ typedef long DAYS;		//days since forever
 
 #if WEBSOCKET
 #define SERVERID 19
+#define SERVERID_SSL 20         // reported instead of SERVERID when the standard port also accepts TLS
 #else
 #define SERVERID 18             //time filter in game records
 #endif
@@ -202,7 +203,12 @@ typedef long DAYS;		//days since forever
 #define BANEXPIRED (60*60)			/* ban an ip address for 1 hour */
 #define NAMESIZE 20					/* length of user names */
 #define INFOSIZE 256				/* length of auxiliary info */
-#define CLIENTPUBLICNAMESIZE (NAMESIZE*6)	/* public names can be long due to translations and unicode */
+// public names arrive escaped: each byte of a utf-8 character is \#00hh, so a guest's
+// 9-character nickname can be 9*24 characters (emoji are 4 bytes), plus "guest." or its
+// translation.  Previously NAMESIZE*6 (120), which cut 9 CJK characters (162) short.
+#define CLIENTPUBLICNAMESIZE 320
+#define NAMESCANSIZE (CLIENTPUBLICNAMESIZE*2)	/* names are scanned at full length, then truncated at a character boundary */
+#define ENCODEDNAMESIZE (CLIENTPUBLICNAMESIZE*5+8)	/* a name as sent, encodeAlphaNumeric style: worst case %nnn% for each character */
 #define FIRSTUSERNUM 1000			/* arbitrary number of the first user */
 
 // string opcodes
@@ -381,6 +387,7 @@ struct User
 	BOOLEAN websocket;			// @field true if this socket is using websocket protocols
 	int  websocket_errno;		// @field error overrides other errno
 	void *websocket_data;		// @field in websocket preamble
+	BOOLEAN tlsUndecided;		// @field standard port connection, plain or TLS not decided yet
 #endif
 	UPTIME clientTime;			// @field last active time
 	int oopsCount;				// @field count of missed supervisor commands (fraudcatcher)
@@ -650,6 +657,11 @@ void banUserByIP(User* U);
 void client_websocket_init(int portNum);
 void closeWebSocket();
 extern SOCKET webserversd;
+extern int listenBacklog;		// listen() backlog for both ports, config "listen-backlog"
+void markRawTls(User *u);				// this connection is TLS with no websocket layer
+int isRealSocket(SOCKET s);				// in migs.c, used by websocket.c
+void sslContextInit(void);			// build the shared SSL context at startup
+void sslFileCheck(void);			// daily check for a renewed certificate, in the save-game thread
 int websocketRecv(User *u, unsigned char* buf, int siz);
 int websocketSend(User* u, unsigned char* buf, int siz);
 void freeWebsocket(User* u);
@@ -657,6 +669,9 @@ void simpleCloseClient(User* u, char* cxt);
 extern char* websocketSslKey;
 extern char* websocketSslCert;
 BOOLEAN setBIO(SOCKET sock);
+BOOLEAN websocketWantsWrite(User *u);
+BOOLEAN websocketPending(User *u);
+void websocketContinueHandshake(User *u);
 #endif
 
 // end of file

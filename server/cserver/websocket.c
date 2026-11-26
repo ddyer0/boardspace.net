@@ -60,6 +60,8 @@ typedef enum HandshakeResult { HANDSHAKE_OK, HANDSHAKE_NONE, HANDSHAKE_SOME, HAN
 #endif
 
 #include <signal.h>
+#include <sys/types.h>
+#include <sys/stat.h>		// stat() to notice a renewed certificate
 #define SHUT_RDWR SD_BOTH
 #define R_OK    4
 #define access _access
@@ -149,29 +151,29 @@ May 29, 2022
 settings_t settings;
 int ssl_errno = 0;
 int ssl_sock = 0;
+//
+// classify the result of the most recent ws_recv/ws_send.  SSL_ERROR_* codes
+// are positive, and ssl_errno is reset by non-ssl calls so it can't be stale.
+//
 int minusErrNo()
 {
 #if INCLUDE_SSL
-        if(ssl_errno<0)
-	  {
-	    switch(ssl_errno)
-	      {
-	      case SSL_ERROR_WANT_READ:
-		logEntry(&mainLog, "[%s] SSL read would block %d S%d\n", timestamp(), ssl_sock);
-		return EWOULDBLOCK;
-	    
-
-	      case SSL_ERROR_WANT_WRITE:
-		logEntry(&mainLog, "[%s] SSL write would block %d S%d\n", timestamp(), ssl_sock);
-		return EWOULDBLOCK;
-		break;
-	      default:
-		return ssl_errno;
-	      }
-	  }
+    switch (ssl_errno)
+    {
+    case 0:
+    case SSL_ERROR_SYSCALL:		// errno is meaningful
+        break;
+    case SSL_ERROR_WANT_READ:
+    case SSL_ERROR_WANT_WRITE:
+        return EWOULDBLOCK;
+    default:					// SSL_ERROR_ZERO_RETURN (orderly close), SSL_ERROR_SSL, etc.
+        return ssl_errno;
+    }
 #endif
+    {
     int e = ErrNo();
-    return e<= 0 ? -1 : e;
+    return e <= 0 ? -1 : e;
+    }
 }
 
 /*
@@ -184,10 +186,11 @@ size_t ws_recv(ws_ctx_t *ctx,SOCKET fd, void *buf, size_t len)
     if (ctx->ssl) {
         //handler_msg("SSL recv\n");
         int ret = SSL_read(ctx->ssl, buf, (int)len);
-	ssl_sock = fd;
-	ssl_errno = ret<0 ? SSL_get_error(ctx->ssl,ret) : 0;
+	ssl_sock = (int)fd;
+	ssl_errno = ret<=0 ? SSL_get_error(ctx->ssl,ret) : 0;
         return ret;
-    } else
+    }
+    ssl_errno = 0;
 #endif
     {
         return recv(fd, buf, (int)len, 0);
@@ -199,10 +202,11 @@ int ws_send(ws_ctx_t *ctx,SOCKET fd, const void *buf, size_t len) {
     if (ctx->ssl) {
         //handler_msg("SSL send\n");
         int ret = SSL_write(ctx->ssl, buf, (int)len);
-	ssl_sock = fd;
-	ssl_errno = ret<0 ? SSL_get_error(ctx->ssl,ret) : 0;
+	ssl_sock = (int)fd;
+	ssl_errno = ret<=0 ? SSL_get_error(ctx->ssl,ret) : 0;
         return ret;
-    } else
+    }
+    ssl_errno = 0;
 #endif
     {
         int n = send(fd, buf, (int)len, 0);
@@ -242,15 +246,17 @@ HandshakeResult ws_socket_ssl_accept(ws_ctx_t *ctx, SOCKET sock)
     if(ret<=0)
       {
 	int err = SSL_get_error(ctx->ssl,ret);
-	printf("ssl error code %d\n",err);
 	switch(err)
 	  {
 	  case SSL_ERROR_WANT_READ:
-	    logEntry(&mainLog, "[%s] SSL_accept wants read %d S%d\n", timestamp(),err, sock);
+	    ctx->ssl_want_write = FALSE;
+	    // a normal step of the non-blocking handshake; only worth logging when debugging
+	    if(logging>=log_all) { logEntry(&mainLog, "[%s] SSL_accept wants read %d S%d\n", timestamp(),err, sock); }
 	    return HANDSHAKE_SSL_ACCEPT;
 
 	  case SSL_ERROR_WANT_WRITE:
-	    logEntry(&mainLog, "[%s] SSL_accept wants write %d S%d\n", timestamp(),err, sock);
+	    ctx->ssl_want_write = TRUE;		// main loop must select for write to finish the handshake
+	    if(logging>=log_all) { logEntry(&mainLog, "[%s] SSL_accept wants write %d S%d\n", timestamp(),err, sock); }
 	    return HANDSHAKE_SSL_ACCEPT;
 	  default: 
 	    logEntry(&mainLog, "[%s] SSL_accept failed code %d S%d\n", timestamp(),err, sock);
@@ -258,50 +264,324 @@ HandshakeResult ws_socket_ssl_accept(ws_ctx_t *ctx, SOCKET sock)
 	}
      }
     else {
+        ctx->ssl_want_write = FALSE;
         return HANDSHAKE_OK;
     }
+}
+
+//
+// one SSL_CTX shared by all connections.  Previously a new context was built
+// (and the key and cert reloaded from disk) for every connection.
+//
+// Now the context is built once at startup (sslContextInit, from main).  After
+// that the main thread never touches the key and cert files: sslFileCheck,
+// which runs in the save-game thread alongside its other disk i/o, looks at
+// the files once a day and builds a new context when they have changed (a
+// certificate renewal).  Renewed certificates overlap the old ones by weeks,
+// so a daily check is plenty, but a check must not catch a renewal half done:
+//
+//  - files changed in the last SSL_FILE_SETTLE seconds are left to settle, and
+//    looked at again once they have (not a day later).
+//  - a new context is released only if it passes every check: the key and the
+//    certificate chain load, the key matches the certificate, the certificate
+//    is within its validity dates, and the chain verifies against the system's
+//    trusted CAs, as a client would check it.  (If the certificate in use doesn't
+//    verify, as with a self-signed test certificate, the new one needn't either.)
+//  - a rejected version is logged once and retried hourly, in case the files
+//    change again; meanwhile the previous context stays in use.
+//
+// Hand-off between the threads follows the single-writer convention: the
+// save-game thread writes ssl_published_ctx and then ssl_published_gen; the
+// main thread writes ssl_taken_gen when it adopts the published context.  The
+// save-game thread doesn't publish again until the previous one is taken, and
+// only the main thread frees contexts.  Connections already open keep the
+// context they started with; OpenSSL reference counts it.
+//
+// the intervals can be overridden with -D for testing
+#ifndef SSL_FILE_CHECK_INTERVAL
+#define SSL_FILE_CHECK_INTERVAL (24*60*60)	// seconds between routine checks
+#endif
+#ifndef SSL_FILE_RETRY_INTERVAL
+#define SSL_FILE_RETRY_INTERVAL (60*60)		// after a rejected version, or with no usable context
+#endif
+#ifndef SSL_FILE_SETTLE
+#define SSL_FILE_SETTLE (5*60)				// files must be this old before they are used
+#endif
+
+#if WIN32
+#define SSL_MEMORY_BARRIER() MemoryBarrier()
+#else
+#define SSL_MEMORY_BARRIER() __sync_synchronize()
+#endif
+
+typedef struct { time_t mtime; ino_t ino; off_t size; int ok; } FileSig;
+
+// main thread only
+static SSL_CTX *shared_ssl_ctx = NULL;
+// written by the save-game thread (and by sslContextInit before it starts)
+static SSL_CTX * volatile ssl_published_ctx = NULL;
+static volatile int ssl_published_gen = 0;
+static time_t ssl_next_check = 0;
+static BOOLEAN ssl_have_ctx = FALSE;
+static BOOLEAN ssl_current_verified = FALSE;	// the certificate in use verifies against the system CAs
+static FileSig ssl_key_sig, ssl_cert_sig;		// the files the current context came from
+static BOOLEAN ssl_rejected = FALSE;
+static FileSig ssl_rejected_key_sig, ssl_rejected_cert_sig;	// the last version that failed
+static BOOLEAN ssl_settle_logged = FALSE;
+// written by the main thread
+static volatile int ssl_taken_gen = 0;
+
+static FileSig fileSig(char *name)
+{
+    FileSig sig;
+    struct stat st;
+    memset(&sig, 0, sizeof(sig));
+    if (stat(name, &st) == 0)		// follows symlinks, as letsencrypt's live/ files are
+    {
+        sig.mtime = st.st_mtime;
+        sig.ino = st.st_ino;
+        sig.size = st.st_size;
+        sig.ok = 1;
+    }
+    return sig;
+}
+
+static int sameSig(FileSig *a, FileSig *b)
+{
+    return (a->ok == b->ok) && (a->mtime == b->mtime) && (a->ino == b->ino) && (a->size == b->size);
+}
+
+//
+// does the context's certificate chain verify against the system's trusted CAs?
+// reason gets the verification error when it doesn't.
+//
+static BOOLEAN verify_ssl_chain(SSL_CTX *c, const char **reason)
+{
+    BOOLEAN ok = FALSE;
+    X509 *leaf = SSL_CTX_get0_certificate(c);
+    STACK_OF(X509) *chain = NULL;
+    X509_STORE *store = X509_STORE_new();
+    X509_STORE_CTX *vctx = X509_STORE_CTX_new();
+    *reason = "out of memory";
+    if (leaf && store && vctx && (X509_STORE_set_default_paths(store) == 1))
+    {
+        SSL_CTX_get0_chain_certs(c, &chain);
+        if (X509_STORE_CTX_init(vctx, store, leaf, chain) == 1)
+        {
+            ok = (X509_verify_cert(vctx) == 1);
+            if (!ok) { *reason = X509_verify_cert_error_string(X509_STORE_CTX_get_error(vctx)); }
+        }
+    }
+    if (vctx) { X509_STORE_CTX_free(vctx); }
+    if (store) { X509_STORE_free(store); }
+    return ok;
+}
+
+//
+// build a context from the files and check it.  NULL (with the reason logged)
+// unless it passes.  If mustVerify, the chain must verify against the system
+// CAs; *verified says whether it did.
+//
+static SSL_CTX *build_ssl_ctx(char *certfile, char *keyfile, BOOLEAN mustVerify, BOOLEAN *verified)
+{
+    X509 *leaf;
+    const char *reason = "";
+    SSL_CTX *c = SSL_CTX_new(TLS_server_method());
+    if (c == NULL) {
+        logEntry(&mainLog, "[%s] Failed to configure SSL context\n", timestamp());
+        return NULL;
+    }
+    if (SSL_CTX_use_PrivateKey_file(c, keyfile, SSL_FILETYPE_PEM) <= 0) {
+        logEntry(&mainLog, "[%s] Unable to load private key file %s\n", timestamp(), keyfile);
+        SSL_CTX_free(c);
+        return NULL;
+    }
+    if (SSL_CTX_use_certificate_chain_file(c, certfile) <= 0) {
+        logEntry(&mainLog, "[%s] Unable to load certificate file %s\n", timestamp(), certfile);
+        SSL_CTX_free(c);
+        return NULL;
+    }
+    if (SSL_CTX_check_private_key(c) != 1) {
+        logEntry(&mainLog, "[%s] Private key %s does not match certificate %s\n", timestamp(), keyfile, certfile);
+        SSL_CTX_free(c);
+        return NULL;
+    }
+    leaf = SSL_CTX_get0_certificate(c);
+    if (X509_cmp_current_time(X509_get0_notBefore(leaf)) >= 0) {
+        logEntry(&mainLog, "[%s] Certificate %s is not valid yet\n", timestamp(), certfile);
+        SSL_CTX_free(c);
+        return NULL;
+    }
+    if (X509_cmp_current_time(X509_get0_notAfter(leaf)) <= 0) {
+        logEntry(&mainLog, "[%s] Certificate %s has expired\n", timestamp(), certfile);
+        SSL_CTX_free(c);
+        return NULL;
+    }
+    *verified = verify_ssl_chain(c, &reason);
+    if (mustVerify && !*verified) {
+        logEntry(&mainLog, "[%s] Certificate %s does not verify: %s\n", timestamp(), certfile, reason);
+        SSL_CTX_free(c);
+        return NULL;
+    }
+    if (!*verified) {
+        logEntry(&mainLog, "[%s] Warning: certificate %s does not verify against the system's trusted CAs (%s); renewals won't be required to\n",
+                 timestamp(), certfile, reason);
+    }
+    return c;
+}
+
+// the key file, or the cert file when they're combined
+static char *sslKeyFile()
+{
+    return (websocketSslKey && (websocketSslKey[0] != '\0')) ? websocketSslKey : websocketSslCert;
+}
+
+static void publish_ssl_ctx(SSL_CTX *c)
+{
+    ssl_published_ctx = c;
+    SSL_MEMORY_BARRIER();
+    ssl_published_gen++;
+}
+
+// try to build a context from the files as they are now.  TRUE if one was published.
+static BOOLEAN load_ssl_files(char *keyfile, FileSig *keySig, FileSig *certSig, time_t now)
+{
+    BOOLEAN verified = FALSE;
+    BOOLEAN reload = ssl_have_ctx;
+    SSL_CTX *c = build_ssl_ctx(websocketSslCert, keyfile, reload && ssl_current_verified, &verified);
+    if (c == NULL)
+    {
+        ssl_rejected = TRUE;
+        ssl_rejected_key_sig = *keySig;
+        ssl_rejected_cert_sig = *certSig;
+        ssl_next_check = now + SSL_FILE_RETRY_INTERVAL;
+        logEntry(&mainLog, reload
+                 ? "[%s] SSL key or certificate changed but was not usable, still using the previous ones; checking again in %d seconds\n"
+                 : "[%s] no usable SSL key and certificate, checking again in %d seconds\n",
+                 timestamp(), SSL_FILE_RETRY_INTERVAL);
+        return FALSE;
+    }
+    logEntry(&mainLog, reload
+             ? "[%s] SSL key or certificate changed on disk, SSL context rebuilt from %s and %s\n"
+             : "[%s] SSL context built from %s and %s\n",
+             timestamp(), websocketSslCert, keyfile);
+    ssl_key_sig = *keySig;
+    ssl_cert_sig = *certSig;
+    ssl_have_ctx = TRUE;
+    ssl_current_verified = verified;
+    ssl_rejected = FALSE;
+    ssl_next_check = now + SSL_FILE_CHECK_INTERVAL;
+    publish_ssl_ctx(c);
+    return TRUE;
+}
+
+//
+// build the first context.  Called from main at startup, before the threads
+// start, when an ssl or websocket port is configured with a certificate.  The
+// files aren't required to have settled; there is nothing else to use.
+//
+void sslContextInit()
+{
+#if INCLUDE_SSL
+    char *keyfile = sslKeyFile();
+    if (!websocketSslCert || !keyfile) { return; }
+    init_ssl();
+    {
+    FileSig keySig = fileSig(keyfile);
+    FileSig certSig = fileSig(websocketSslCert);
+    load_ssl_files(keyfile, &keySig, &certSig, time(NULL));
+    }
+#endif
+}
+
+//
+// runs in the save-game thread (or from the main loop when use-threads is 0,
+// like the game saving it accompanies).  Usually returns at once.
+//
+void sslFileCheck()
+{
+#if INCLUDE_SSL
+    char *keyfile = sslKeyFile();
+    time_t now;
+    if (!websocketSslCert || !keyfile || !ssl_initialized) { return; }
+    now = time(NULL);
+    if (now < ssl_next_check) { return; }
+    if (ssl_published_gen != ssl_taken_gen)
+    {   // the last one hasn't been picked up yet (no TLS connections since)
+        ssl_next_check = now + SSL_FILE_SETTLE;
+        return;
+    }
+    {
+    FileSig keySig = fileSig(keyfile);
+    FileSig certSig = fileSig(websocketSslCert);
+    time_t newest = (keySig.mtime > certSig.mtime) ? keySig.mtime : certSig.mtime;
+    if (ssl_have_ctx && sameSig(&keySig, &ssl_key_sig) && sameSig(&certSig, &ssl_cert_sig))
+    {   // unchanged
+        ssl_next_check = now + SSL_FILE_CHECK_INTERVAL;
+        return;
+    }
+    if (ssl_rejected && sameSig(&keySig, &ssl_rejected_key_sig) && sameSig(&certSig, &ssl_rejected_cert_sig))
+    {   // the version that was already rejected; wait for it to change
+        ssl_next_check = now + SSL_FILE_RETRY_INTERVAL;
+        return;
+    }
+    if (keySig.ok && certSig.ok && ((now - newest) < SSL_FILE_SETTLE))
+    {   // a renewal may still be writing them
+        if (!ssl_settle_logged)
+        {
+            logEntry(&mainLog, "[%s] SSL key or certificate changed on disk, waiting for the files to settle\n", timestamp());
+            ssl_settle_logged = TRUE;
+        }
+        ssl_next_check = newest + SSL_FILE_SETTLE + 1;
+        return;
+    }
+    ssl_settle_logged = FALSE;
+    load_ssl_files(keyfile, &keySig, &certSig, now);
+    }
+#endif
+}
+
+// main thread: the current context, adopting a newly published one if there is one
+static SSL_CTX *get_shared_ssl_ctx()
+{
+    int gen = ssl_published_gen;
+    if (gen != ssl_taken_gen)
+    {
+        SSL_CTX *old = shared_ssl_ctx;
+        SSL_MEMORY_BARRIER();
+        shared_ssl_ctx = ssl_published_ctx;
+        ssl_taken_gen = gen;
+        if ((old != NULL) && (old != shared_ssl_ctx))
+        {
+            SSL_CTX_free(old);		// open connections hold their own references
+        }
+    }
+    return shared_ssl_ctx;
 }
 
 HandshakeResult ws_socket_ssl(ws_ctx_t *ctx, SOCKET sock, char * certfile, char * keyfile)
 {
 
-    char* use_keyfile;
- 
-    init_ssl();
-
-    if (keyfile && (keyfile[0] != '\0')) {
-        // Separate key file
-        use_keyfile = keyfile;
-    }
-    else {
-        // Combined key and cert file
-        use_keyfile = certfile;
-    }
-
-    ctx->ssl_ctx = SSL_CTX_new(TLS_server_method());
-    
-    if (ctx->ssl_ctx == NULL) {
-        logEntry(&mainLog, "[%s] Failed to configure SSL context socket S%d\n", timestamp(), sock);
+    // certfile and keyfile are no longer used here: the shared context was
+    // built from them at startup, and is rebuilt by sslFileCheck
+    {
+    SSL_CTX *sslctx = get_shared_ssl_ctx();
+    if (sslctx == NULL)
+    {
+        logEntry(&mainLog, "[%s] SSL connection but no usable websocketsslkey / websocketsslcert S%d\n", timestamp(), sock);
         return HANDSHAKE_ERROR;
     }
 
-   // printf("keyfile %s\n",use_keyfile);
-   if (SSL_CTX_use_PrivateKey_file(ctx->ssl_ctx, use_keyfile,
-        SSL_FILETYPE_PEM) <= 0) {
-        logEntry(&mainLog, "[%s] Unable to load private key file %s socket S%d\n", timestamp(), use_keyfile, sock);
+    // Associate socket and ssl object.  ctx->ssl_ctx stays NULL; the shared
+    // context is not owned by this connection and must not be freed with it.
+    ctx->ssl = SSL_new(sslctx);
+    if (ctx->ssl == NULL)
+    {
+        logEntry(&mainLog, "[%s] SSL_new failed socket S%d\n", timestamp(), sock);
         return HANDSHAKE_ERROR;
     }
-
-    // printf("certfile %s\n",certfile);
-    if (SSL_CTX_use_certificate_chain_file(ctx->ssl_ctx, certfile) <= 0) {
-        logEntry(&mainLog, "[%s] Unable to load certificate file %s socket S%d\n", timestamp(), certfile, sock);
-        return HANDSHAKE_ERROR;
-    }
-
-    // Associate socket and ssl object
-
-    ctx->ssl = SSL_new(ctx->ssl_ctx);
     SSL_set_fd(ctx->ssl, (int)sock);
+    }
 
     //
     // it appears that the ancient openssl 1.1 installed on the server does not
@@ -576,7 +856,10 @@ int decode_hybi(User *u,unsigned char *src, int srclength,
             return -1;
         }
         if ((hdr_length + 4*masked + payload_length) > remaining) {
-            continue;
+            // incomplete frame; stop here so "remaining" counts from the start
+            // of this frame and the caller keeps it for the next read.  This used
+            // to "continue", which stepped past the end and discarded the partial frame.
+            break;
         }
         //printf("    payload_length: %u, raw remaining: %u\n", payload_length, remaining);
         payload = frame + hdr_length + 4*masked;
@@ -717,7 +1000,9 @@ int parse_handshake(User *u,ws_ctx_t *ws_ctx, char *handshake) {
     }
     if (logging>=log_connections)
     {
-        logEntry(&mainLog, "[%s] using websockets. S%d\n", timestamp(), sock);
+        // ws or wss, as decided by the first byte of the connection
+        logEntry(&mainLog, "[%s] using websockets (%s). S%d\n", timestamp(),
+                 (ws_ctx->scheme!=NULL) ? ws_ctx->scheme : "ws", sock);
     }
     return HANDSHAKE_OK;
 }
@@ -807,7 +1092,9 @@ PREAMBLE_RESULT handshake_preamble(User *u,SOCKET socket)
 {
     fd_set rlist, elist;
     char buf[10];
-    int n = doselect(socket, &rlist, NULL, &elist, 10);
+    // timeout 0: we are called from the main loop, which must never wait here.
+    // the main select has already reported this socket readable.
+    int n = doselect(socket, &rlist, NULL, &elist, 0);
     if (n < 0) { u->badReadCount++; return PREAMBLE_ERROR; }
     else if (n == 0) { u->badReadCount++; return PREAMBLE_ASKAGAIN; }
     if (FD_ISSET(socket, &elist))
@@ -845,6 +1132,9 @@ PREAMBLE_RESULT handshake_preamble(User *u,SOCKET socket)
 
 HandshakeResult do_handshake(User* u)
 {
+
+
+
     if (settings.verbose) { printf("doing handshake\n"); }
 
     SOCKET sock = u->socket;
@@ -873,11 +1163,6 @@ HandshakeResult do_handshake(User* u)
                 logEntry(&mainLog, "[%s] SSL connection but no websocketSslKey specified. S%d\n", timestamp(), sock);
                 return HANDSHAKE_ERROR;
             }
-            else if (access(websocketSslKey, R_OK) != 0) {
-                logEntry(&mainLog, "[%s] SSL connection but '%s' not found. S%d\n", timestamp(), websocketSslKey,sock);
-
-                return HANDSHAKE_ERROR;
-            }
 	    if(settings.verbose) { printf("ssl preamble\n"); }
             HandshakeResult res = ws_socket_ssl(ctx, sock, websocketSslCert, websocketSslKey);
 	    switch(res)
@@ -896,7 +1181,6 @@ HandshakeResult do_handshake(User* u)
 	case PREAMBLE_SSL_ACCEPT:
 	  {
 	    if(settings.verbose) { printf("ssl preamble accept\n"); }
-	    printf("ssl preamble accept\n");
             HandshakeResult res = ws_socket_ssl_accept(ctx, sock);
 	    switch(res)
 	      {
@@ -997,13 +1281,19 @@ HandshakeResult do_handshake(User* u)
         }
         else {
             response_protocol = strtok(headers->protocols, ",");
-            printf("response protocol %s\n", response_protocol);
+            if (logging >= log_all)
+            {
+                logEntry(&mainLog, "[%s] websocket response protocol %s S%d\n", timestamp(), response_protocol, sock);
+            }
             if (!response_protocol || !strlen(response_protocol)) {
                 ctx->opcode = OPCODE_BINARY;
                 response_protocol = "null";
             }
             else if (!strcmp(response_protocol, "base64")) {
-                printf("using base64 %s\n", response_protocol);
+                if (logging >= log_all)
+                {
+                    logEntry(&mainLog, "[%s] websocket using base64 %s S%d\n", timestamp(), response_protocol, sock);
+                }
                 ctx->opcode = OPCODE_TEXT;
             }
             else {
@@ -1050,6 +1340,59 @@ void closeWebSocket()
     }
 }
 
+/** mark a connection on the standard port that turned out to be TLS */
+void markRawTls(User *u)
+{
+    if (u->websocket_data == NULL)
+    {
+        u->websocket_data = (ws_ctx_t*)alloc_ws();
+    }
+    ((ws_ctx_t *)u->websocket_data)->rawtls = TRUE;
+}
+
+/** the TLS handshake for TLS on the standard port, which has no http upgrade after it */
+static HandshakeResult tls_only_handshake(User *u)
+{
+#if INCLUDE_SSL
+    ws_ctx_t *ctx = (ws_ctx_t *)u->websocket_data;
+    SOCKET sock = u->socket;
+    HandshakeResult res;
+    if (ctx->ssl == NULL)
+    {
+        res = ws_socket_ssl(ctx, sock, websocketSslCert, websocketSslKey);
+    }
+    else
+    {
+        res = ws_socket_ssl_accept(ctx, sock);
+    }
+    if (res == HANDSHAKE_SSL_ACCEPT) { ctx->phase = HANDSHAKE_SSL_ACCEPT; }
+    if (res == HANDSHAKE_OK) { ctx->scheme = "tls"; }
+    return res;
+#else
+    return HANDSHAKE_ERROR;
+#endif
+}
+
+/** read TLS on the standard port: no framing, the bytes are the line protocol */
+static int recv_raw(User *u, unsigned char *buf, int siz)
+{
+    ws_ctx_t *ctx = (ws_ctx_t *)u->websocket_data;
+    int bytes = (int)ws_recv(ctx, u->socket, buf, siz);
+    if (bytes > 0)
+    {
+        u->badReadCount = 0;
+        u->goodReadCount++;
+        return bytes;
+    }
+    u->badReadCount++;
+    {
+    int eno = minusErrNo();
+    u->websocket_errno = eno;
+    if (eno == EWOULDBLOCK) { return 0; }
+    }
+    return -1;
+}
+
 /** this is a copy derived from client_socket_init, which should be treated as the definitive "how to do it" guide */
 void client_websocket_init(int portNum)
 {
@@ -1058,6 +1401,7 @@ void client_websocket_init(int portNum)
 #if INCLUDE_SSL
     init_ssl();
 #endif
+
     webserversd = socket(AF_INET, SOCK_STREAM, 0);
     if (webserversd == -1)
         error("Failed socket", ErrNo());
@@ -1076,14 +1420,26 @@ void client_websocket_init(int portNum)
     webiclient.sin_family = AF_INET;
     webiclient.sin_port = htons((short)portNum);
  
+    logEntry(&mainLog, "[%s] Real Websocket Server using port %d.\n",
+        timestamp(), portNum);
+#ifdef _WIN32
+    {
+        char path[MAX_PATH] = { 0 };
+        char cwd[MAX_PATH] = { 0 };
+        HMODULE h = GetModuleHandleA("libcrypto-3-x64.dll");
+        if (h) { GetModuleFileNameA(h, path, sizeof(path)); }
+        GetCurrentDirectoryA(sizeof(cwd), cwd);
+        logEntry(&mainLog, "[%s] %s from [%s], cwd [%s]\n",
+            timestamp(), OpenSSL_version(OPENSSL_VERSION), path, cwd);
+    }
+#endif
     logEntry(&mainLog, "[%s] Websocket Server using port %d.\n",
         timestamp(), portNum);
-
     if (bind(webserversd, (struct sockaddr*)&webiclient, sizeof(webiclient)) == -1)
     {
         error("Failed bind on websocket port", ErrNo());
     };
-    if (listen(webserversd, 4) == -1)
+    if (listen(webserversd, listenBacklog) == -1)
     {
         error("Failed listen on websocket port", ErrNo());
     }
@@ -1184,10 +1540,14 @@ int websocketSend(User* u, unsigned char* buf, int siz0)
                     // we sent nothing this time.  
     int siz = siz0;
     ws_ctx_t* ctx = (ws_ctx_t*)u->websocket_data;
-    if(siz>MAX_OUT_SIZE)
+    // the frame (up to 4 header bytes plus the payload) must fit in cout_buf, which
+    // is WEBSOCKET_BUFSIZE bytes.  Trimming to MAX_OUT_SIZE alone allowed a 65539 byte
+    // frame, overrunning the buffer by 3 bytes and corrupting the heap.
+#define MAX_FRAME_PAYLOAD ((MAX_OUT_SIZE < (WEBSOCKET_BUFSIZE-4)) ? MAX_OUT_SIZE : (WEBSOCKET_BUFSIZE-4))
+    if(siz>MAX_FRAME_PAYLOAD)
       {
-	siz = MAX_OUT_SIZE;
-        logEntry(&mainLog, "[%s] output buffer trimmed from %d to %d S%d\n", timestamp(), siz0, MAX_OUT_SIZE, u->socket);
+	siz = MAX_FRAME_PAYLOAD;
+        logEntry(&mainLog, "[%s] output buffer trimmed from %d to %d S%d\n", timestamp(), siz0, siz, u->socket);
       }
     if (ctx)
     {
@@ -1197,12 +1557,24 @@ int websocketSend(User* u, unsigned char* buf, int siz0)
 
         if (outend == 0)
         {
+            if (siz <= 0) { return 0; }		// nothing new and nothing pending
             // add new content to the now-empty buffer
-
-            //if (ctx->hybi) 
+            if (ctx->rawtls)
+            {   // TLS on the standard port: no framing
+                MEMCPY(outbuf, buf, siz);
+                outend = siz;
+            }
+            else
             {   // for some reason, OPCODE_BINARY isn't acceptable to the clients
                 outend = encode_hybi(u, buf, siz, outbuf, WEBSOCKET_BUFSIZE, OPCODE_TEXT);
+                if (outend < 0) { return -1; }
             }
+            // the frame is ours now: remember it until it is completely sent.  Previously
+            // cout_buf_end was never set, so after a partial write the next call encoded a
+            // new frame over the unsent tail of this one.
+            outstart = 0;
+            ctx->cout_buf_idx = 0;
+            ctx->cout_buf_end = outend;
             sent = siz;     // we tell the server we sent it all, eventhough we may not actually
         }
         int len = outend - outstart;
@@ -1223,15 +1595,17 @@ int websocketSend(User* u, unsigned char* buf, int siz0)
                     ctx->cout_buf_idx = outstart;
                 }
             }
-            else if(bsent<0)
+            else
             {
+                int eno = minusErrNo();
                 u->badWriteCount++;
-	            u->websocket_errno = minusErrNo();
-                sent = bsent;
-            }
-            else {
-                // not an immediate error, but might persist
-                u->badWriteCount++;
+                if ((bsent < 0) && (eno != EWOULDBLOCK))
+                {
+                    u->websocket_errno = eno;
+                    return -1;          // a real error
+                }
+                // would block: the frame stays in cout_buf and goes out when the
+                // socket is writable (websocketWantsWrite / websocketContinueHandshake)
             }
         }
     }
@@ -1259,8 +1633,8 @@ int websocketRecv(User *u, unsigned char* buf, int siz)
     case HANDSHAKE:
     case HANDSHAKE_SSL_ACCEPT:
         {
-        HandshakeResult res = do_handshake(u);
-        if (res == HANDSHAKE_ERROR) { simpleCloseClient(u, "error in websocket handshake"); }
+        HandshakeResult res = ctx->rawtls ? tls_only_handshake(u) : do_handshake(u);
+        if (res == HANDSHAKE_ERROR) { simpleCloseClient(u, ctx->rawtls ? "error in ssl handshake" : "error in websocket handshake"); }
         else if (res == HANDSHAKE_OK)
             { ctx->phase = MAIN; 
               ctx->cin_buf_idx = 0;
@@ -1272,7 +1646,7 @@ int websocketRecv(User *u, unsigned char* buf, int siz)
     case MAIN:
     {  // char sha1[HYBI10_ACCEPTHDRLEN + 1];
        // sha1_test("This is a test", sha1, sizeof(sha1));
-        received = recv_decoded(u, buf, siz);
+        received = ctx->rawtls ? recv_raw(u, buf, siz) : recv_decoded(u, buf, siz);
         assert(received <= siz);
         break;
         ;
@@ -1297,7 +1671,9 @@ ws_ctx_t* alloc_ws() {
 #if INCLUDE_SSL
     ctx->ssl = NULL;
     ctx->ssl_ctx = NULL;
+    ctx->ssl_want_write = FALSE;
 #endif
+    ctx->rawtls = FALSE;
     ctx->phase = HANDSHAKE;
     ctx->scheme = NULL;
     return ctx;
@@ -1313,14 +1689,63 @@ void free_ws(ws_ctx_t* ctx) {
         SSL_free(ctx->ssl);
         ctx->ssl = NULL;
     }
-    if (ctx->ssl_ctx != NULL);
+    if (ctx->ssl_ctx != NULL)
     {
         SSL_CTX_free(ctx->ssl_ctx);
         ctx->ssl_ctx = NULL;
     }
-    FREE(ctx, sizeof(ws_ctx_t));
-
 #endif
+    FREE(ctx, sizeof(ws_ctx_t));
+}
+
+//
+// true if the main loop should select this socket for write even though
+// no output is pending: an SSL handshake that is waiting to write.
+//
+BOOLEAN websocketWantsWrite(User *u)
+{
+    ws_ctx_t *ctx = (ws_ctx_t *)u->websocket_data;
+    if (ctx == NULL) { return FALSE; }
+    if (ctx->cout_buf_end > ctx->cout_buf_idx) { return TRUE; }	// a frame is partly sent
+#if INCLUDE_SSL
+    return (ctx->ssl != NULL) && ctx->ssl_want_write;
+#else
+    return FALSE;
+#endif
+}
+
+//
+// true if SSL has already decrypted input buffered for this socket.  select()
+// can't see that data, so the main loop has to treat the socket as readable.
+//
+BOOLEAN websocketPending(User *u)
+{
+#if INCLUDE_SSL
+    ws_ctx_t *ctx = (ws_ctx_t *)u->websocket_data;
+    return (ctx != NULL) && (ctx->ssl != NULL) && (SSL_pending(ctx->ssl) > 0);
+#else
+    return FALSE;
+#endif
+}
+
+//
+// continue an SSL handshake that stalled on write, called when select reports writable
+//
+void websocketContinueHandshake(User *u)
+{
+    ws_ctx_t *ctx = (ws_ctx_t *)u->websocket_data;
+    if (ctx == NULL) { return; }
+#if INCLUDE_SSL
+    if ((ctx->ssl != NULL) && ctx->ssl_want_write && (ctx->phase != MAIN))
+    {
+        unsigned char dummy[1];
+        websocketRecv(u, dummy, 0);     // re-enters the handshake state machine
+    }
+#endif
+    if (isRealSocket(u->socket) && (ctx->cout_buf_end > ctx->cout_buf_idx))
+    {
+        websocketSend(u, NULL, 0);      // finish the partly sent frame
+    }
 }
 
 

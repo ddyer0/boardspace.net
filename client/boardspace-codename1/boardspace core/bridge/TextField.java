@@ -22,7 +22,7 @@ import com.codename1.ui.events.ActionListener;
 import lib.FontManager;
 import lib.G;
 
-public class TextField extends com.codename1.ui.EditField
+public class TextField extends com.codename1.ui.TextField implements ActionReceiver
 {
 	MouseAdapter mouse = new MouseAdapter(this);
 	public void addMouseListener(MouseListener m) 
@@ -38,21 +38,21 @@ public class TextField extends com.codename1.ui.EditField
 	
 	public TextField(int i) {
 		super(i);
-		addActionListener(mouse);
+		super.addActionListener(mouse);
 	}
 
 	public TextField(String string) {
 		super(string);
-		addActionListener(mouse);
+		super.addActionListener(mouse);
 	}
 
 	public TextField() { 
 		super(); 
-		addActionListener(mouse);
+		super.addActionListener(mouse);
 	}
 	public TextField(String string, int i) 
 	{ 	super(string,i); 
-		addActionListener(mouse);
+		super.addActionListener(mouse);
 	}
 
 	public void setBackground(Color color) { getStyle().setBgColor(color.getRGB()); }

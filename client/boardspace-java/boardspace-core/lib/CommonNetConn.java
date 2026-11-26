@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import bridge.ClientSocket;
+import bridge.SslSocket;
 import bridge.Config;
 import bridge.Utf8OutputStream;
 import bridge.WebSocket;
@@ -110,6 +111,12 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
 
     String machineName;
     int machinePort;
+    /** how to connect: a raw socket or a websocket, each with or without TLS */
+    public enum Transport { Plain, Tls, Ws, Wss };
+    // set by ConnectionManager for the game server connection, with setMachineTransport.
+    // other connections, such as side screens, use setMachinePort and are always plain.
+    Transport machineTransport = Transport.Plain;
+    String sslFallback = null;	// why TLS failed, when we connected without it
     SocketProxy mySocket = null; //open sockets and streams
     InputStream myInStream = null;
     OutputStream myOutStream = null;
@@ -219,8 +226,12 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
     /** make a connection, return true if we were successful */
     public final boolean makeConn()
     {
-        int[] ports = { machinePort };
-        SocketProxy sock = getSocketConnection(machineName, ports);
+        SocketProxy sock = null;
+        try { sock = machineConnection(); }
+        catch (Throwable e)
+        {	G.print("Can't get socket " + machinePort + ": " + e);
+            setErrString("getsocket:" + e);
+        }
 
         //System.out.println("Sock: "+sock);
         if (sock == null)
@@ -365,9 +376,24 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
         machineName = inStr;
     }
 
+    /** the port to connect to with a plain socket, as for side screens */
     public final void setMachinePort(int inPort)
     {
+        machineTransport = Transport.Plain;
         machinePort = inPort;
+    }
+    /** the game server: the port to connect to, and how */
+    public final void setMachineTransport(Transport t,int inPort)
+    {
+        machineTransport = t;
+        machinePort = inPort;
+    }
+
+    /** the reason TLS failed if we connected without it, once; otherwise null */
+    public final String takeSslFallback()
+    {	String s = sslFallback;
+    	sslFallback = null;
+    	return(s);
     }
 
     public final synchronized SocketProxy setMySocket(SocketProxy s)
@@ -434,59 +460,46 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
         return (hasConn);
     }
 
-    /** public utility function to open a socket on a particular socket numbers */
-	public final SocketProxy getSocketConnection(String server,int sock) throws IOException
-    {	 SocketProxy myS = null;
-    	//SocketPermission sp = new SocketPermission(serverName,"connect");
-    	//if((myManager!=null)
-    	//		&& (sock==PROXY_HTTP_PORT)
-    	//		&& (myManager.serverID>=16))	// has proxy
-    	//{ proxySocket temp = new proxySocket(myManager);
-    	//  if(temp.status==proxySocket.status_ok) 
-    	//  	{ myS = temp; 
-    	//  	}
-    	//  else { temp.close(); }
-    	//}
-        if(myS==null)
-        	{ myS = CommonNetConn.makeSocketConnection(server,sock); 
-        	}
-        
-        //setting NoDelay seemed to work, but had no discernable effect
-        //on the games.  However, it coincided with a rash of 
-        //router crashes, possibly due to fragmented packets.
-        //if(myS!=null) { myS.setTcpNoDelay(true); }
-        
-        //myS.setTcpNoDelay(true);
-        //System.out.println("Socket timout="+sock.getSoTimeout()+" delay "+sock.getTcpNoDelay());
-        //myS.setTcpNoDelay(true);
-        //System.out.println("Timeout "+myS.getSoTimeout());
-        //System.out.println("Linger "+myS.getSoLinger());
-        //System.out.println("Nodelay "+myS.getTcpNoDelay());
-         return(myS);
-    }
+    /** open a plain socket connection, as for side screens */
+	public final SocketProxy getSocketConnection(String server,int port) throws IOException
+	{	return(makeSocketConnection(server,port));
+	}
 
-    /** public utility function to open a socket on the first available
-       from a list of socket numbers */
+    /**
+     * open the connection to machineName:machinePort.  Side screens are plain sockets;
+     * the game server connection uses machineTransport.  If TLS or wss fails, try
+     * again without, and remember why so ConnectionManager can report it.
+     */
+	private SocketProxy machineConnection() throws IOException
+	{	String server = machineName;
+		int port = machinePort;
+		if(machineTransport!=Transport.Plain) { Plog.log.addLog("Open ",machineTransport," connection ",server,":",port); }
+		switch(machineTransport)
+		{
+		case Tls:
+			// introductory period: if the TLS connection fails (old server, blocked,
+			// certificate trouble), try again without it.
+			try { return(new SslSocket(server,port)); }
+			catch (IOException e) { noteFallback("TLS",server,port,e); }
+			return(getSocketConnection(server,port));
+		case Wss:
+			try { return(new WebSocket(server,port,true)); }
+			catch (IOException e) { noteFallback("wss",server,port,e); }
+			return(new WebSocket(server,port,false));
+		case Ws:
+			return(new WebSocket(server,port,false));
+		case Plain:
+		default:
+			return(getSocketConnection(server,port));
+		}
+	}
 
-    public final SocketProxy getSocketConnection(String server, int[] socks)
-    {
-        SocketProxy myS = null;
+	private void noteFallback(String what,String server,int port,IOException e)
+	{	sslFallback = e.toString();
+		Plog.log.addLog(what," connection failed, retrying without: ",e);
+		G.print(what+" connection to "+server+":"+port+" failed, retrying without: "+e);
+	}
 
-        for (int i = 0; (myS == null) && (i < socks.length); i++)
-        {
-            try
-            {	myS = getSocketConnection(server,socks[i]);
-            }
-            catch (Throwable e)
-            {
-            	G.print("Can't get socket " + socks[i] + ": " + e);
-                setErrString("getsocket:" + e);
-            }
-        }
-
-        return (myS);
-    }
- 
     public final void inputWake() { synchronized(inQueue) { inQueue.notifyAll();}}
     
     // just enqueue the message without checking of the stream is active.  This is used to stuff
@@ -720,18 +733,12 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
 
     writer = null;
     }
+	/** a plain socket connection, for the game server and for other connections such as side screens */
 	public static SocketProxy makeSocketConnection(String server,int port) throws IOException
 	{	Plog.log.addLog("Open socket ",server,":",port);
-		boolean cheer = G.isCheerpj() || G.isJS();
-		// if we're using cheerpj, we need to use websockets rather than real sockets,
-		// and if we're using https connections, we need to use wss.  This requires
-		// using either the the "websockify" proxy, or the latest version of Boardspaceserver
-		// which includes ws and wss support. 
-		SocketProxy p = cheer
-							? new WebSocket(server,port)
-							: (USE_NATIVE_SOCKETS && !G.isIOS()
+		SocketProxy p = USE_NATIVE_SOCKETS && !G.isIOS()
 									? new ClientSocket(server, port)
-									: new Socket(server,port));
+									: new Socket(server,port);
 		Plog.log.addLog("opened socket ",p);
 		return(p);
 	}

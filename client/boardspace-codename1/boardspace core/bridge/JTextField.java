@@ -23,7 +23,7 @@ import com.codename1.ui.events.ActionListener;
 import lib.FontManager;
 import lib.G;
 
-public class JTextField extends  JTextComponent
+public class JTextField extends  JTextComponent implements ActionReceiver
 {
 	MouseAdapter mouse = new MouseAdapter(this);
 	public void addMouseListener(MouseListener m) 

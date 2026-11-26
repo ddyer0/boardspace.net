@@ -453,11 +453,10 @@ public class MouseAdapter
 	public String getCommand(Type eventType)
 	{
 		if(component!=null) 
-		{	if(component instanceof JTextField)
-			{	// for "done" events, return the action string
-				// otherwise return "".  For example, this is the case for PointerReleased events
-				String str = (eventType==Type.Done) ? ((JTextField)component).getCommand() : "";
-				return(str);
+		{	if(component instanceof ActionReceiver)
+			{
+			String str = (eventType==Type.Done) ? ((ActionReceiver)component).getCommand() : "";
+			return(str);
 			}
 			if(component instanceof Button)
 			{

@@ -115,7 +115,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	private int colorIndex[] = null;
 	private boolean changeRecurse = false;
 	private GearMenu gearMenu = new GearMenu(this);
-	
+	// TODO: add logic to allow variations to have their own second icons, specifically for kings color and horde
 	enum MainMode { Category(CategoriesMode,SeatId.CategoriesSelected),
 					AZ(A_ZMode,SeatId.A_Zselected),
 					Recent(RecentMode,SeatId.RecentSelected);
@@ -175,6 +175,10 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
         	InternationalStrings.put(SeatingViewer.SeatingStringPairs);
         }
         startserver = myFrame.addAction((VNCService.isVNCServer()||RpcService.isRpcServer()) ? "stop server" : "start server",deferredEvents);
+        if(G.isCheerpj()) 
+        {
+        	testswitch = myFrame.addAction("test switch",deferredEvents);
+        }
         String name = UDPService.getPlaytableName();
         namefield.setText(name);
         namefield.singleLine = true;
@@ -193,7 +197,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
         
         UDPService.stop();
         
-        if(G.isTable() && !(G.isCheerpj()||G.isJS()))
+        if(G.isTable() && !G.isCheerpj())
         {
         UDPService.start(true);	// listen for tables
         if(REMOTEVNC) { VNCService.runVNCServer(true); }

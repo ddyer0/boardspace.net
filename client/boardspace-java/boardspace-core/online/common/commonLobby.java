@@ -162,7 +162,7 @@ Change log:
   // boardspace versions
    * 1.4 change lobby robots to appear next to the game instead of in the player area
    * 
-   * TODO: the user name sort is slightly unstable.  should be stable.
+   * the user name sort is now a total order (score, name, serverIndex), so it is stable.
    * 
 */
   
@@ -397,7 +397,10 @@ private void ReStarting(boolean recon)
   startConnectTime = G.Date();
   myNetConn.Connect("Lobby "+G.getPlatformName(),
 		  			sharedInfo.getString(GAMESERVERNAME,sharedInfo.getString(SERVERNAME)),
-		  			sharedInfo.getInt(LOBBYPORT,-1));
+		  			sharedInfo.getInt(LOBBYPORT,-1),
+		  			// login gives the browser the websocket port as LOBBYPORT
+		  			sharedInfo.getInt(WEBSOCKETPORT,sharedInfo.getInt(LOBBYPORT,-1)),
+		  			sharedInfo.getBoolean(USE_SSL,false));
 
   PutInSess(users.primaryUser(),null,0);
   }
@@ -705,7 +708,7 @@ private boolean processIntro(String messType,Tokenizer localST)
 	{
 		localST.intToken();	// color
 		String uid = localST.nextToken();
-		String name = localST.nextToken();
+		String name = Base64.decodeAlphaNumeric(localST.nextToken());	// encoded by the server
 		localST.intToken();		// order
 		setUserName(channel,name,uid);
 	}
@@ -734,6 +737,7 @@ private boolean process_ECHO_INTRO_SELF(String messType,Tokenizer localSTx)
     		  		props, 
                     " ip=" , localip, 
                      v.statsForLog()));
+      myNetConn.sendSslFallbackNote();		// if TLS failed and we connected without it
       if(pingtime==0)
       {
       pingtime = hearbeatTime=G.Date();
@@ -1034,7 +1038,7 @@ private boolean processEchoGroup(String messType,Tokenizer localST,String fullMs
       }}
       else if (commandStr.equalsIgnoreCase(KEYWORD_IMNAMED)) 
       {
-        String playerNameStr = localST.nextToken();
+        String playerNameStr = Base64.decodeAlphaNumeric(localST.nextToken());	// encoded by the sending client
         String playerUidStr = localST.hasMoreTokens() ? localST.nextToken() : null;
         setUserName(playerID,playerNameStr,playerUidStr);
       } 
@@ -1596,7 +1600,8 @@ private boolean processEchoGroup(String messType,Tokenizer localST,String fullMs
       int passwordFlag = localST.intToken();
       boolean paint=false;
       boolean join = true;
-      String theRealName=localST.nextToken();
+      String rawName = localST.nextToken();
+      String theRealName=Base64.decodeAlphaNumeric(rawName);	// encoded by the server
       Session sess = getSession(sessNum);
       String theUID = localST.hasMoreTokens() ? localST.nextToken() : null;
      if (sess!=null)
@@ -1762,6 +1767,8 @@ private boolean processEchoGroup(String messType,Tokenizer localST,String fullMs
   private boolean processIgnoredMessages(String messType,Tokenizer localST)
   {
     if(NetConn.ECHO_REMOVE_GAME.equals(messType)
+      // ack of SEND_MYNAME.  If the name is ever used, it is encoded by the
+      // server and needs Base64.decodeAlphaNumeric
       || NetConn.ECHO_MYNAME.equals(messType))
     {
       return(true);
@@ -1982,7 +1989,7 @@ private boolean processEchoRoomtype(String messType,Tokenizer localST)
    int him = u.serverIndex;
    User mu = users.primaryUser();
    Session muSess = mu.session();
-   sendMessage(NetConn.SEND_MESSAGE_TO+him+" "+KEYWORD_IMNAMED+" " + mu.publicName + " "+mu.uid);
+   sendMessage(NetConn.SEND_MESSAGE_TO+him+" "+KEYWORD_IMNAMED+" " + Base64.encodeAlphaNumeric(mu.publicName) + " "+mu.uid);
    if(muSess!=null)
    {
    int sessn = muSess.gameIndex;
@@ -2174,7 +2181,7 @@ private boolean processEchoRoomtype(String messType,Tokenizer localST)
   
         if (!"".equals(user.name))
         {
-        	sendMessage(NetConn.SEND_GROUP+KEYWORD_IMNAMED+" "+user.publicName + " " + user.uid);
+        	sendMessage(NetConn.SEND_GROUP+KEYWORD_IMNAMED+" "+Base64.encodeAlphaNumeric(user.publicName) + " " + user.uid);
         	SendMyRank();
         	SetMyOtherInfo(-1);
         }

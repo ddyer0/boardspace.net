@@ -51,6 +51,8 @@ public class Session implements LobbyConstants
         G.LANGUAGE,
         LOBBYPORT,	
         REALPORT,
+        USE_SSL,
+        WEBSOCKETPORT,
         SERVERNAME,
         ConnectionManager.USERNAME,
         ConnectionManager.UID,

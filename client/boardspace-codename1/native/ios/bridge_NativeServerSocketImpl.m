@@ -10,6 +10,11 @@
     return 0;
 }
 
+// not implemented on ios (isSupported is NO), so TLS falls back to a plain connection
+-(int)connectSsl:(NSString*)param param1:(int)param1{
+    return -1;
+}
+
 -(int)listen{
     return 0;
 }

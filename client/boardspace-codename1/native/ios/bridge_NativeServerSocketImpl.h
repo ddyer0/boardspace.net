@@ -5,6 +5,7 @@
 
 -(int)write:(int)param param1:(int)param1;
 -(int)connect:(NSString*)param param1:(int)param1;
+-(int)connectSsl:(NSString*)param param1:(int)param1;
 -(int)listen;
 -(int)read:(int)param;
 -(int)flush:(int)param;

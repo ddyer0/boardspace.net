@@ -87,7 +87,11 @@ public class UserManager implements LobbyConstants
  * @return a user or null
  */
 public User getExistingUser(String playerID)
-{ if(playerID.equals(primary.uid)) { return(primary); }
+{ // all guests share the same uid, so a uid can't identify a guest.  Matching it
+  // would find the first guest (often ourself), which made a guest spectator look
+  // like a player in another guest's game, so they couldn't spectate.
+  if(OnlineConstants.guestUID.equals(playerID)) { return(null); }
+  if(playerID.equals(primary.uid)) { return(primary); }
   for(int userIndex = 0; userIndex<numberOfUsers; userIndex++)
   { User u = Users[userIndex];
     if(playerID.equals(u.uid)) { return(u); }

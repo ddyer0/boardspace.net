@@ -26,13 +26,17 @@ public class WebSocket implements SocketProxy
     private byte[] current = null;
     private int pos = 0;
 
-    public WebSocket(String server,int port) throws IOException
+    /** true where codename1 has websockets: the devices, but not the simulator */
+    public static boolean isSupported() { return com.codename1.io.WebSocket.isSupported(); }
+
+    /** connect with wss if secure, otherwise ws */
+    public WebSocket(String server,int port,boolean secure) throws IOException
     {	
-        if (!com.codename1.io.WebSocket.isSupported())
+        if (!isSupported())
         {
-            G.Error("WebSocket is not supported");
+            throw new IOException("WebSocket is not supported");
         }
-        String prefix = (lib.Http.getDefaultProtocol().equalsIgnoreCase("https:") ? "wss://":"ws:") ;
+        String prefix = secure ? "wss://" : "ws://";
         // /gameserver is boilerplate that the server uses to exclude random connections
         String finalurl = prefix + server + ":"+port+"/gameserver";
         Plog.log.addLog("Final websocket "+finalurl);

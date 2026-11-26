@@ -160,7 +160,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     private boolean unrankedMode = false;
     private boolean masterMode = false;
     private boolean isGuest = false; 			// if guest in a game played by another guest
-    private boolean isPoisonedGuest = false;	// is a guest who joined as a spectator
     private int errors = 0;
     private int numberOfPlayerConnections = 0;
     private BSDate startingTime = new BSDate();
@@ -1120,6 +1119,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                		registerLocalPlayers();
                		}
             }
+            myNetConn.sendSslFallbackNote();		// if TLS failed and we connected without it
 
             return (true);
         }
@@ -1204,6 +1204,19 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     		v.useStoryBuffer(tok,myST);
     	}
     }
+    //
+    // the name a guest is known by for taking over seats.  Default guest names are
+    // the translated "guest" plus the server channel, so every default guest is
+    // the same guest.  A custom guest name is "guest.name", and only the part after
+    // the "." counts, so it is the same in every language.
+    //
+    private static String guestName(String name)
+    {	int dot = name.indexOf('.');
+    	return(dot>=0 ? name.substring(dot+1) : "");
+    }
+    private static boolean sameGuestName(String a,String b)
+    {	return(guestName(a).equalsIgnoreCase(guestName(b)));
+    }
     // this is used to restart when a spectator joins and is promoted to player
     public void ProcessGetStory(Tokenizer myST,String fullMsg)
     {	// typical string
@@ -1248,15 +1261,13 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 			  sharedInfo.put(OnlineConstants.ROBOTGAME, robot);
         	  }
         	}
-        	if(isGuest && uid.equals(my.uid) && !hasQuit) 
-        		{ isPoisonedGuest = true;		// poisoned guests are those who started as guests spectating in another guests game 
-        		}
-        	// it's only reliable to take over if there is no robot running
-        	if( //hasQuit &&
-        		//(name.equalsIgnoreCase(my.trueName())) && 
-        		 ((uid.equals(my.uid)
-        				 && !isPoisonedGuest)))	// only let guests take over if there is an empty slot previously held by a guest
-        														// it's bad if a new guest spectator takes over the game!
+        	// all guests share the same uid, so for guests the uid alone doesn't say
+        	// this slot is ours.  A guest can take over only a vacant slot, and only
+        	// one held by a guest with the same guest name: any guest for the default
+        	// guest names, only the same custom name for guests who chose one.
+        	boolean mySlot = uid.equals(my.uid)
+        						&& (!isGuest || (hasQuit && sameGuestName(name,my.userName)));
+        	if(mySlot)
         		{ quitPlayer=p; 
         		}
         	setPlayerName(p,name,false);
@@ -1410,11 +1421,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
             if (isGuest)
             {
-                sendMessage(NetConn.SEND_GROUP+KEYWORD_TRUENAME+" "+ my.trueName+" "+my.uid);
+                sendMessage(NetConn.SEND_GROUP+KEYWORD_TRUENAME+" "+ Base64.encodeAlphaNumeric(my.trueName)+" "+my.uid);
 
             }
 
-             sendMessage(NetConn.SEND_GROUP+KEYWORD_IMNAMED+" " + my.userName + " " + my.IP 
+             sendMessage(NetConn.SEND_GROUP+KEYWORD_IMNAMED+" " + Base64.encodeAlphaNumeric(my.userName) + " " + my.IP 
                  + " 0 " // this was cookie, now obsolete
                  + my.localIP + " " + my.uid);
 
@@ -1432,10 +1443,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
              if (isGuest)
             {   
 
-                sendMessage(NetConn.SEND_MESSAGE_TO + toindex + " "+KEYWORD_TRUENAME+" " + my.trueName + " "+my.uid);
+                sendMessage(NetConn.SEND_MESSAGE_TO + toindex + " "+KEYWORD_TRUENAME+" " + Base64.encodeAlphaNumeric(my.trueName) + " "+my.uid);
             }
 
-            sendMessage(NetConn.SEND_MESSAGE_TO + toindex + " "+KEYWORD_IMNAMED+" " + my.userName + " " +
+            sendMessage(NetConn.SEND_MESSAGE_TO + toindex + " "+KEYWORD_IMNAMED+" " + Base64.encodeAlphaNumeric(my.userName) + " " +
                 my.IP + " 0 "/*was cookie, now obsolete*/ + my.localIP + " " + my.uid);
 
             if (!my.isSpectator())
@@ -1567,7 +1578,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             else if (commandStr.equalsIgnoreCase(KEYWORD_IMNAMED) 
                     || (istrue = commandStr.equalsIgnoreCase(KEYWORD_TRUENAME)))
             {
-                String localNS = myST.nextToken();
+                String localNS = Base64.decodeAlphaNumeric(myST.nextToken());	// encoded by the sender
                 commonPlayer player = getPlayer(playerID);
  
                 if (player != null)
@@ -2064,7 +2075,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             // robotGame = true;
             // technically these ought to be grouped as an atomic op
             sendRegister(p.getOrder(),p.getPosition(),p.trueName,p.uid,p.channel,getGameRevision()); //register for the lobby
-            sendMessage(NetConn.SEND_AS_ROBOT_ECHO + p.channel + " "+KEYWORD_IMNAMED+" " + weak.name);
+            sendMessage(NetConn.SEND_AS_ROBOT_ECHO + p.channel + " "+KEYWORD_IMNAMED+" " + Base64.encodeAlphaNumeric(weak.name));
             sendMessage(NetConn.SEND_AS_ROBOT +NetConn.ECHO_PLAYER_QUIT +" "+ p.channel + " "+KEYWORD_ROBOT_PLAYING+ " " + p.seatIndex());
        }
     }
@@ -2793,7 +2804,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             }
             else if (cmdStr.equals(NetConn.ECHO_I_QUIT)) { processEchoIQuit(myST,fullMsg); }
             else if (cmdStr.equals(NetConn.ECHO_MYNAME)) 
-            { /* ack SEND_MYNAME */  
+            { /* ack SEND_MYNAME.  If the name is ever used, it is encoded by the
+                 server and needs Base64.decodeAlphaNumeric */
             }
             else if (cmdStr.equals(NetConn.ECHO_PING))
             { /* aheartbeat */
@@ -3091,8 +3103,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     {	
 		int position = myST.intToken();	// unused, but meaningful to the server so don't mess with it
 		String uid = myST.nextToken();
-		String nametoken = myST.nextToken();
-		String name = Base64.decodeAlphaNumeric(nametoken);
+		String name = Base64.decodeAlphaNumeric(myST.nextToken());	// encoded by the server
 		int order = myST.intToken();
 		//
 		// from time to time, the "order" argument was overloaded to pass new information about the 
@@ -3800,7 +3811,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         {
         myNetConn.Connect((my.isSpectator() ? "Spectator " : "Game ")+" "+gameInfo.gameName,
         					sharedInfo.getString(GAMESERVERNAME,sharedInfo.getString(SERVERNAME)),
-        					sharedInfo.getInt(LOBBYPORT,-1));
+        					sharedInfo.getInt(LOBBYPORT,-1),
+        					// login gives the browser the websocket port as LOBBYPORT
+        					sharedInfo.getInt(WEBSOCKETPORT,sharedInfo.getInt(LOBBYPORT,-1)),
+        					sharedInfo.getBoolean(USE_SSL,false));
         setGameState(ConnectionState.UNCONNECTED);
 
         if(theChat!=null)

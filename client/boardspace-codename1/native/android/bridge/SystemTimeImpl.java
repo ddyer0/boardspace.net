@@ -22,7 +22,9 @@ public class SystemTimeImpl {
     public long currentNanoTime() {
     	return SystemClock.elapsedRealtimeNanos();
     }
-
+    
+    public boolean isRunningOnMac() { return false; }
+    
     public boolean isSupported() {
         return true;
     }

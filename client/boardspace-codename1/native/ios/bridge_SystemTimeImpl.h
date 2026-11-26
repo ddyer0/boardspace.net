@@ -4,5 +4,6 @@
 }
 
 -(long long)currentNanoTime;
+-(BOOL)isRunningOnMac;
 -(BOOL)isSupported;
 @end

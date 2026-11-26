@@ -10,6 +10,10 @@ var o = {};
         callback.error(new Error("Not implemented yet"));
     };
 
+    o.connectSsl__java_lang_String_int = function(param1, param2, callback) {
+        callback.error(new Error("Not implemented yet"));
+    };
+
     o.listen_ = function(callback) {
         callback.error(new Error("Not implemented yet"));
     };

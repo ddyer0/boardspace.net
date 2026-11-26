@@ -820,5 +820,5 @@ public static Object MakeInstance(Class<?> cl)
 			}
 			return(bytes.toByteArray());
 		}
-	    
+
 }
