@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id: viewforum.php,v 1.5 2026/10/30 09:15:55 ddyer Exp $
+ *   $Id: viewforum.php,v 1.6 2026/11/27 22:10:01 ddyer Exp $
  *
  *
  ***************************************************************************/

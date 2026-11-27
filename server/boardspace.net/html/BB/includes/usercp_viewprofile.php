@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id: usercp_viewprofile.php,v 1.1 2006/12/01 09:49:46 ddyer Exp $
+ *   $Id: usercp_viewprofile.php,v 1.4 2026/11/27 22:10:02 ddyer Exp $
  *
  *
  ***************************************************************************/

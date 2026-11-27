@@ -174,6 +174,7 @@ gameservername=$::ip_name
 localIP=$ENV{'REMOTE_ADDR'}
 serverKey=$::serverKey
 lobbyportnumber=$port
+usessl=$::usessl
 reallobbyportnumber=$actualPort
 robotlobby=solo
 username=$pname

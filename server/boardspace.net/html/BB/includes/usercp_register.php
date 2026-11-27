@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id: usercp_register.php,v 1.6 2026/10/30 09:15:56 ddyer Exp $
+ *   $Id: usercp_register.php,v 1.7 2026/11/27 22:10:01 ddyer Exp $
  *
  *
  ***************************************************************************/

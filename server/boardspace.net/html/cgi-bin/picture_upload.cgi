@@ -23,6 +23,12 @@ $cgi_lib::writefiles = $basename."upload/";
 # Limit upload size to avoid using too much memory
 $cgi_lib::maxdata = 150000;
 
+# headers for every page this script produces.  The result must never be
+# cached, otherwise the browser can show a stale result page or picture.
+$html_header = "Content-type: text/html\r\n"
+             . "Cache-Control: no-cache, no-store, must-revalidate\r\n"
+             . "Pragma: no-cache\r\n"
+             . "Expires: 0\r\n\r\n";
 
 sub init {
 	$| = 1;				# force writes
@@ -70,6 +76,29 @@ sub filename_split()
    return($name,$path,$type);
 }
 
+# minimal html escaping for values echoed back to the browser
+sub esc()
+{  my ($s) = @_;
+   $s = "" unless defined $s;
+   $s =~ s/&/&amp;/g;
+   $s =~ s/</&lt;/g;
+   $s =~ s/>/&gt;/g;
+   $s =~ s/"/&quot;/g;
+   return($s);
+}
+
+# true if the file starts with the JPEG signature (FF D8 FF)
+sub looks_like_jpeg()
+{  my ($file) = @_;
+   my ($head) = "";
+   open(my $fh, "<", $file) or return(0);
+   binmode($fh);
+   read($fh, $head, 3);
+   close($fh);
+
+   return(($head eq "\xFF\xD8\xFF") ? 1 : 0);
+}
+
 MAIN: 
 {
   my (%cgi_data,  # The form data
@@ -81,6 +110,27 @@ MAIN:
      );
   &init();
 
+  # Check the declared size BEFORE cgi-lib sees the request.  If it is too
+  # big, read and discard the body so the browser can finish sending and is
+  # able to display our message instead of "connection reset", then reply
+  # with a proper header and a clean page.
+  my $len = $ENV{'CONTENT_LENGTH'} || 0;
+  if ($len > $cgi_lib::maxdata)
+  {
+    my ($left, $junk) = ($len < 20_000_000 ? $len : 20_000_000);
+    while ($left > 0)
+    {  my $n = read(STDIN, $junk, ($left > 8192) ? 8192 : $left);
+       last unless $n;
+       $left -= $n;
+    }
+    print $html_header;
+    print &HtmlTop("File Upload Results");
+    print "<b>Upload failed:</b> the picture is too large ",
+          "($len bytes). The limit is $cgi_lib::maxdata bytes. ",
+          "Please resize it and try again.\n";
+    print &HtmlBot;
+    exit 0;
+  }
 
   # Start off by reading and parsing the data.  Save the return value.
   # Pass references to retreive the data, the filenames, and the content-type
@@ -107,22 +157,22 @@ MAIN:
 	$password = &despace(substr($password,0,25));
 
   # Now print the page for the user to see...
-  print &PrintHeader;
+  print $html_header;
   print &HtmlTop("File Upload Results");
 
-  print <<EOT;
-The file's reported name on your machine was:
- <i>$cgi_cfn{'upfile'}</i><br>
-The file's reported Content-type (possibly none) was:
- <i>$cgi_ct{'upfile'}</i><br>
-EOT
+  print "The file's reported name on your machine was:\n",
+        " <i>".&esc($cgi_cfn{'upfile'})."</i><br>\n",
+        "The file's reported Content-type (possibly none) was:\n",
+        " <i>".&esc($cgi_ct{'upfile'})."</i><br>\n";
 
     my (@name) = split("/",$cgi_data{'upfile'});
     my ($nameonly) =$name[$#name];
-    my ($name,$path,$typeonly) = &filename_split($nameonly);
-    my ($realname) = lc($username.".jpg");
+    my (@type) = &filename_split($nameonly);
+    my ($typeonly) = lc($type[$#type]);
+    my ($realname) = lc($username.$typeonly);
     my ($from) = $basename."upload/".$nameonly;
     my ($toname) = $basename.$realname;
+
   if(&check_password($username,$password))
    {
   if (( $cgi_ct{'upfile'} eq "image/pjpeg")
@@ -132,57 +182,31 @@ EOT
 #  ||       ($cgi_ct{'upfile'} eq "image/gif")
    )
   {
+      if(&looks_like_jpeg($from))
+      {
     if(-e $toname) { unlink($toname); }
     rename($from, $toname);
-    print "from $from to $toname\n";
-    print "<p>It's an image!<br><img src=\"$pubname$realname\"><br>\n";
-  }}else
+        # the time() suffix makes the browser fetch the new picture
+        # instead of showing its cached copy of the old one
+        print "<p>It's an image!<br><img src=\"".&esc($pubname.$realname)."?t=".time()."\"><br>\n";
+      }
+      else
+      {
+        unlink($from);
+        print "<p><b>That file is not a valid JPEG image.</b>\n";
+      }
+    }
+    else
   {
+      unlink($from);
+      print "<p><b>Only JPEG (.jpg) pictures are accepted.</b>\n";
+    }
+  }
+  else
+  {
+    unlink($from);
   print "<b>Bad user name or password</b>\n";
       }
-#<hr>
-#The contents of $cgi_data{'upfile'} are as follows:<br>
-#<pre>
-
-  # Print the contents of the uploaded file
-#  open (UPFILE, $cgi_sfn{'upfile'}) or 
-#    &CgiError("Error: Unable to open file $cgi_sfn{'upfile'}: $!\n");
-#  $buf = "";    # avoid annoying warning message
-#  while (read (UPFILE, $buf, 8192)) {
-#    # Munge the uploaded text so that it doesn't contain HTML elements
-#    # This munging isn't complete -- lots of illegal characters are left
-#    # However, it takes care of the most common culprits.  
-#    $buf =~ s/</&lt;/g;
-#    $buf =~ s/>/&gt;/g;
-#    print $buf;
-#  }
-#  close (UPFILE);
-#  print "</pre>\n";
-
-#  $cvt = `gs/gs /i$cgi_data{'upfile'} /o$cgi_data{'upfile'} /pcmulti.004 /fcmulti.8bf`;
-
-#  print "<pre>\n$cvt\n</pre>\n";
-#  my (@parts) = split(/\//,$cgi_data{'upfile'});
-#  my ($name) = $parts[$#parts];
-#  my ($dlname) = "/out/$name";
-#  print "<table><td><tr>\n";
-#  print "\n<hr><bre><img src=\"$dlname\" WIDTH=130>\n";
-#  print "</tr><tr>Use your browser's <b>save as</b> option to <a href=\"$dlname\">Download the result</a></tr></td></table>\n";
-#  print "<p>\n";
- 
-
-  #unlink ($cgi_sfn{'upfile'}) or
-  # &CgiError("Error: Unable to delete file",
-  #           "Error: Unable to delete file $cgi_sfn{'upfile'}: $!\n");
-  # cleanup - delete the uploaded file
-  # Note that when using spooling of files to disk, the uploaded file's
-  # name on the server machine is in both %cgi_data and %cgi_sfn
-  # (that is, the first and fourth parameters to ReadParse).  However,
-  # for technical reasons, the data in %cgi_data are tainted.  The data in
-  # %cgi_sfn are not tainted, but the keys can contain only a limited
-  # set of characters ([-\w] in cgi-lib 2.8)
-  #  print "<hr>File $cgi_data{'upfile'} has now been removed\n";
-
 
   print &HtmlBot;
 

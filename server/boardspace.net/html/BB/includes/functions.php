@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id: functions.php,v 1.3 2007/01/13 05:29:47 ddyer Exp $
+ *   $Id: functions.php,v 1.6 2026/11/27 22:10:01 ddyer Exp $
  *
  *
  ***************************************************************************/

@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id: groupcp.php,v 1.3 2007/01/13 05:29:48 ddyer Exp $
+ *   $Id: groupcp.php,v 1.5 2026/11/27 22:10:00 ddyer Exp $
  *
  *
  ***************************************************************************/

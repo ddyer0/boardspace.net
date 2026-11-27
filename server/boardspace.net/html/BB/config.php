@@ -9,7 +9,10 @@ $dbms = 'mysql';
 $dbhost = 'localhost';
 $dbname = 'phpbb';
 $dbuser = 'root';
-$dbpasswd = 'greatpumpkin';
+// the password is kept outside the web tree, in www/../secrets/secrets.php
+$secrets = require(dirname(__FILE__) . '/../../secrets/secrets.php');
+$dbpasswd = $secrets['phpbb_dbpasswd'];
+unset($secrets);
 
 $table_prefix = 'phpbb_';
 

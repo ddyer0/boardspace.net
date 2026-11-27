@@ -22,7 +22,7 @@ sub retirement_clause()
   my $rtest = ">=";
   my $retired_test = 'AND is_retired IS NULL';
 
-  if($months<=0) { $months=$'retire_months; };
+  if($months<=0) { $months=$::retire_months; };
 
   if($retired) 
 	{ $rtest='<='; 
