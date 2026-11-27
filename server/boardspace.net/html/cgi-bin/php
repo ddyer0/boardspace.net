@@ -1,3 +1,0 @@
-#!/bin/sh
-. /usr/aoserv/etc/postgresql-7.3.3.sh
-exec /usr/php-4.3.3/bin/php "$@"
